@@ -1,5 +1,0 @@
-[console_scripts]
-camera_tf = planning.camera_static_transform:main
-ik = planning.ik:main
-pick_and_place = planning.pick_and_place:main
-simple_move = planning.simple_move:main

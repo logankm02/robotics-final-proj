@@ -1,8 +1,0 @@
-{
-  "package_name": "planning_interfaces",
-  "non_idl_tuples": [
-    "/home/nano/final_project_ws/src/planning_interfaces:srv/PickPlaceService.srv",
-    "/home/nano/final_project_ws/src/planning_interfaces:srv/MoveToTarget.srv",
-    "/home/nano/final_project_ws/src/planning_interfaces:srv/ContinuousPickPlace.srv"
-  ]
-}
