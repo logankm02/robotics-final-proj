@@ -1,0 +1,25 @@
+[1.989s] Invoking command in '/home/nano/final_project_ws/src/actuation': PYTHONPATH=/home/nano/final_project_ws/build/actuation/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/nano/final_project_ws/install/actuation/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/actuation build --build-base /home/nano/final_project_ws/build/actuation/build install --record /home/nano/final_project_ws/build/actuation/install.log --single-version-externally-managed install_data
+[2.543s] running egg_info
+[2.580s] writing ../../build/actuation/actuation.egg-info/PKG-INFO
+[2.581s] writing dependency_links to ../../build/actuation/actuation.egg-info/dependency_links.txt
+[2.582s] writing entry points to ../../build/actuation/actuation.egg-info/entry_points.txt
+[2.583s] writing requirements to ../../build/actuation/actuation.egg-info/requires.txt
+[2.583s] writing top-level names to ../../build/actuation/actuation.egg-info/top_level.txt
+[2.665s] reading manifest file '../../build/actuation/actuation.egg-info/SOURCES.txt'
+[2.668s] writing manifest file '../../build/actuation/actuation.egg-info/SOURCES.txt'
+[2.668s] running build
+[2.669s] running build_py
+[2.669s] copying actuation/gripper_server.py -> /home/nano/final_project_ws/build/actuation/build/lib/actuation
+[2.669s] copying actuation/__init__.py -> /home/nano/final_project_ws/build/actuation/build/lib/actuation
+[2.670s] running install
+[2.679s] running install_lib
+[2.719s] running install_data
+[2.719s] copying resource/actuation -> /home/nano/final_project_ws/install/actuation/share/ament_index/resource_index/packages
+[2.719s] copying package.xml -> /home/nano/final_project_ws/install/actuation/share/actuation
+[2.720s] running install_egg_info
+[2.761s] removing '/home/nano/final_project_ws/install/actuation/lib/python3.10/site-packages/actuation-0.0.0-py3.10.egg-info' (and everything under it)
+[2.761s] Copying ../../build/actuation/actuation.egg-info to /home/nano/final_project_ws/install/actuation/lib/python3.10/site-packages/actuation-0.0.0-py3.10.egg-info
+[2.763s] running install_scripts
+[2.841s] Installing gripper script to /home/nano/final_project_ws/install/actuation/lib/actuation
+[2.843s] writing list of installed files to '/home/nano/final_project_ws/build/actuation/install.log'
+[2.914s] Invoked command in '/home/nano/final_project_ws/src/actuation' returned '0': PYTHONPATH=/home/nano/final_project_ws/build/actuation/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/nano/final_project_ws/install/actuation/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/actuation build --build-base /home/nano/final_project_ws/build/actuation/build install --record /home/nano/final_project_ws/build/actuation/install.log --single-version-externally-managed install_data

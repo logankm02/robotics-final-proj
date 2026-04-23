@@ -1,0 +1,67 @@
+[0.000000] (-) TimerEvent: {}
+[0.000466] (planning) JobQueued: {'identifier': 'planning', 'dependencies': OrderedDict()}
+[0.000614] (planning) JobStarted: {'identifier': 'planning'}
+[0.097781] (-) TimerEvent: {}
+[0.198350] (-) TimerEvent: {}
+[0.298905] (-) TimerEvent: {}
+[0.399512] (-) TimerEvent: {}
+[0.500081] (-) TimerEvent: {}
+[0.600757] (-) TimerEvent: {}
+[0.701549] (-) TimerEvent: {}
+[0.802168] (-) TimerEvent: {}
+[0.902722] (-) TimerEvent: {}
+[1.003266] (-) TimerEvent: {}
+[1.103809] (-) TimerEvent: {}
+[1.204443] (-) TimerEvent: {}
+[1.305292] (-) TimerEvent: {}
+[1.405987] (-) TimerEvent: {}
+[1.506809] (-) TimerEvent: {}
+[1.607830] (-) TimerEvent: {}
+[1.663634] (planning) Command: {'cmd': ['/usr/bin/python3', '-W', 'ignore:setup.py install is deprecated', '-W', 'ignore:easy_install command is deprecated', 'setup.py', 'egg_info', '--egg-base', '../../build/planning', 'build', '--build-base', '/home/nano/final_project_ws/build/planning/build', 'install', '--record', '/home/nano/final_project_ws/build/planning/install.log', '--single-version-externally-managed', 'install_data'], 'cwd': '/home/nano/final_project_ws/src/planning', 'env': {'LESSOPEN': '| /usr/bin/lesspipe %s', 'USER': 'nano', 'SSH_CLIENT': '100.69.96.94 35424 22', 'XDG_SESSION_TYPE': 'tty', 'GIT_ASKPASS': '/home/nano/.vscode-server/cli/servers/Stable-7d842fb85a0275a4a8e4d7e040d2625abbf7f084/server/extensions/git/dist/askpass.sh', 'SHLVL': '2', 'LD_LIBRARY_PATH': '/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/aarch64-linux-gnu:/opt/ros/humble/lib', 'BROWSER': '/home/nano/.vscode-server/cli/servers/Stable-7d842fb85a0275a4a8e4d7e040d2625abbf7f084/server/bin/helpers/browser.sh', 'MOTD_SHOWN': 'pam', 'HOME': '/home/nano', 'OLDPWD': '/home/nano', 'TERM_PROGRAM_VERSION': '1.105.1', 'VSCODE_IPC_HOOK_CLI': '/run/user/1000/vscode-ipc-7432072b-3277-428a-8184-06e7202b5ea3.sock', 'ROS_PYTHON_VERSION': '3', 'VSCODE_GIT_ASKPASS_MAIN': '/home/nano/.vscode-server/cli/servers/Stable-7d842fb85a0275a4a8e4d7e040d2625abbf7f084/server/extensions/git/dist/askpass-main.js', 'VSCODE_GIT_ASKPASS_NODE': '/home/nano/.vscode-server/cli/servers/Stable-7d842fb85a0275a4a8e4d7e040d2625abbf7f084/server/node', 'SSL_CERT_FILE': '/usr/lib/ssl/certs/ca-certificates.crt', 'VSCODE_PYTHON_AUTOACTIVATE_GUARD': '1', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLORTERM': 'truecolor', 'ROS_DISTRO': 'humble', 'LOGNAME': 'nano', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'XDG_SESSION_CLASS': 'user', 'TERM': 'xterm-256color', 'XDG_SESSION_ID': '31', 'ROS_LOCALHOST_ONLY': '0', 'PATH': '/home/nano/.vscode-server/cli/servers/Stable-7d842fb85a0275a4a8e4d7e040d2625abbf7f084/server/bin/remote-cli:/home/nano/.local/bin:/opt/ros/humble/bin:/home/nano/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/nano/.vscode-server/data/User/globalStorage/github.copilot-chat/debugCommand', 'XDG_RUNTIME_DIR': '/run/user/1000', 'SSL_CERT_DIR': '/usr/lib/ssl/certs', 'LANG': 'en_US.UTF-8', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:', 'VSCODE_GIT_IPC_HANDLE': '/run/user/1000/vscode-git-cba18c13d6.sock', 'TERM_PROGRAM': 'vscode', 'AMENT_PREFIX_PATH': '/opt/ros/humble', 'SHELL': '/bin/bash', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'VSCODE_GIT_ASKPASS_EXTRA_ARGS': '', 'PWD': '/home/nano/final_project_ws/build/planning', 'LC_ALL': 'en_US.UTF-8', 'SSH_CONNECTION': '100.69.96.94 35424 100.83.81.86 22', 'XDG_DATA_DIRS': '/usr/share/gnome:/usr/local/share:/usr/share:/var/lib/snapd/desktop', 'PYTHONPATH': '/home/nano/final_project_ws/build/planning/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/nano/final_project_ws/install/planning/lib/python3.10/site-packages:/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages', 'COLCON': '1'}, 'shell': False}
+[1.707953] (-) TimerEvent: {}
+[1.808516] (-) TimerEvent: {}
+[1.909062] (-) TimerEvent: {}
+[2.009647] (-) TimerEvent: {}
+[2.110206] (-) TimerEvent: {}
+[2.124953] (planning) StdoutLine: {'line': b'running egg_info\n'}
+[2.125920] (planning) StdoutLine: {'line': b'creating ../../build/planning/planning.egg-info\n'}
+[2.126294] (planning) StdoutLine: {'line': b'writing ../../build/planning/planning.egg-info/PKG-INFO\n'}
+[2.126756] (planning) StdoutLine: {'line': b'writing dependency_links to ../../build/planning/planning.egg-info/dependency_links.txt\n'}
+[2.127006] (planning) StdoutLine: {'line': b'writing entry points to ../../build/planning/planning.egg-info/entry_points.txt\n'}
+[2.127211] (planning) StdoutLine: {'line': b'writing requirements to ../../build/planning/planning.egg-info/requires.txt\n'}
+[2.127384] (planning) StdoutLine: {'line': b'writing top-level names to ../../build/planning/planning.egg-info/top_level.txt\n'}
+[2.127716] (planning) StdoutLine: {'line': b"writing manifest file '../../build/planning/planning.egg-info/SOURCES.txt'\n"}
+[2.130938] (planning) StdoutLine: {'line': b"reading manifest file '../../build/planning/planning.egg-info/SOURCES.txt'\n"}
+[2.131279] (planning) StdoutLine: {'line': b"adding license file 'LICENSE'\n"}
+[2.132186] (planning) StdoutLine: {'line': b"writing manifest file '../../build/planning/planning.egg-info/SOURCES.txt'\n"}
+[2.132476] (planning) StdoutLine: {'line': b'running build\n'}
+[2.132680] (planning) StdoutLine: {'line': b'running build_py\n'}
+[2.132841] (planning) StdoutLine: {'line': b'creating /home/nano/final_project_ws/build/planning/build\n'}
+[2.133028] (planning) StdoutLine: {'line': b'creating /home/nano/final_project_ws/build/planning/build/lib\n'}
+[2.133230] (planning) StdoutLine: {'line': b'creating /home/nano/final_project_ws/build/planning/build/lib/planning\n'}
+[2.133429] (planning) StdoutLine: {'line': b'copying planning/pick_planner.py -> /home/nano/final_project_ws/build/planning/build/lib/planning\n'}
+[2.133647] (planning) StdoutLine: {'line': b'copying planning/__init__.py -> /home/nano/final_project_ws/build/planning/build/lib/planning\n'}
+[2.133838] (planning) StdoutLine: {'line': b'running install\n'}
+[2.134376] (planning) StdoutLine: {'line': b'running install_lib\n'}
+[2.135689] (planning) StdoutLine: {'line': b'creating /home/nano/final_project_ws/install/planning/lib/python3.10/site-packages/planning\n'}
+[2.135858] (planning) StdoutLine: {'line': b'copying /home/nano/final_project_ws/build/planning/build/lib/planning/pick_planner.py -> /home/nano/final_project_ws/install/planning/lib/python3.10/site-packages/planning\n'}
+[2.136121] (planning) StdoutLine: {'line': b'copying /home/nano/final_project_ws/build/planning/build/lib/planning/__init__.py -> /home/nano/final_project_ws/install/planning/lib/python3.10/site-packages/planning\n'}
+[2.137034] (planning) StdoutLine: {'line': b'byte-compiling /home/nano/final_project_ws/install/planning/lib/python3.10/site-packages/planning/pick_planner.py to pick_planner.cpython-310.pyc\n'}
+[2.139227] (planning) StdoutLine: {'line': b'byte-compiling /home/nano/final_project_ws/install/planning/lib/python3.10/site-packages/planning/__init__.py to __init__.cpython-310.pyc\n'}
+[2.139524] (planning) StdoutLine: {'line': b'running install_data\n'}
+[2.139720] (planning) StdoutLine: {'line': b'creating /home/nano/final_project_ws/install/planning/share/ament_index\n'}
+[2.139911] (planning) StdoutLine: {'line': b'creating /home/nano/final_project_ws/install/planning/share/ament_index/resource_index\n'}
+[2.140106] (planning) StdoutLine: {'line': b'creating /home/nano/final_project_ws/install/planning/share/ament_index/resource_index/packages\n'}
+[2.140301] (planning) StdoutLine: {'line': b'copying resource/planning -> /home/nano/final_project_ws/install/planning/share/ament_index/resource_index/packages\n'}
+[2.140490] (planning) StdoutLine: {'line': b'copying package.xml -> /home/nano/final_project_ws/install/planning/share/planning\n'}
+[2.140691] (planning) StdoutLine: {'line': b'creating /home/nano/final_project_ws/install/planning/share/planning/launch\n'}
+[2.140820] (planning) StdoutLine: {'line': b'copying launch/pick_planner.launch.py -> /home/nano/final_project_ws/install/planning/share/planning/launch\n'}
+[2.141010] (planning) StdoutLine: {'line': b'running install_egg_info\n'}
+[2.146031] (planning) StdoutLine: {'line': b'Copying ../../build/planning/planning.egg-info to /home/nano/final_project_ws/install/planning/lib/python3.10/site-packages/planning-0.0.0-py3.10.egg-info\n'}
+[2.147717] (planning) StdoutLine: {'line': b'running install_scripts\n'}
+[2.184542] (planning) StdoutLine: {'line': b'Installing pick_planner script to /home/nano/final_project_ws/install/planning/lib/planning\n'}
+[2.185246] (planning) StdoutLine: {'line': b"writing list of installed files to '/home/nano/final_project_ws/build/planning/install.log'\n"}
+[2.210348] (-) TimerEvent: {}
+[2.252570] (planning) CommandEnded: {'returncode': 0}
+[2.302021] (planning) JobEnded: {'identifier': 'planning', 'rc': 0}
+[2.304655] (-) EventReactorShutdown: {}

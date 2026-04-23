@@ -1,0 +1,6 @@
+{
+  "package_name": "ros2_aruco_interfaces",
+  "non_idl_tuples": [
+    "/home/nano/final_project_ws/src/perception/ros2_aruco/ros2_aruco_interfaces:msg/ArucoMarkers.msg"
+  ]
+}

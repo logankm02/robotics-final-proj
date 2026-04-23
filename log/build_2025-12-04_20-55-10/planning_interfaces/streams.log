@@ -1,0 +1,173 @@
+[0.099s] Invoking command in '/home/nano/final_project_ws/build/planning_interfaces': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/nano/final_project_ws/install/ros2_aruco:/home/nano/final_project_ws/install/realsense_cv:/home/nano/final_project_ws/install/planning:/home/nano/final_project_ws/install/actuation:/home/nano/tmdriver_ws/install/tm_mod_urdf:/home/nano/tmdriver_ws/install/tm_get_status:/opt/ros/humble /usr/bin/cmake --build /home/nano/final_project_ws/build/planning_interfaces -- -j6 -l6
+[1.556s] [  2%] Built target planning_interfaces__cpp
+[1.556s] [  2%] Built target ament_cmake_python_copy_planning_interfaces
+[1.557s] [ 12%] Built target planning_interfaces__rosidl_generator_c
+[1.557s] [ 23%] Built target planning_interfaces__rosidl_typesupport_introspection_cpp
+[1.558s] [ 33%] Built target planning_interfaces__rosidl_typesupport_cpp
+[1.558s] [ 43%] Built target planning_interfaces__rosidl_typesupport_fastrtps_cpp
+[1.558s] [ 64%] Built target planning_interfaces__rosidl_typesupport_introspection_c
+[1.558s] [ 64%] Built target planning_interfaces__rosidl_typesupport_fastrtps_c
+[1.558s] [ 74%] Built target planning_interfaces__rosidl_typesupport_c
+[1.558s] [ 74%] Built target planning_interfaces
+[1.559s] [ 76%] Built target planning_interfaces__py
+[1.559s] [ 84%] Built target planning_interfaces__rosidl_generator_py
+[1.559s] [100%] Built target planning_interfaces__rosidl_typesupport_c__pyext
+[1.560s] [100%] Built target planning_interfaces__rosidl_typesupport_introspection_c__pyext
+[1.560s] [100%] Built target planning_interfaces__rosidl_typesupport_fastrtps_c__pyext
+[1.560s] running egg_info
+[1.560s] writing planning_interfaces.egg-info/PKG-INFO
+[1.561s] writing dependency_links to planning_interfaces.egg-info/dependency_links.txt
+[1.561s] writing top-level names to planning_interfaces.egg-info/top_level.txt
+[1.561s] reading manifest file 'planning_interfaces.egg-info/SOURCES.txt'
+[1.561s] writing manifest file 'planning_interfaces.egg-info/SOURCES.txt'
+[1.562s] [100%] Built target ament_cmake_python_build_planning_interfaces_egg
+[1.572s] Invoked command in '/home/nano/final_project_ws/build/planning_interfaces' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/nano/final_project_ws/install/ros2_aruco:/home/nano/final_project_ws/install/realsense_cv:/home/nano/final_project_ws/install/planning:/home/nano/final_project_ws/install/actuation:/home/nano/tmdriver_ws/install/tm_mod_urdf:/home/nano/tmdriver_ws/install/tm_get_status:/opt/ros/humble /usr/bin/cmake --build /home/nano/final_project_ws/build/planning_interfaces -- -j6 -l6
+[1.602s] Invoking command in '/home/nano/final_project_ws/build/planning_interfaces': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/nano/final_project_ws/install/ros2_aruco:/home/nano/final_project_ws/install/realsense_cv:/home/nano/final_project_ws/install/planning:/home/nano/final_project_ws/install/actuation:/home/nano/tmdriver_ws/install/tm_mod_urdf:/home/nano/tmdriver_ws/install/tm_get_status:/opt/ros/humble /usr/bin/cmake --install /home/nano/final_project_ws/build/planning_interfaces
+[1.619s] -- Install configuration: ""
+[1.620s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/ament_index/resource_index/rosidl_interfaces/planning_interfaces
+[1.656s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces
+[1.657s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/msg
+[1.657s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/msg/rosidl_generator_c__visibility_control.h
+[1.657s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/srv
+[1.657s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/srv/detail
+[1.657s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/srv/detail/pick_place_service__functions.c
+[1.658s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/srv/detail/pick_place_service__functions.h
+[1.658s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/srv/detail/pick_place_service__type_support.h
+[1.658s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/srv/detail/move_to_target__type_support.h
+[1.658s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/srv/detail/move_to_target__functions.h
+[1.658s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/srv/detail/pick_place_service__struct.h
+[1.658s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/srv/detail/move_to_target__struct.h
+[1.658s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/srv/detail/move_to_target__functions.c
+[1.658s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/srv/move_to_target.h
+[1.658s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/srv/pick_place_service.h
+[1.659s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/environment/library_path.sh
+[1.659s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/environment/library_path.dsv
+[1.659s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/lib/libplanning_interfaces__rosidl_generator_c.so
+[1.659s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces
+[1.659s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/msg
+[1.659s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/msg/rosidl_typesupport_fastrtps_c__visibility_control.h
+[1.659s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/srv
+[1.659s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/srv/detail
+[1.659s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/srv/detail/move_to_target__rosidl_typesupport_fastrtps_c.h
+[1.660s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/srv/detail/pick_place_service__rosidl_typesupport_fastrtps_c.h
+[1.660s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/lib/libplanning_interfaces__rosidl_typesupport_fastrtps_c.so
+[1.660s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces
+[1.660s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/msg
+[1.660s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/msg/rosidl_typesupport_introspection_c__visibility_control.h
+[1.660s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/srv
+[1.660s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/srv/detail
+[1.660s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/srv/detail/move_to_target__type_support.c
+[1.661s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/srv/detail/pick_place_service__rosidl_typesupport_introspection_c.h
+[1.661s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/srv/detail/pick_place_service__type_support.c
+[1.661s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/srv/detail/move_to_target__rosidl_typesupport_introspection_c.h
+[1.661s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/lib/libplanning_interfaces__rosidl_typesupport_introspection_c.so
+[1.661s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/lib/libplanning_interfaces__rosidl_typesupport_c.so
+[1.661s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces
+[1.662s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/msg
+[1.662s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/msg/rosidl_generator_cpp__visibility_control.hpp
+[1.662s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/srv
+[1.662s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/srv/pick_place_service.hpp
+[1.662s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/srv/detail
+[1.662s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/srv/detail/pick_place_service__traits.hpp
+[1.662s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/srv/detail/pick_place_service__struct.hpp
+[1.662s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/srv/detail/move_to_target__struct.hpp
+[1.662s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/srv/detail/pick_place_service__builder.hpp
+[1.663s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/srv/detail/move_to_target__builder.hpp
+[1.663s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/srv/detail/move_to_target__type_support.hpp
+[1.663s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/srv/detail/pick_place_service__type_support.hpp
+[1.663s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/srv/detail/move_to_target__traits.hpp
+[1.663s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/srv/move_to_target.hpp
+[1.663s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces
+[1.663s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/msg
+[1.663s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/msg/rosidl_typesupport_fastrtps_cpp__visibility_control.h
+[1.664s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/srv
+[1.664s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/srv/detail
+[1.664s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/srv/detail/move_to_target__rosidl_typesupport_fastrtps_cpp.hpp
+[1.664s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/srv/detail/pick_place_service__rosidl_typesupport_fastrtps_cpp.hpp
+[1.664s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/srv/detail/dds_fastrtps
+[1.664s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/lib/libplanning_interfaces__rosidl_typesupport_fastrtps_cpp.so
+[1.664s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces
+[1.664s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/srv
+[1.664s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/srv/detail
+[1.665s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/srv/detail/move_to_target__type_support.cpp
+[1.665s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/srv/detail/pick_place_service__rosidl_typesupport_introspection_cpp.hpp
+[1.665s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/srv/detail/move_to_target__rosidl_typesupport_introspection_cpp.hpp
+[1.665s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/include/planning_interfaces/planning_interfaces/srv/detail/pick_place_service__type_support.cpp
+[1.665s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/lib/libplanning_interfaces__rosidl_typesupport_introspection_cpp.so
+[1.665s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/lib/libplanning_interfaces__rosidl_typesupport_cpp.so
+[1.665s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/environment/pythonpath.sh
+[1.665s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/environment/pythonpath.dsv
+[1.666s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/local/lib/python3.10/dist-packages/planning_interfaces-0.0.0-py3.10.egg-info
+[1.666s] -- Installing: /home/nano/final_project_ws/install/planning_interfaces/local/lib/python3.10/dist-packages/planning_interfaces-0.0.0-py3.10.egg-info/SOURCES.txt
+[1.666s] -- Installing: /home/nano/final_project_ws/install/planning_interfaces/local/lib/python3.10/dist-packages/planning_interfaces-0.0.0-py3.10.egg-info/PKG-INFO
+[1.666s] -- Installing: /home/nano/final_project_ws/install/planning_interfaces/local/lib/python3.10/dist-packages/planning_interfaces-0.0.0-py3.10.egg-info/dependency_links.txt
+[1.666s] -- Installing: /home/nano/final_project_ws/install/planning_interfaces/local/lib/python3.10/dist-packages/planning_interfaces-0.0.0-py3.10.egg-info/top_level.txt
+[1.666s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/local/lib/python3.10/dist-packages/planning_interfaces
+[1.666s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/local/lib/python3.10/dist-packages/planning_interfaces/_planning_interfaces_s.ep.rosidl_typesupport_fastrtps_c.c
+[1.666s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/local/lib/python3.10/dist-packages/planning_interfaces/libplanning_interfaces__rosidl_generator_py.so
+[1.666s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/local/lib/python3.10/dist-packages/planning_interfaces/_planning_interfaces_s.ep.rosidl_typesupport_introspection_c.c
+[1.667s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/local/lib/python3.10/dist-packages/planning_interfaces/srv
+[1.667s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/local/lib/python3.10/dist-packages/planning_interfaces/srv/_move_to_target_s.c
+[1.667s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/local/lib/python3.10/dist-packages/planning_interfaces/srv/_pick_place_service.py
+[1.667s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/local/lib/python3.10/dist-packages/planning_interfaces/srv/_pick_place_service_s.c
+[1.667s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/local/lib/python3.10/dist-packages/planning_interfaces/srv/_move_to_target.py
+[1.667s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/local/lib/python3.10/dist-packages/planning_interfaces/srv/__init__.py
+[1.667s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/local/lib/python3.10/dist-packages/planning_interfaces/planning_interfaces_s__rosidl_typesupport_introspection_c.cpython-310-aarch64-linux-gnu.so
+[1.667s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/local/lib/python3.10/dist-packages/planning_interfaces/planning_interfaces_s__rosidl_typesupport_fastrtps_c.cpython-310-aarch64-linux-gnu.so
+[1.667s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/local/lib/python3.10/dist-packages/planning_interfaces/_planning_interfaces_s.ep.rosidl_typesupport_c.c
+[1.668s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/local/lib/python3.10/dist-packages/planning_interfaces/planning_interfaces_s__rosidl_typesupport_c.cpython-310-aarch64-linux-gnu.so
+[1.668s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/local/lib/python3.10/dist-packages/planning_interfaces/__init__.py
+[1.745s] Listing '/home/nano/final_project_ws/install/planning_interfaces/local/lib/python3.10/dist-packages/planning_interfaces'...
+[1.746s] Listing '/home/nano/final_project_ws/install/planning_interfaces/local/lib/python3.10/dist-packages/planning_interfaces/srv'...
+[1.761s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/local/lib/python3.10/dist-packages/planning_interfaces/planning_interfaces_s__rosidl_typesupport_fastrtps_c.cpython-310-aarch64-linux-gnu.so
+[1.763s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/local/lib/python3.10/dist-packages/planning_interfaces/planning_interfaces_s__rosidl_typesupport_introspection_c.cpython-310-aarch64-linux-gnu.so
+[1.765s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/local/lib/python3.10/dist-packages/planning_interfaces/planning_interfaces_s__rosidl_typesupport_c.cpython-310-aarch64-linux-gnu.so
+[1.767s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/lib/libplanning_interfaces__rosidl_generator_py.so
+[1.769s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/srv/PickPlaceService.idl
+[1.770s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/srv/MoveToTarget.idl
+[1.770s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/srv/PickPlaceService.srv
+[1.770s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/srv/PickPlaceService_Request.msg
+[1.770s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/srv/PickPlaceService_Response.msg
+[1.770s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/srv/MoveToTarget.srv
+[1.770s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/srv/MoveToTarget_Request.msg
+[1.770s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/srv/MoveToTarget_Response.msg
+[1.771s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/ament_index/resource_index/package_run_dependencies/planning_interfaces
+[1.772s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/ament_index/resource_index/parent_prefix_path/planning_interfaces
+[1.772s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/environment/ament_prefix_path.sh
+[1.772s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/environment/ament_prefix_path.dsv
+[1.772s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/environment/path.sh
+[1.772s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/environment/path.dsv
+[1.773s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/local_setup.bash
+[1.773s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/local_setup.sh
+[1.773s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/local_setup.zsh
+[1.773s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/local_setup.dsv
+[1.773s] -- Installing: /home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/package.dsv
+[1.774s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/ament_index/resource_index/packages/planning_interfaces
+[1.778s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/cmake/export_planning_interfaces__rosidl_generator_cExport.cmake
+[1.778s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/cmake/export_planning_interfaces__rosidl_generator_cExport-noconfig.cmake
+[1.779s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/cmake/export_planning_interfaces__rosidl_typesupport_fastrtps_cExport.cmake
+[1.780s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/cmake/export_planning_interfaces__rosidl_typesupport_fastrtps_cExport-noconfig.cmake
+[1.782s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/cmake/planning_interfaces__rosidl_typesupport_introspection_cExport.cmake
+[1.782s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/cmake/planning_interfaces__rosidl_typesupport_introspection_cExport-noconfig.cmake
+[1.783s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/cmake/planning_interfaces__rosidl_typesupport_cExport.cmake
+[1.783s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/cmake/planning_interfaces__rosidl_typesupport_cExport-noconfig.cmake
+[1.784s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/cmake/export_planning_interfaces__rosidl_generator_cppExport.cmake
+[1.786s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/cmake/export_planning_interfaces__rosidl_typesupport_fastrtps_cppExport.cmake
+[1.786s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/cmake/export_planning_interfaces__rosidl_typesupport_fastrtps_cppExport-noconfig.cmake
+[1.788s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/cmake/planning_interfaces__rosidl_typesupport_introspection_cppExport.cmake
+[1.788s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/cmake/planning_interfaces__rosidl_typesupport_introspection_cppExport-noconfig.cmake
+[1.789s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/cmake/planning_interfaces__rosidl_typesupport_cppExport.cmake
+[1.789s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/cmake/planning_interfaces__rosidl_typesupport_cppExport-noconfig.cmake
+[1.791s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/cmake/export_planning_interfaces__rosidl_generator_pyExport.cmake
+[1.791s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/cmake/export_planning_interfaces__rosidl_generator_pyExport-noconfig.cmake
+[1.792s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/cmake/rosidl_cmake-extras.cmake
+[1.792s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/cmake/ament_cmake_export_dependencies-extras.cmake
+[1.792s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/cmake/ament_cmake_export_include_directories-extras.cmake
+[1.792s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/cmake/ament_cmake_export_libraries-extras.cmake
+[1.792s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/cmake/ament_cmake_export_targets-extras.cmake
+[1.792s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/cmake/rosidl_cmake_export_typesupport_targets-extras.cmake
+[1.792s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake
+[1.793s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/cmake/planning_interfacesConfig.cmake
+[1.793s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/cmake/planning_interfacesConfig-version.cmake
+[1.793s] -- Up-to-date: /home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/package.xml
+[1.801s] Invoked command in '/home/nano/final_project_ws/build/planning_interfaces' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/nano/final_project_ws/install/ros2_aruco:/home/nano/final_project_ws/install/realsense_cv:/home/nano/final_project_ws/install/planning:/home/nano/final_project_ws/install/actuation:/home/nano/tmdriver_ws/install/tm_mod_urdf:/home/nano/tmdriver_ws/install/tm_get_status:/opt/ros/humble /usr/bin/cmake --install /home/nano/final_project_ws/build/planning_interfaces

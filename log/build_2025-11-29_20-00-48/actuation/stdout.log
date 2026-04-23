@@ -1,0 +1,22 @@
+running egg_info
+writing ../../build/actuation/actuation.egg-info/PKG-INFO
+writing dependency_links to ../../build/actuation/actuation.egg-info/dependency_links.txt
+writing entry points to ../../build/actuation/actuation.egg-info/entry_points.txt
+writing requirements to ../../build/actuation/actuation.egg-info/requires.txt
+writing top-level names to ../../build/actuation/actuation.egg-info/top_level.txt
+reading manifest file '../../build/actuation/actuation.egg-info/SOURCES.txt'
+writing manifest file '../../build/actuation/actuation.egg-info/SOURCES.txt'
+running build
+running build_py
+copying actuation/gripper_server.py -> /home/nano/final_project_ws/build/actuation/build/lib/actuation
+running install
+running install_lib
+copying /home/nano/final_project_ws/build/actuation/build/lib/actuation/gripper_server.py -> /home/nano/final_project_ws/install/actuation/lib/python3.10/site-packages/actuation
+byte-compiling /home/nano/final_project_ws/install/actuation/lib/python3.10/site-packages/actuation/gripper_server.py to gripper_server.cpython-310.pyc
+running install_data
+running install_egg_info
+removing '/home/nano/final_project_ws/install/actuation/lib/python3.10/site-packages/actuation-0.0.0-py3.10.egg-info' (and everything under it)
+Copying ../../build/actuation/actuation.egg-info to /home/nano/final_project_ws/install/actuation/lib/python3.10/site-packages/actuation-0.0.0-py3.10.egg-info
+running install_scripts
+Installing gripper script to /home/nano/final_project_ws/install/actuation/lib/actuation
+writing list of installed files to '/home/nano/final_project_ws/build/actuation/install.log'

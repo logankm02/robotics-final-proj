@@ -1,0 +1,35 @@
+[2.008s] Invoking command in '/home/nano/final_project_ws/src/perception/realsense_cv': PYTHONPATH=/home/nano/final_project_ws/build/realsense_cv/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/nano/final_project_ws/install/realsense_cv/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../../build/realsense_cv build --build-base /home/nano/final_project_ws/build/realsense_cv/build install --record /home/nano/final_project_ws/build/realsense_cv/install.log --single-version-externally-managed install_data
+[2.558s] running egg_info
+[2.594s] writing ../../../build/realsense_cv/realsense_cv.egg-info/PKG-INFO
+[2.595s] writing dependency_links to ../../../build/realsense_cv/realsense_cv.egg-info/dependency_links.txt
+[2.595s] writing entry points to ../../../build/realsense_cv/realsense_cv.egg-info/entry_points.txt
+[2.595s] writing requirements to ../../../build/realsense_cv/realsense_cv.egg-info/requires.txt
+[2.596s] writing top-level names to ../../../build/realsense_cv/realsense_cv.egg-info/top_level.txt
+[2.672s] reading manifest file '../../../build/realsense_cv/realsense_cv.egg-info/SOURCES.txt'
+[2.675s] writing manifest file '../../../build/realsense_cv/realsense_cv.egg-info/SOURCES.txt'
+[2.675s] running build
+[2.675s] running build_py
+[2.676s] copying realsense_cv/edge_detect.py -> /home/nano/final_project_ws/build/realsense_cv/build/lib/realsense_cv
+[2.676s] copying realsense_cv/slide_detector.py -> /home/nano/final_project_ws/build/realsense_cv/build/lib/realsense_cv
+[2.677s] copying realsense_cv/hsv_tune.py -> /home/nano/final_project_ws/build/realsense_cv/build/lib/realsense_cv
+[2.677s] copying realsense_cv/model_download.py -> /home/nano/final_project_ws/build/realsense_cv/build/lib/realsense_cv
+[2.677s] copying realsense_cv/yolo_detect.py -> /home/nano/final_project_ws/build/realsense_cv/build/lib/realsense_cv
+[2.678s] copying realsense_cv/__init__.py -> /home/nano/final_project_ws/build/realsense_cv/build/lib/realsense_cv
+[2.678s] copying realsense_cv/marker_detect.py -> /home/nano/final_project_ws/build/realsense_cv/build/lib/realsense_cv
+[2.679s] copying realsense_cv/hsv_tune_v1.py -> /home/nano/final_project_ws/build/realsense_cv/build/lib/realsense_cv
+[2.679s] running install
+[2.687s] running install_lib
+[2.727s] running install_data
+[2.727s] copying resource/realsense_cv -> /home/nano/final_project_ws/install/realsense_cv/share/ament_index/resource_index/packages
+[2.727s] copying package.xml -> /home/nano/final_project_ws/install/realsense_cv/share/realsense_cv
+[2.728s] running install_egg_info
+[2.775s] removing '/home/nano/final_project_ws/install/realsense_cv/lib/python3.10/site-packages/realsense_cv-0.0.0-py3.10.egg-info' (and everything under it)
+[2.776s] Copying ../../../build/realsense_cv/realsense_cv.egg-info to /home/nano/final_project_ws/install/realsense_cv/lib/python3.10/site-packages/realsense_cv-0.0.0-py3.10.egg-info
+[2.779s] running install_scripts
+[2.849s] Installing edge_node script to /home/nano/final_project_ws/install/realsense_cv/lib/realsense_cv
+[2.849s] Installing hsv_tuning script to /home/nano/final_project_ws/install/realsense_cv/lib/realsense_cv
+[2.849s] Installing marker_node script to /home/nano/final_project_ws/install/realsense_cv/lib/realsense_cv
+[2.850s] Installing slide_detector script to /home/nano/final_project_ws/install/realsense_cv/lib/realsense_cv
+[2.850s] Installing yolo_node script to /home/nano/final_project_ws/install/realsense_cv/lib/realsense_cv
+[2.852s] writing list of installed files to '/home/nano/final_project_ws/build/realsense_cv/install.log'
+[2.921s] Invoked command in '/home/nano/final_project_ws/src/perception/realsense_cv' returned '0': PYTHONPATH=/home/nano/final_project_ws/build/realsense_cv/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/nano/final_project_ws/install/realsense_cv/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../../build/realsense_cv build --build-base /home/nano/final_project_ws/build/realsense_cv/build install --record /home/nano/final_project_ws/build/realsense_cv/install.log --single-version-externally-managed install_data

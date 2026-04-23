@@ -1,0 +1,22 @@
+[1.376s] Invoking command in '/home/nano/final_project_ws/src/planning': PYTHONPATH=/home/nano/final_project_ws/build/planning/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/nano/final_project_ws/install/planning/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/planning build --build-base /home/nano/final_project_ws/build/planning/build install --record /home/nano/final_project_ws/build/planning/install.log --single-version-externally-managed install_data
+[1.871s] running egg_info
+[1.872s] writing ../../build/planning/planning.egg-info/PKG-INFO
+[1.874s] writing dependency_links to ../../build/planning/planning.egg-info/dependency_links.txt
+[1.875s] writing entry points to ../../build/planning/planning.egg-info/entry_points.txt
+[1.875s] writing requirements to ../../build/planning/planning.egg-info/requires.txt
+[1.875s] writing top-level names to ../../build/planning/planning.egg-info/top_level.txt
+[1.881s] reading manifest file '../../build/planning/planning.egg-info/SOURCES.txt'
+[1.882s] adding license file 'LICENSE'
+[1.883s] writing manifest file '../../build/planning/planning.egg-info/SOURCES.txt'
+[1.883s] running build
+[1.883s] running build_py
+[1.884s] running install
+[1.885s] running install_lib
+[1.888s] running install_data
+[1.888s] running install_egg_info
+[1.892s] removing '/home/nano/final_project_ws/install/planning/lib/python3.10/site-packages/planning-0.0.0-py3.10.egg-info' (and everything under it)
+[1.892s] Copying ../../build/planning/planning.egg-info to /home/nano/final_project_ws/install/planning/lib/python3.10/site-packages/planning-0.0.0-py3.10.egg-info
+[1.895s] running install_scripts
+[1.937s] Installing pick_planner script to /home/nano/final_project_ws/install/planning/lib/planning
+[1.938s] writing list of installed files to '/home/nano/final_project_ws/build/planning/install.log'
+[2.018s] Invoked command in '/home/nano/final_project_ws/src/planning' returned '0': PYTHONPATH=/home/nano/final_project_ws/build/planning/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/nano/final_project_ws/install/planning/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/planning build --build-base /home/nano/final_project_ws/build/planning/build install --record /home/nano/final_project_ws/build/planning/install.log --single-version-externally-managed install_data

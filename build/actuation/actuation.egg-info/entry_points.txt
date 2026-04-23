@@ -1,0 +1,2 @@
+[console_scripts]
+gripper = actuation.gripper_server:main

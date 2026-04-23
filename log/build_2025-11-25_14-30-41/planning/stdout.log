@@ -1,0 +1,38 @@
+running egg_info
+creating ../../build/planning/planning.egg-info
+writing ../../build/planning/planning.egg-info/PKG-INFO
+writing dependency_links to ../../build/planning/planning.egg-info/dependency_links.txt
+writing entry points to ../../build/planning/planning.egg-info/entry_points.txt
+writing requirements to ../../build/planning/planning.egg-info/requires.txt
+writing top-level names to ../../build/planning/planning.egg-info/top_level.txt
+writing manifest file '../../build/planning/planning.egg-info/SOURCES.txt'
+reading manifest file '../../build/planning/planning.egg-info/SOURCES.txt'
+adding license file 'LICENSE'
+writing manifest file '../../build/planning/planning.egg-info/SOURCES.txt'
+running build
+running build_py
+creating /home/nano/final_project_ws/build/planning/build
+creating /home/nano/final_project_ws/build/planning/build/lib
+creating /home/nano/final_project_ws/build/planning/build/lib/planning
+copying planning/pick_planner.py -> /home/nano/final_project_ws/build/planning/build/lib/planning
+copying planning/__init__.py -> /home/nano/final_project_ws/build/planning/build/lib/planning
+running install
+running install_lib
+creating /home/nano/final_project_ws/install/planning/lib/python3.10/site-packages/planning
+copying /home/nano/final_project_ws/build/planning/build/lib/planning/pick_planner.py -> /home/nano/final_project_ws/install/planning/lib/python3.10/site-packages/planning
+copying /home/nano/final_project_ws/build/planning/build/lib/planning/__init__.py -> /home/nano/final_project_ws/install/planning/lib/python3.10/site-packages/planning
+byte-compiling /home/nano/final_project_ws/install/planning/lib/python3.10/site-packages/planning/pick_planner.py to pick_planner.cpython-310.pyc
+byte-compiling /home/nano/final_project_ws/install/planning/lib/python3.10/site-packages/planning/__init__.py to __init__.cpython-310.pyc
+running install_data
+creating /home/nano/final_project_ws/install/planning/share/ament_index
+creating /home/nano/final_project_ws/install/planning/share/ament_index/resource_index
+creating /home/nano/final_project_ws/install/planning/share/ament_index/resource_index/packages
+copying resource/planning -> /home/nano/final_project_ws/install/planning/share/ament_index/resource_index/packages
+copying package.xml -> /home/nano/final_project_ws/install/planning/share/planning
+creating /home/nano/final_project_ws/install/planning/share/planning/launch
+copying launch/pick_planner.launch.py -> /home/nano/final_project_ws/install/planning/share/planning/launch
+running install_egg_info
+Copying ../../build/planning/planning.egg-info to /home/nano/final_project_ws/install/planning/lib/python3.10/site-packages/planning-0.0.0-py3.10.egg-info
+running install_scripts
+Installing pick_planner script to /home/nano/final_project_ws/install/planning/lib/planning
+writing list of installed files to '/home/nano/final_project_ws/build/planning/install.log'

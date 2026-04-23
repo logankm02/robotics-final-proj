@@ -1,0 +1,29 @@
+running egg_info
+writing ../../build/planning/planning.egg-info/PKG-INFO
+writing dependency_links to ../../build/planning/planning.egg-info/dependency_links.txt
+writing entry points to ../../build/planning/planning.egg-info/entry_points.txt
+writing requirements to ../../build/planning/planning.egg-info/requires.txt
+writing top-level names to ../../build/planning/planning.egg-info/top_level.txt
+reading manifest file '../../build/planning/planning.egg-info/SOURCES.txt'
+adding license file 'LICENSE'
+writing manifest file '../../build/planning/planning.egg-info/SOURCES.txt'
+running build
+running build_py
+copying planning/simple_move.py -> /home/nano/final_project_ws/build/planning/build/lib/planning
+copying planning/ik.py -> /home/nano/final_project_ws/build/planning/build/lib/planning
+copying planning/pick_and_place.py -> /home/nano/final_project_ws/build/planning/build/lib/planning
+copying planning/__init__.py -> /home/nano/final_project_ws/build/planning/build/lib/planning
+running install
+running install_lib
+running install_data
+copying resource/planning -> /home/nano/final_project_ws/install/planning/share/ament_index/resource_index/packages
+copying package.xml -> /home/nano/final_project_ws/install/planning/share/planning
+copying launch/pick_planner.launch.py -> /home/nano/final_project_ws/install/planning/share/planning/launch
+running install_egg_info
+removing '/home/nano/final_project_ws/install/planning/lib/python3.10/site-packages/planning-0.0.0-py3.10.egg-info' (and everything under it)
+Copying ../../build/planning/planning.egg-info to /home/nano/final_project_ws/install/planning/lib/python3.10/site-packages/planning-0.0.0-py3.10.egg-info
+running install_scripts
+Installing ik script to /home/nano/final_project_ws/install/planning/lib/planning
+Installing pick_and_place script to /home/nano/final_project_ws/install/planning/lib/planning
+Installing simple_move script to /home/nano/final_project_ws/install/planning/lib/planning
+writing list of installed files to '/home/nano/final_project_ws/build/planning/install.log'

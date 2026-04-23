@@ -1,0 +1,348 @@
+[0.903s] DEBUG:colcon:Command line arguments: ['/usr/bin/colcon', 'build']
+[0.903s] DEBUG:colcon:Parsed command line arguments: Namespace(log_base=None, log_level=None, verb_name='build', build_base='build', install_base='install', merge_install=False, symlink_install=False, test_result_base=None, continue_on_error=False, executor='parallel', parallel_workers=6, event_handlers=None, ignore_user_meta=False, metas=['./colcon.meta'], base_paths=['.'], packages_ignore=None, packages_ignore_regex=None, paths=None, packages_up_to=None, packages_up_to_regex=None, packages_above=None, packages_above_and_dependencies=None, packages_above_depth=None, packages_select_by_dep=None, packages_skip_by_dep=None, packages_skip_up_to=None, packages_select_build_failed=False, packages_skip_build_finished=False, packages_select_test_failures=False, packages_skip_test_passed=False, packages_select=None, packages_skip=None, packages_select_regex=None, packages_skip_regex=None, packages_start=None, packages_end=None, allow_overriding=[], cmake_args=None, cmake_target=None, cmake_target_skip_unavailable=False, cmake_clean_cache=False, cmake_clean_first=False, cmake_force_configure=False, ament_cmake_args=None, catkin_cmake_args=None, catkin_skip_building_tests=False, mixin_files=None, mixin=None, verb_parser=<colcon_mixin.mixin.mixin_argument.MixinArgumentDecorator object at 0xffffae84e7a0>, verb_extension=<colcon_core.verb.build.BuildVerb object at 0xffffae84e2f0>, main=<bound method BuildVerb.main of <colcon_core.verb.build.BuildVerb object at 0xffffae84e2f0>>, mixin_verb=('build',))
+[1.089s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) check parameters
+[1.089s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) check parameters
+[1.089s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) check parameters
+[1.089s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) check parameters
+[1.090s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) discover
+[1.090s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) discover
+[1.090s] INFO:colcon.colcon_core.package_discovery:Crawling recursively for packages in '/home/nano/final_project_ws'
+[1.090s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ignore', 'ignore_ament_install']
+[1.090s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore'
+[1.090s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore_ament_install'
+[1.091s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_pkg']
+[1.091s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_pkg'
+[1.091s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_meta']
+[1.091s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_meta'
+[1.091s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ros']
+[1.091s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ros'
+[1.187s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['cmake', 'python']
+[1.187s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'cmake'
+[1.187s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python'
+[1.188s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['python_setup_py']
+[1.188s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python_setup_py'
+[1.188s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extensions ['ignore', 'ignore_ament_install']
+[1.188s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extension 'ignore'
+[1.189s] Level 1:colcon.colcon_core.package_identification:_identify(build) ignored
+[1.189s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extensions ['ignore', 'ignore_ament_install']
+[1.189s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extension 'ignore'
+[1.189s] Level 1:colcon.colcon_core.package_identification:_identify(install) ignored
+[1.190s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extensions ['ignore', 'ignore_ament_install']
+[1.190s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extension 'ignore'
+[1.190s] Level 1:colcon.colcon_core.package_identification:_identify(log) ignored
+[1.190s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['ignore', 'ignore_ament_install']
+[1.190s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ignore'
+[1.191s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ignore_ament_install'
+[1.191s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['colcon_pkg']
+[1.191s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'colcon_pkg'
+[1.191s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['colcon_meta']
+[1.191s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'colcon_meta'
+[1.191s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['ros']
+[1.191s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'ros'
+[1.191s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['cmake', 'python']
+[1.191s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'cmake'
+[1.192s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'python'
+[1.192s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extensions ['python_setup_py']
+[1.192s] Level 1:colcon.colcon_core.package_identification:_identify(src) by extension 'python_setup_py'
+[1.192s] Level 1:colcon.colcon_core.package_identification:_identify(src/actuation) by extensions ['ignore', 'ignore_ament_install']
+[1.192s] Level 1:colcon.colcon_core.package_identification:_identify(src/actuation) by extension 'ignore'
+[1.192s] Level 1:colcon.colcon_core.package_identification:_identify(src/actuation) by extension 'ignore_ament_install'
+[1.192s] Level 1:colcon.colcon_core.package_identification:_identify(src/actuation) by extensions ['colcon_pkg']
+[1.193s] Level 1:colcon.colcon_core.package_identification:_identify(src/actuation) by extension 'colcon_pkg'
+[1.193s] Level 1:colcon.colcon_core.package_identification:_identify(src/actuation) by extensions ['colcon_meta']
+[1.193s] Level 1:colcon.colcon_core.package_identification:_identify(src/actuation) by extension 'colcon_meta'
+[1.193s] Level 1:colcon.colcon_core.package_identification:_identify(src/actuation) by extensions ['ros']
+[1.193s] Level 1:colcon.colcon_core.package_identification:_identify(src/actuation) by extension 'ros'
+[1.203s] DEBUG:colcon.colcon_core.package_identification:Package 'src/actuation' with type 'ros.ament_python' and name 'actuation'
+[1.203s] Level 1:colcon.colcon_core.package_identification:_identify(src/install) by extensions ['ignore', 'ignore_ament_install']
+[1.203s] Level 1:colcon.colcon_core.package_identification:_identify(src/install) by extension 'ignore'
+[1.204s] Level 1:colcon.colcon_core.package_identification:_identify(src/install) ignored
+[1.204s] Level 1:colcon.colcon_core.package_identification:_identify(src/log) by extensions ['ignore', 'ignore_ament_install']
+[1.204s] Level 1:colcon.colcon_core.package_identification:_identify(src/log) by extension 'ignore'
+[1.204s] Level 1:colcon.colcon_core.package_identification:_identify(src/log) ignored
+[1.205s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception) by extensions ['ignore', 'ignore_ament_install']
+[1.205s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception) by extension 'ignore'
+[1.205s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception) by extension 'ignore_ament_install'
+[1.205s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception) by extensions ['colcon_pkg']
+[1.205s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception) by extension 'colcon_pkg'
+[1.205s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception) by extensions ['colcon_meta']
+[1.205s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception) by extension 'colcon_meta'
+[1.206s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception) by extensions ['ros']
+[1.206s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception) by extension 'ros'
+[1.206s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception) by extensions ['cmake', 'python']
+[1.206s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception) by extension 'cmake'
+[1.206s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception) by extension 'python'
+[1.206s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception) by extensions ['python_setup_py']
+[1.206s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception) by extension 'python_setup_py'
+[1.206s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception/TMFlow_CV) by extensions ['ignore', 'ignore_ament_install']
+[1.207s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception/TMFlow_CV) by extension 'ignore'
+[1.207s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception/TMFlow_CV) by extension 'ignore_ament_install'
+[1.207s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception/TMFlow_CV) by extensions ['colcon_pkg']
+[1.207s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception/TMFlow_CV) by extension 'colcon_pkg'
+[1.207s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception/TMFlow_CV) by extensions ['colcon_meta']
+[1.207s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception/TMFlow_CV) by extension 'colcon_meta'
+[1.207s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception/TMFlow_CV) by extensions ['ros']
+[1.207s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception/TMFlow_CV) by extension 'ros'
+[1.208s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception/TMFlow_CV) by extensions ['cmake', 'python']
+[1.208s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception/TMFlow_CV) by extension 'cmake'
+[1.208s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception/TMFlow_CV) by extension 'python'
+[1.208s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception/TMFlow_CV) by extensions ['python_setup_py']
+[1.208s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception/TMFlow_CV) by extension 'python_setup_py'
+[1.208s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception/aruco_marker) by extensions ['ignore', 'ignore_ament_install']
+[1.208s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception/aruco_marker) by extension 'ignore'
+[1.209s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception/aruco_marker) by extension 'ignore_ament_install'
+[1.209s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception/aruco_marker) by extensions ['colcon_pkg']
+[1.209s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception/aruco_marker) by extension 'colcon_pkg'
+[1.209s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception/aruco_marker) by extensions ['colcon_meta']
+[1.209s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception/aruco_marker) by extension 'colcon_meta'
+[1.209s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception/aruco_marker) by extensions ['ros']
+[1.209s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception/aruco_marker) by extension 'ros'
+[1.209s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception/aruco_marker) by extensions ['cmake', 'python']
+[1.209s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception/aruco_marker) by extension 'cmake'
+[1.210s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception/aruco_marker) by extension 'python'
+[1.210s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception/aruco_marker) by extensions ['python_setup_py']
+[1.210s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception/aruco_marker) by extension 'python_setup_py'
+[1.210s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception/realsense_cv) by extensions ['ignore', 'ignore_ament_install']
+[1.210s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception/realsense_cv) by extension 'ignore'
+[1.210s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception/realsense_cv) by extension 'ignore_ament_install'
+[1.210s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception/realsense_cv) by extensions ['colcon_pkg']
+[1.211s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception/realsense_cv) by extension 'colcon_pkg'
+[1.211s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception/realsense_cv) by extensions ['colcon_meta']
+[1.211s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception/realsense_cv) by extension 'colcon_meta'
+[1.211s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception/realsense_cv) by extensions ['ros']
+[1.211s] Level 1:colcon.colcon_core.package_identification:_identify(src/perception/realsense_cv) by extension 'ros'
+[1.214s] DEBUG:colcon.colcon_core.package_identification:Package 'src/perception/realsense_cv' with type 'ros.ament_python' and name 'realsense_cv'
+[1.214s] Level 1:colcon.colcon_core.package_identification:_identify(src/planning) by extensions ['ignore', 'ignore_ament_install']
+[1.214s] Level 1:colcon.colcon_core.package_identification:_identify(src/planning) by extension 'ignore'
+[1.214s] Level 1:colcon.colcon_core.package_identification:_identify(src/planning) by extension 'ignore_ament_install'
+[1.215s] Level 1:colcon.colcon_core.package_identification:_identify(src/planning) by extensions ['colcon_pkg']
+[1.215s] Level 1:colcon.colcon_core.package_identification:_identify(src/planning) by extension 'colcon_pkg'
+[1.215s] Level 1:colcon.colcon_core.package_identification:_identify(src/planning) by extensions ['colcon_meta']
+[1.215s] Level 1:colcon.colcon_core.package_identification:_identify(src/planning) by extension 'colcon_meta'
+[1.215s] Level 1:colcon.colcon_core.package_identification:_identify(src/planning) by extensions ['ros']
+[1.215s] Level 1:colcon.colcon_core.package_identification:_identify(src/planning) by extension 'ros'
+[1.218s] DEBUG:colcon.colcon_core.package_identification:Package 'src/planning' with type 'ros.ament_python' and name 'planning'
+[1.218s] Level 1:colcon.colcon_core.package_identification:_identify(src/planning_interfaces) by extensions ['ignore', 'ignore_ament_install']
+[1.218s] Level 1:colcon.colcon_core.package_identification:_identify(src/planning_interfaces) by extension 'ignore'
+[1.218s] Level 1:colcon.colcon_core.package_identification:_identify(src/planning_interfaces) by extension 'ignore_ament_install'
+[1.218s] Level 1:colcon.colcon_core.package_identification:_identify(src/planning_interfaces) by extensions ['colcon_pkg']
+[1.218s] Level 1:colcon.colcon_core.package_identification:_identify(src/planning_interfaces) by extension 'colcon_pkg'
+[1.219s] Level 1:colcon.colcon_core.package_identification:_identify(src/planning_interfaces) by extensions ['colcon_meta']
+[1.219s] Level 1:colcon.colcon_core.package_identification:_identify(src/planning_interfaces) by extension 'colcon_meta'
+[1.219s] Level 1:colcon.colcon_core.package_identification:_identify(src/planning_interfaces) by extensions ['ros']
+[1.219s] Level 1:colcon.colcon_core.package_identification:_identify(src/planning_interfaces) by extension 'ros'
+[1.221s] DEBUG:colcon.colcon_core.package_identification:Package 'src/planning_interfaces' with type 'ros.ament_cmake' and name 'planning_interfaces'
+[1.221s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) using defaults
+[1.221s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) discover
+[1.221s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) using defaults
+[1.221s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) discover
+[1.221s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) using defaults
+[1.314s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) check parameters
+[1.314s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) discover
+[1.326s] DEBUG:colcon.colcon_installed_package_information.package_discovery:Found 6 installed packages in /home/nano/final_project_ws/install
+[1.329s] DEBUG:colcon.colcon_installed_package_information.package_discovery:Found 19 installed packages in /home/nano/tmdriver_ws/install
+[1.332s] DEBUG:colcon.colcon_installed_package_information.package_discovery:Found 337 installed packages in /opt/ros/humble
+[1.336s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) using defaults
+[1.475s] Level 5:colcon.colcon_core.verb:set package 'actuation' build argument 'cmake_args' from command line to 'None'
+[1.475s] Level 5:colcon.colcon_core.verb:set package 'actuation' build argument 'cmake_target' from command line to 'None'
+[1.475s] Level 5:colcon.colcon_core.verb:set package 'actuation' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[1.475s] Level 5:colcon.colcon_core.verb:set package 'actuation' build argument 'cmake_clean_cache' from command line to 'False'
+[1.475s] Level 5:colcon.colcon_core.verb:set package 'actuation' build argument 'cmake_clean_first' from command line to 'False'
+[1.475s] Level 5:colcon.colcon_core.verb:set package 'actuation' build argument 'cmake_force_configure' from command line to 'False'
+[1.475s] Level 5:colcon.colcon_core.verb:set package 'actuation' build argument 'ament_cmake_args' from command line to 'None'
+[1.475s] Level 5:colcon.colcon_core.verb:set package 'actuation' build argument 'catkin_cmake_args' from command line to 'None'
+[1.475s] Level 5:colcon.colcon_core.verb:set package 'actuation' build argument 'catkin_skip_building_tests' from command line to 'False'
+[1.475s] DEBUG:colcon.colcon_core.verb:Building package 'actuation' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/nano/final_project_ws/build/actuation', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/nano/final_project_ws/install/actuation', 'merge_install': False, 'path': '/home/nano/final_project_ws/src/actuation', 'symlink_install': False, 'test_result_base': None}
+[1.476s] Level 5:colcon.colcon_core.verb:set package 'planning_interfaces' build argument 'cmake_args' from command line to 'None'
+[1.476s] Level 5:colcon.colcon_core.verb:set package 'planning_interfaces' build argument 'cmake_target' from command line to 'None'
+[1.476s] Level 5:colcon.colcon_core.verb:set package 'planning_interfaces' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[1.476s] Level 5:colcon.colcon_core.verb:set package 'planning_interfaces' build argument 'cmake_clean_cache' from command line to 'False'
+[1.476s] Level 5:colcon.colcon_core.verb:set package 'planning_interfaces' build argument 'cmake_clean_first' from command line to 'False'
+[1.476s] Level 5:colcon.colcon_core.verb:set package 'planning_interfaces' build argument 'cmake_force_configure' from command line to 'False'
+[1.476s] Level 5:colcon.colcon_core.verb:set package 'planning_interfaces' build argument 'ament_cmake_args' from command line to 'None'
+[1.476s] Level 5:colcon.colcon_core.verb:set package 'planning_interfaces' build argument 'catkin_cmake_args' from command line to 'None'
+[1.476s] Level 5:colcon.colcon_core.verb:set package 'planning_interfaces' build argument 'catkin_skip_building_tests' from command line to 'False'
+[1.477s] DEBUG:colcon.colcon_core.verb:Building package 'planning_interfaces' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/nano/final_project_ws/build/planning_interfaces', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/nano/final_project_ws/install/planning_interfaces', 'merge_install': False, 'path': '/home/nano/final_project_ws/src/planning_interfaces', 'symlink_install': False, 'test_result_base': None}
+[1.477s] Level 5:colcon.colcon_core.verb:set package 'realsense_cv' build argument 'cmake_args' from command line to 'None'
+[1.477s] Level 5:colcon.colcon_core.verb:set package 'realsense_cv' build argument 'cmake_target' from command line to 'None'
+[1.477s] Level 5:colcon.colcon_core.verb:set package 'realsense_cv' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[1.477s] Level 5:colcon.colcon_core.verb:set package 'realsense_cv' build argument 'cmake_clean_cache' from command line to 'False'
+[1.477s] Level 5:colcon.colcon_core.verb:set package 'realsense_cv' build argument 'cmake_clean_first' from command line to 'False'
+[1.477s] Level 5:colcon.colcon_core.verb:set package 'realsense_cv' build argument 'cmake_force_configure' from command line to 'False'
+[1.477s] Level 5:colcon.colcon_core.verb:set package 'realsense_cv' build argument 'ament_cmake_args' from command line to 'None'
+[1.477s] Level 5:colcon.colcon_core.verb:set package 'realsense_cv' build argument 'catkin_cmake_args' from command line to 'None'
+[1.477s] Level 5:colcon.colcon_core.verb:set package 'realsense_cv' build argument 'catkin_skip_building_tests' from command line to 'False'
+[1.478s] DEBUG:colcon.colcon_core.verb:Building package 'realsense_cv' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/nano/final_project_ws/build/realsense_cv', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/nano/final_project_ws/install/realsense_cv', 'merge_install': False, 'path': '/home/nano/final_project_ws/src/perception/realsense_cv', 'symlink_install': False, 'test_result_base': None}
+[1.478s] Level 5:colcon.colcon_core.verb:set package 'planning' build argument 'cmake_args' from command line to 'None'
+[1.478s] Level 5:colcon.colcon_core.verb:set package 'planning' build argument 'cmake_target' from command line to 'None'
+[1.478s] Level 5:colcon.colcon_core.verb:set package 'planning' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[1.478s] Level 5:colcon.colcon_core.verb:set package 'planning' build argument 'cmake_clean_cache' from command line to 'False'
+[1.478s] Level 5:colcon.colcon_core.verb:set package 'planning' build argument 'cmake_clean_first' from command line to 'False'
+[1.478s] Level 5:colcon.colcon_core.verb:set package 'planning' build argument 'cmake_force_configure' from command line to 'False'
+[1.478s] Level 5:colcon.colcon_core.verb:set package 'planning' build argument 'ament_cmake_args' from command line to 'None'
+[1.478s] Level 5:colcon.colcon_core.verb:set package 'planning' build argument 'catkin_cmake_args' from command line to 'None'
+[1.478s] Level 5:colcon.colcon_core.verb:set package 'planning' build argument 'catkin_skip_building_tests' from command line to 'False'
+[1.478s] DEBUG:colcon.colcon_core.verb:Building package 'planning' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/nano/final_project_ws/build/planning', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/nano/final_project_ws/install/planning', 'merge_install': False, 'path': '/home/nano/final_project_ws/src/planning', 'symlink_install': False, 'test_result_base': None}
+[1.479s] INFO:colcon.colcon_core.executor:Executing jobs using 'parallel' executor
+[1.481s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete
+[1.481s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/home/nano/final_project_ws/src/planning_interfaces' with build type 'ament_cmake'
+[1.482s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/nano/final_project_ws/src/planning_interfaces'
+[1.494s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_core.shell.bat': Not used on non-Windows systems
+[1.494s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[1.494s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[1.506s] INFO:colcon.colcon_ros.task.ament_python.build:Building ROS package in '/home/nano/final_project_ws/src/actuation' with build type 'ament_python'
+[1.506s] Level 1:colcon.colcon_core.shell:create_environment_hook('actuation', 'ament_prefix_path')
+[1.507s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/nano/final_project_ws/install/actuation/share/actuation/hook/ament_prefix_path.ps1'
+[1.509s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/nano/final_project_ws/install/actuation/share/actuation/hook/ament_prefix_path.dsv'
+[1.511s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/nano/final_project_ws/install/actuation/share/actuation/hook/ament_prefix_path.sh'
+[1.514s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[1.514s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[1.522s] INFO:colcon.colcon_ros.task.ament_python.build:Building ROS package in '/home/nano/final_project_ws/src/perception/realsense_cv' with build type 'ament_python'
+[1.523s] Level 1:colcon.colcon_core.shell:create_environment_hook('realsense_cv', 'ament_prefix_path')
+[1.523s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/nano/final_project_ws/install/realsense_cv/share/realsense_cv/hook/ament_prefix_path.ps1'
+[1.524s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/nano/final_project_ws/install/realsense_cv/share/realsense_cv/hook/ament_prefix_path.dsv'
+[1.525s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/nano/final_project_ws/install/realsense_cv/share/realsense_cv/hook/ament_prefix_path.sh'
+[1.526s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[1.526s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[1.543s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/nano/final_project_ws/build/planning_interfaces': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/nano/final_project_ws/install/ros2_aruco:/home/nano/final_project_ws/install/realsense_cv:/home/nano/final_project_ws/install/planning:/home/nano/final_project_ws/install/actuation:/home/nano/tmdriver_ws/install/tm_mod_urdf:/home/nano/tmdriver_ws/install/tm_get_status:/opt/ros/humble /usr/bin/cmake --build /home/nano/final_project_ws/build/planning_interfaces -- -j6 -l6
+[2.029s] INFO:colcon.colcon_core.task.python.build:Building Python package in '/home/nano/final_project_ws/src/actuation'
+[2.030s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[2.030s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[2.504s] INFO:colcon.colcon_core.task.python.build:Building Python package in '/home/nano/final_project_ws/src/perception/realsense_cv'
+[2.505s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[2.505s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[2.653s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/nano/final_project_ws/build/planning_interfaces' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/nano/final_project_ws/install/ros2_aruco:/home/nano/final_project_ws/install/realsense_cv:/home/nano/final_project_ws/install/planning:/home/nano/final_project_ws/install/actuation:/home/nano/tmdriver_ws/install/tm_mod_urdf:/home/nano/tmdriver_ws/install/tm_get_status:/opt/ros/humble /usr/bin/cmake --build /home/nano/final_project_ws/build/planning_interfaces -- -j6 -l6
+[2.679s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/nano/final_project_ws/build/planning_interfaces': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/nano/final_project_ws/install/ros2_aruco:/home/nano/final_project_ws/install/realsense_cv:/home/nano/final_project_ws/install/planning:/home/nano/final_project_ws/install/actuation:/home/nano/tmdriver_ws/install/tm_mod_urdf:/home/nano/tmdriver_ws/install/tm_get_status:/opt/ros/humble /usr/bin/cmake --install /home/nano/final_project_ws/build/planning_interfaces
+[2.835s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(planning_interfaces)
+[2.836s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/nano/final_project_ws/build/planning_interfaces' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/nano/final_project_ws/install/ros2_aruco:/home/nano/final_project_ws/install/realsense_cv:/home/nano/final_project_ws/install/planning:/home/nano/final_project_ws/install/actuation:/home/nano/tmdriver_ws/install/tm_mod_urdf:/home/nano/tmdriver_ws/install/tm_get_status:/opt/ros/humble /usr/bin/cmake --install /home/nano/final_project_ws/build/planning_interfaces
+[2.849s] Level 1:colcon.colcon_core.environment:checking '/home/nano/final_project_ws/install/planning_interfaces' for CMake module files
+[2.850s] Level 1:colcon.colcon_core.environment:checking '/home/nano/final_project_ws/install/planning_interfaces' for CMake config files
+[2.851s] Level 1:colcon.colcon_core.shell:create_environment_hook('planning_interfaces', 'cmake_prefix_path')
+[2.852s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/hook/cmake_prefix_path.ps1'
+[2.853s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/hook/cmake_prefix_path.dsv'
+[2.854s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/hook/cmake_prefix_path.sh'
+[2.855s] Level 1:colcon.colcon_core.environment:checking '/home/nano/final_project_ws/install/planning_interfaces/lib'
+[2.856s] Level 1:colcon.colcon_core.shell:create_environment_hook('planning_interfaces', 'ld_library_path_lib')
+[2.856s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/hook/ld_library_path_lib.ps1'
+[2.857s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/hook/ld_library_path_lib.dsv'
+[2.857s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/hook/ld_library_path_lib.sh'
+[2.858s] Level 1:colcon.colcon_core.environment:checking '/home/nano/final_project_ws/install/planning_interfaces/bin'
+[2.858s] Level 1:colcon.colcon_core.environment:checking '/home/nano/final_project_ws/install/planning_interfaces/lib/pkgconfig/planning_interfaces.pc'
+[2.859s] Level 1:colcon.colcon_core.environment:checking '/home/nano/final_project_ws/install/planning_interfaces/lib/python3.10/site-packages'
+[2.860s] Level 1:colcon.colcon_core.environment:checking '/home/nano/final_project_ws/install/planning_interfaces/bin'
+[2.860s] INFO:colcon.colcon_core.shell:Creating package script '/home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/package.ps1'
+[2.862s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/package.dsv'
+[2.864s] INFO:colcon.colcon_core.shell:Creating package script '/home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/package.sh'
+[2.867s] INFO:colcon.colcon_core.shell:Creating package script '/home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/package.bash'
+[2.870s] INFO:colcon.colcon_core.shell:Creating package script '/home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/package.zsh'
+[2.880s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/nano/final_project_ws/install/planning_interfaces/share/colcon-core/packages/planning_interfaces)
+[2.882s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(planning_interfaces)
+[2.882s] Level 1:colcon.colcon_core.environment:checking '/home/nano/final_project_ws/install/planning_interfaces' for CMake module files
+[2.883s] Level 1:colcon.colcon_core.environment:checking '/home/nano/final_project_ws/install/planning_interfaces' for CMake config files
+[2.884s] Level 1:colcon.colcon_core.shell:create_environment_hook('planning_interfaces', 'cmake_prefix_path')
+[2.885s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/hook/cmake_prefix_path.ps1'
+[2.886s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/hook/cmake_prefix_path.dsv'
+[2.886s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/hook/cmake_prefix_path.sh'
+[2.887s] Level 1:colcon.colcon_core.environment:checking '/home/nano/final_project_ws/install/planning_interfaces/lib'
+[2.888s] Level 1:colcon.colcon_core.shell:create_environment_hook('planning_interfaces', 'ld_library_path_lib')
+[2.888s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/hook/ld_library_path_lib.ps1'
+[2.889s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/hook/ld_library_path_lib.dsv'
+[2.889s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/hook/ld_library_path_lib.sh'
+[2.890s] Level 1:colcon.colcon_core.environment:checking '/home/nano/final_project_ws/install/planning_interfaces/bin'
+[2.890s] Level 1:colcon.colcon_core.environment:checking '/home/nano/final_project_ws/install/planning_interfaces/lib/pkgconfig/planning_interfaces.pc'
+[2.891s] Level 1:colcon.colcon_core.environment:checking '/home/nano/final_project_ws/install/planning_interfaces/lib/python3.10/site-packages'
+[2.891s] Level 1:colcon.colcon_core.environment:checking '/home/nano/final_project_ws/install/planning_interfaces/bin'
+[2.892s] INFO:colcon.colcon_core.shell:Creating package script '/home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/package.ps1'
+[2.893s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/package.dsv'
+[2.894s] INFO:colcon.colcon_core.shell:Creating package script '/home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/package.sh'
+[2.895s] INFO:colcon.colcon_core.shell:Creating package script '/home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/package.bash'
+[2.896s] INFO:colcon.colcon_core.shell:Creating package script '/home/nano/final_project_ws/install/planning_interfaces/share/planning_interfaces/package.zsh'
+[2.897s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/nano/final_project_ws/install/planning_interfaces/share/colcon-core/packages/planning_interfaces)
+[2.898s] INFO:colcon.colcon_ros.task.ament_python.build:Building ROS package in '/home/nano/final_project_ws/src/planning' with build type 'ament_python'
+[2.898s] Level 1:colcon.colcon_core.shell:create_environment_hook('planning', 'ament_prefix_path')
+[2.899s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/nano/final_project_ws/install/planning/share/planning/hook/ament_prefix_path.ps1'
+[2.900s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/nano/final_project_ws/install/planning/share/planning/hook/ament_prefix_path.dsv'
+[2.901s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/nano/final_project_ws/install/planning/share/planning/hook/ament_prefix_path.sh'
+[2.902s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[2.902s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[3.386s] INFO:colcon.colcon_core.task.python.build:Building Python package in '/home/nano/final_project_ws/src/planning'
+[3.387s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[3.388s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[3.800s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/nano/final_project_ws/src/perception/realsense_cv': PYTHONPATH=/home/nano/final_project_ws/build/realsense_cv/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/nano/final_project_ws/install/realsense_cv/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../../build/realsense_cv build --build-base /home/nano/final_project_ws/build/realsense_cv/build install --record /home/nano/final_project_ws/build/realsense_cv/install.log --single-version-externally-managed install_data
+[3.804s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/nano/final_project_ws/src/actuation': PYTHONPATH=/home/nano/final_project_ws/build/actuation/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/nano/final_project_ws/install/actuation/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/actuation build --build-base /home/nano/final_project_ws/build/actuation/build install --record /home/nano/final_project_ws/build/actuation/install.log --single-version-externally-managed install_data
+[4.356s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/nano/final_project_ws/src/planning': CMAKE_PREFIX_PATH=/home/nano/final_project_ws/install/planning_interfaces:/home/nano/final_project_ws/install/ros2_aruco_interfaces:/home/nano/tmdriver_ws/install/ui_for_debug_and_demo:/home/nano/tmdriver_ws/install/tm_driver:/home/nano/tmdriver_ws/install/demo:/home/nano/tmdriver_ws/install/tm_msgs:/home/nano/tmdriver_ws/install/tm5x-900_moveit_config:/home/nano/tmdriver_ws/install/tm5x-700_moveit_config:/home/nano/tmdriver_ws/install/tm5-900_moveit_config:/home/nano/tmdriver_ws/install/tm5-700_moveit_config:/home/nano/tmdriver_ws/install/tm20_moveit_config:/home/nano/tmdriver_ws/install/tm16_moveit_config:/home/nano/tmdriver_ws/install/tm14x_moveit_config:/home/nano/tmdriver_ws/install/tm14_moveit_config:/home/nano/tmdriver_ws/install/tm12x_moveit_config:/home/nano/tmdriver_ws/install/tm12_moveit_config:/home/nano/tmdriver_ws/install/tm_description:/home/nano/tmdriver_ws/install/custom_package:/home/nano/tmdriver_ws/install/techman_robot_msgs LD_LIBRARY_PATH=/home/nano/final_project_ws/install/planning_interfaces/lib:/home/nano/final_project_ws/install/ros2_aruco_interfaces/lib:/home/nano/tmdriver_ws/install/tm_msgs/lib:/home/nano/tmdriver_ws/install/techman_robot_msgs/lib:/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/aarch64-linux-gnu:/opt/ros/humble/lib PYTHONPATH=/home/nano/final_project_ws/build/planning/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/nano/final_project_ws/install/planning/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/planning build --build-base /home/nano/final_project_ws/build/planning/build install --record /home/nano/final_project_ws/build/planning/install.log --single-version-externally-managed install_data
+[4.727s] Level 1:colcon.colcon_core.environment:checking '/home/nano/final_project_ws/install/actuation' for CMake module files
+[4.728s] Level 1:colcon.colcon_core.environment:checking '/home/nano/final_project_ws/install/actuation' for CMake config files
+[4.730s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/nano/final_project_ws/src/actuation' returned '0': PYTHONPATH=/home/nano/final_project_ws/build/actuation/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/nano/final_project_ws/install/actuation/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/actuation build --build-base /home/nano/final_project_ws/build/actuation/build install --record /home/nano/final_project_ws/build/actuation/install.log --single-version-externally-managed install_data
+[4.731s] Level 1:colcon.colcon_core.environment:checking '/home/nano/final_project_ws/install/actuation/lib'
+[4.731s] Level 1:colcon.colcon_core.environment:checking '/home/nano/final_project_ws/install/actuation/bin'
+[4.732s] Level 1:colcon.colcon_core.environment:checking '/home/nano/final_project_ws/install/actuation/lib/pkgconfig/actuation.pc'
+[4.732s] Level 1:colcon.colcon_core.environment:checking '/home/nano/final_project_ws/install/actuation/lib/python3.10/site-packages'
+[4.732s] Level 1:colcon.colcon_core.shell:create_environment_hook('actuation', 'pythonpath')
+[4.733s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/nano/final_project_ws/install/actuation/share/actuation/hook/pythonpath.ps1'
+[4.734s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/nano/final_project_ws/install/actuation/share/actuation/hook/pythonpath.dsv'
+[4.735s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/nano/final_project_ws/install/actuation/share/actuation/hook/pythonpath.sh'
+[4.737s] Level 1:colcon.colcon_core.environment:checking '/home/nano/final_project_ws/install/actuation/bin'
+[4.737s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(actuation)
+[4.738s] INFO:colcon.colcon_core.shell:Creating package script '/home/nano/final_project_ws/install/actuation/share/actuation/package.ps1'
+[4.739s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/nano/final_project_ws/install/actuation/share/actuation/package.dsv'
+[4.740s] INFO:colcon.colcon_core.shell:Creating package script '/home/nano/final_project_ws/install/actuation/share/actuation/package.sh'
+[4.741s] INFO:colcon.colcon_core.shell:Creating package script '/home/nano/final_project_ws/install/actuation/share/actuation/package.bash'
+[4.741s] INFO:colcon.colcon_core.shell:Creating package script '/home/nano/final_project_ws/install/actuation/share/actuation/package.zsh'
+[4.742s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/nano/final_project_ws/install/actuation/share/colcon-core/packages/actuation)
+[4.745s] Level 1:colcon.colcon_core.environment:checking '/home/nano/final_project_ws/install/realsense_cv' for CMake module files
+[4.747s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/nano/final_project_ws/src/perception/realsense_cv' returned '0': PYTHONPATH=/home/nano/final_project_ws/build/realsense_cv/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/nano/final_project_ws/install/realsense_cv/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../../build/realsense_cv build --build-base /home/nano/final_project_ws/build/realsense_cv/build install --record /home/nano/final_project_ws/build/realsense_cv/install.log --single-version-externally-managed install_data
+[4.748s] Level 1:colcon.colcon_core.environment:checking '/home/nano/final_project_ws/install/realsense_cv' for CMake config files
+[4.749s] Level 1:colcon.colcon_core.environment:checking '/home/nano/final_project_ws/install/realsense_cv/lib'
+[4.749s] Level 1:colcon.colcon_core.environment:checking '/home/nano/final_project_ws/install/realsense_cv/bin'
+[4.749s] Level 1:colcon.colcon_core.environment:checking '/home/nano/final_project_ws/install/realsense_cv/lib/pkgconfig/realsense_cv.pc'
+[4.750s] Level 1:colcon.colcon_core.environment:checking '/home/nano/final_project_ws/install/realsense_cv/lib/python3.10/site-packages'
+[4.750s] Level 1:colcon.colcon_core.shell:create_environment_hook('realsense_cv', 'pythonpath')
+[4.750s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/nano/final_project_ws/install/realsense_cv/share/realsense_cv/hook/pythonpath.ps1'
+[4.751s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/nano/final_project_ws/install/realsense_cv/share/realsense_cv/hook/pythonpath.dsv'
+[4.752s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/nano/final_project_ws/install/realsense_cv/share/realsense_cv/hook/pythonpath.sh'
+[4.753s] Level 1:colcon.colcon_core.environment:checking '/home/nano/final_project_ws/install/realsense_cv/bin'
+[4.753s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(realsense_cv)
+[4.754s] INFO:colcon.colcon_core.shell:Creating package script '/home/nano/final_project_ws/install/realsense_cv/share/realsense_cv/package.ps1'
+[4.755s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/nano/final_project_ws/install/realsense_cv/share/realsense_cv/package.dsv'
+[4.756s] INFO:colcon.colcon_core.shell:Creating package script '/home/nano/final_project_ws/install/realsense_cv/share/realsense_cv/package.sh'
+[4.757s] INFO:colcon.colcon_core.shell:Creating package script '/home/nano/final_project_ws/install/realsense_cv/share/realsense_cv/package.bash'
+[4.758s] INFO:colcon.colcon_core.shell:Creating package script '/home/nano/final_project_ws/install/realsense_cv/share/realsense_cv/package.zsh'
+[4.758s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/nano/final_project_ws/install/realsense_cv/share/colcon-core/packages/realsense_cv)
+[5.297s] Level 1:colcon.colcon_core.environment:checking '/home/nano/final_project_ws/install/planning' for CMake module files
+[5.299s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/nano/final_project_ws/src/planning' returned '0': CMAKE_PREFIX_PATH=/home/nano/final_project_ws/install/planning_interfaces:/home/nano/final_project_ws/install/ros2_aruco_interfaces:/home/nano/tmdriver_ws/install/ui_for_debug_and_demo:/home/nano/tmdriver_ws/install/tm_driver:/home/nano/tmdriver_ws/install/demo:/home/nano/tmdriver_ws/install/tm_msgs:/home/nano/tmdriver_ws/install/tm5x-900_moveit_config:/home/nano/tmdriver_ws/install/tm5x-700_moveit_config:/home/nano/tmdriver_ws/install/tm5-900_moveit_config:/home/nano/tmdriver_ws/install/tm5-700_moveit_config:/home/nano/tmdriver_ws/install/tm20_moveit_config:/home/nano/tmdriver_ws/install/tm16_moveit_config:/home/nano/tmdriver_ws/install/tm14x_moveit_config:/home/nano/tmdriver_ws/install/tm14_moveit_config:/home/nano/tmdriver_ws/install/tm12x_moveit_config:/home/nano/tmdriver_ws/install/tm12_moveit_config:/home/nano/tmdriver_ws/install/tm_description:/home/nano/tmdriver_ws/install/custom_package:/home/nano/tmdriver_ws/install/techman_robot_msgs LD_LIBRARY_PATH=/home/nano/final_project_ws/install/planning_interfaces/lib:/home/nano/final_project_ws/install/ros2_aruco_interfaces/lib:/home/nano/tmdriver_ws/install/tm_msgs/lib:/home/nano/tmdriver_ws/install/techman_robot_msgs/lib:/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/aarch64-linux-gnu:/opt/ros/humble/lib PYTHONPATH=/home/nano/final_project_ws/build/planning/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/nano/final_project_ws/install/planning/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/planning build --build-base /home/nano/final_project_ws/build/planning/build install --record /home/nano/final_project_ws/build/planning/install.log --single-version-externally-managed install_data
+[5.300s] Level 1:colcon.colcon_core.environment:checking '/home/nano/final_project_ws/install/planning' for CMake config files
+[5.301s] Level 1:colcon.colcon_core.environment:checking '/home/nano/final_project_ws/install/planning/lib'
+[5.302s] Level 1:colcon.colcon_core.environment:checking '/home/nano/final_project_ws/install/planning/bin'
+[5.302s] Level 1:colcon.colcon_core.environment:checking '/home/nano/final_project_ws/install/planning/lib/pkgconfig/planning.pc'
+[5.302s] Level 1:colcon.colcon_core.environment:checking '/home/nano/final_project_ws/install/planning/lib/python3.10/site-packages'
+[5.303s] Level 1:colcon.colcon_core.shell:create_environment_hook('planning', 'pythonpath')
+[5.304s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/nano/final_project_ws/install/planning/share/planning/hook/pythonpath.ps1'
+[5.306s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/nano/final_project_ws/install/planning/share/planning/hook/pythonpath.dsv'
+[5.308s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/nano/final_project_ws/install/planning/share/planning/hook/pythonpath.sh'
+[5.311s] Level 1:colcon.colcon_core.environment:checking '/home/nano/final_project_ws/install/planning/bin'
+[5.311s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(planning)
+[5.312s] INFO:colcon.colcon_core.shell:Creating package script '/home/nano/final_project_ws/install/planning/share/planning/package.ps1'
+[5.314s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/nano/final_project_ws/install/planning/share/planning/package.dsv'
+[5.316s] INFO:colcon.colcon_core.shell:Creating package script '/home/nano/final_project_ws/install/planning/share/planning/package.sh'
+[5.318s] INFO:colcon.colcon_core.shell:Creating package script '/home/nano/final_project_ws/install/planning/share/planning/package.bash'
+[5.319s] INFO:colcon.colcon_core.shell:Creating package script '/home/nano/final_project_ws/install/planning/share/planning/package.zsh'
+[5.321s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/nano/final_project_ws/install/planning/share/colcon-core/packages/planning)
+[5.322s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:closing loop
+[5.323s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:loop closed
+[5.323s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete finished with '0'
+[5.324s] DEBUG:colcon.colcon_core.event_reactor:joining thread
+[5.352s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.terminal_notifier': Not used on non-Darwin systems
+[5.353s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.win32': Not used on non-Windows systems
+[5.353s] INFO:colcon.colcon_notification.desktop_notification:Sending desktop notification using 'notify2'
+[5.426s] DEBUG:colcon.colcon_core.event_reactor:joined thread
+[5.427s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/nano/final_project_ws/install/local_setup.ps1'
+[5.433s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/nano/final_project_ws/install/_local_setup_util_ps1.py'
+[5.440s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/nano/final_project_ws/install/setup.ps1'
+[5.447s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/nano/final_project_ws/install/local_setup.sh'
+[5.449s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/nano/final_project_ws/install/_local_setup_util_sh.py'
+[5.451s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/nano/final_project_ws/install/setup.sh'
+[5.458s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/nano/final_project_ws/install/local_setup.bash'
+[5.460s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/nano/final_project_ws/install/setup.bash'
+[5.466s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/nano/final_project_ws/install/local_setup.zsh'
+[5.468s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/nano/final_project_ws/install/setup.zsh'

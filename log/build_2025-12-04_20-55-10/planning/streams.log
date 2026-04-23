@@ -1,0 +1,35 @@
+[1.533s] Invoking command in '/home/nano/final_project_ws/src/planning': CMAKE_PREFIX_PATH=/home/nano/final_project_ws/install/planning_interfaces:/home/nano/final_project_ws/install/ros2_aruco_interfaces:/home/nano/tmdriver_ws/install/ui_for_debug_and_demo:/home/nano/tmdriver_ws/install/tm_driver:/home/nano/tmdriver_ws/install/demo:/home/nano/tmdriver_ws/install/tm_msgs:/home/nano/tmdriver_ws/install/tm5x-900_moveit_config:/home/nano/tmdriver_ws/install/tm5x-700_moveit_config:/home/nano/tmdriver_ws/install/tm5-900_moveit_config:/home/nano/tmdriver_ws/install/tm5-700_moveit_config:/home/nano/tmdriver_ws/install/tm20_moveit_config:/home/nano/tmdriver_ws/install/tm16_moveit_config:/home/nano/tmdriver_ws/install/tm14x_moveit_config:/home/nano/tmdriver_ws/install/tm14_moveit_config:/home/nano/tmdriver_ws/install/tm12x_moveit_config:/home/nano/tmdriver_ws/install/tm12_moveit_config:/home/nano/tmdriver_ws/install/tm_description:/home/nano/tmdriver_ws/install/custom_package:/home/nano/tmdriver_ws/install/techman_robot_msgs LD_LIBRARY_PATH=/home/nano/final_project_ws/install/planning_interfaces/lib:/home/nano/final_project_ws/install/ros2_aruco_interfaces/lib:/home/nano/tmdriver_ws/install/tm_msgs/lib:/home/nano/tmdriver_ws/install/techman_robot_msgs/lib:/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/aarch64-linux-gnu:/opt/ros/humble/lib PYTHONPATH=/home/nano/final_project_ws/build/planning/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/nano/final_project_ws/install/planning/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/planning build --build-base /home/nano/final_project_ws/build/planning/build install --record /home/nano/final_project_ws/build/planning/install.log --single-version-externally-managed install_data
+[2.059s] running egg_info
+[2.093s] writing ../../build/planning/planning.egg-info/PKG-INFO
+[2.217s] writing dependency_links to ../../build/planning/planning.egg-info/dependency_links.txt
+[2.217s] writing entry points to ../../build/planning/planning.egg-info/entry_points.txt
+[2.218s] writing requirements to ../../build/planning/planning.egg-info/requires.txt
+[2.218s] writing top-level names to ../../build/planning/planning.egg-info/top_level.txt
+[2.293s] reading manifest file '../../build/planning/planning.egg-info/SOURCES.txt'
+[2.663s] adding license file 'LICENSE'
+[2.668s] writing manifest file '../../build/planning/planning.egg-info/SOURCES.txt'
+[2.669s] running build
+[2.669s] running build_py
+[6.477s] copying planning/simple_move.py -> /home/nano/final_project_ws/build/planning/build/lib/planning
+[6.482s] copying planning/ik.py -> /home/nano/final_project_ws/build/planning/build/lib/planning
+[6.487s] copying planning/pick_and_place.py -> /home/nano/final_project_ws/build/planning/build/lib/planning
+[6.488s] copying planning/__init__.py -> /home/nano/final_project_ws/build/planning/build/lib/planning
+[6.488s] copying planning/camera_static_transform.py -> /home/nano/final_project_ws/build/planning/build/lib/planning
+[6.490s] running install
+[6.506s] running install_lib
+[6.560s] copying /home/nano/final_project_ws/build/planning/build/lib/planning/camera_static_transform.py -> /home/nano/final_project_ws/install/planning/lib/python3.10/site-packages/planning
+[6.562s] byte-compiling /home/nano/final_project_ws/install/planning/lib/python3.10/site-packages/planning/camera_static_transform.py to camera_static_transform.cpython-310.pyc
+[6.564s] running install_data
+[6.564s] copying resource/planning -> /home/nano/final_project_ws/install/planning/share/ament_index/resource_index/packages
+[6.565s] copying package.xml -> /home/nano/final_project_ws/install/planning/share/planning
+[6.566s] copying launch/pick_planner.launch.py -> /home/nano/final_project_ws/install/planning/share/planning/launch
+[6.572s] running install_egg_info
+[6.616s] removing '/home/nano/final_project_ws/install/planning/lib/python3.10/site-packages/planning-0.0.0-py3.10.egg-info' (and everything under it)
+[6.616s] Copying ../../build/planning/planning.egg-info to /home/nano/final_project_ws/install/planning/lib/python3.10/site-packages/planning-0.0.0-py3.10.egg-info
+[6.619s] running install_scripts
+[6.706s] Installing camera_tf script to /home/nano/final_project_ws/install/planning/lib/planning
+[6.706s] Installing ik script to /home/nano/final_project_ws/install/planning/lib/planning
+[6.707s] Installing pick_and_place script to /home/nano/final_project_ws/install/planning/lib/planning
+[6.707s] Installing simple_move script to /home/nano/final_project_ws/install/planning/lib/planning
+[6.708s] writing list of installed files to '/home/nano/final_project_ws/build/planning/install.log'
+[6.819s] Invoked command in '/home/nano/final_project_ws/src/planning' returned '0': CMAKE_PREFIX_PATH=/home/nano/final_project_ws/install/planning_interfaces:/home/nano/final_project_ws/install/ros2_aruco_interfaces:/home/nano/tmdriver_ws/install/ui_for_debug_and_demo:/home/nano/tmdriver_ws/install/tm_driver:/home/nano/tmdriver_ws/install/demo:/home/nano/tmdriver_ws/install/tm_msgs:/home/nano/tmdriver_ws/install/tm5x-900_moveit_config:/home/nano/tmdriver_ws/install/tm5x-700_moveit_config:/home/nano/tmdriver_ws/install/tm5-900_moveit_config:/home/nano/tmdriver_ws/install/tm5-700_moveit_config:/home/nano/tmdriver_ws/install/tm20_moveit_config:/home/nano/tmdriver_ws/install/tm16_moveit_config:/home/nano/tmdriver_ws/install/tm14x_moveit_config:/home/nano/tmdriver_ws/install/tm14_moveit_config:/home/nano/tmdriver_ws/install/tm12x_moveit_config:/home/nano/tmdriver_ws/install/tm12_moveit_config:/home/nano/tmdriver_ws/install/tm_description:/home/nano/tmdriver_ws/install/custom_package:/home/nano/tmdriver_ws/install/techman_robot_msgs LD_LIBRARY_PATH=/home/nano/final_project_ws/install/planning_interfaces/lib:/home/nano/final_project_ws/install/ros2_aruco_interfaces/lib:/home/nano/tmdriver_ws/install/tm_msgs/lib:/home/nano/tmdriver_ws/install/techman_robot_msgs/lib:/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/aarch64-linux-gnu:/opt/ros/humble/lib PYTHONPATH=/home/nano/final_project_ws/build/planning/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/nano/final_project_ws/install/planning/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/planning build --build-base /home/nano/final_project_ws/build/planning/build install --record /home/nano/final_project_ws/build/planning/install.log --single-version-externally-managed install_data

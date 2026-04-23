@@ -1,0 +1,46 @@
+[2.507s] Invoking command in '/home/nano/final_project_ws/src/perception/ros2_aruco/ros2_aruco': PYTHONPATH=/home/nano/final_project_ws/build/ros2_aruco/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/nano/final_project_ws/install/ros2_aruco/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../../../build/ros2_aruco build --build-base /home/nano/final_project_ws/build/ros2_aruco/build install --record /home/nano/final_project_ws/build/ros2_aruco/install.log --single-version-externally-managed install_data
+[3.073s] running egg_info
+[3.075s] creating ../../../../build/ros2_aruco/ros2_aruco.egg-info
+[3.076s] writing ../../../../build/ros2_aruco/ros2_aruco.egg-info/PKG-INFO
+[3.076s] writing dependency_links to ../../../../build/ros2_aruco/ros2_aruco.egg-info/dependency_links.txt
+[3.077s] writing entry points to ../../../../build/ros2_aruco/ros2_aruco.egg-info/entry_points.txt
+[3.078s] writing requirements to ../../../../build/ros2_aruco/ros2_aruco.egg-info/requires.txt
+[3.078s] writing top-level names to ../../../../build/ros2_aruco/ros2_aruco.egg-info/top_level.txt
+[3.079s] writing manifest file '../../../../build/ros2_aruco/ros2_aruco.egg-info/SOURCES.txt'
+[3.085s] reading manifest file '../../../../build/ros2_aruco/ros2_aruco.egg-info/SOURCES.txt'
+[3.090s] writing manifest file '../../../../build/ros2_aruco/ros2_aruco.egg-info/SOURCES.txt'
+[3.091s] running build
+[3.092s] running build_py
+[3.092s] creating /home/nano/final_project_ws/build/ros2_aruco/build
+[3.093s] creating /home/nano/final_project_ws/build/ros2_aruco/build/lib
+[3.094s] creating /home/nano/final_project_ws/build/ros2_aruco/build/lib/ros2_aruco
+[3.094s] copying ros2_aruco/aruco_node.py -> /home/nano/final_project_ws/build/ros2_aruco/build/lib/ros2_aruco
+[3.095s] copying ros2_aruco/aruco_generate_marker.py -> /home/nano/final_project_ws/build/ros2_aruco/build/lib/ros2_aruco
+[3.096s] copying ros2_aruco/__init__.py -> /home/nano/final_project_ws/build/ros2_aruco/build/lib/ros2_aruco
+[3.097s] running install
+[3.098s] running install_lib
+[3.100s] creating /home/nano/final_project_ws/install/ros2_aruco/lib/python3.10/site-packages/ros2_aruco
+[3.101s] copying /home/nano/final_project_ws/build/ros2_aruco/build/lib/ros2_aruco/aruco_node.py -> /home/nano/final_project_ws/install/ros2_aruco/lib/python3.10/site-packages/ros2_aruco
+[3.102s] copying /home/nano/final_project_ws/build/ros2_aruco/build/lib/ros2_aruco/aruco_generate_marker.py -> /home/nano/final_project_ws/install/ros2_aruco/lib/python3.10/site-packages/ros2_aruco
+[3.102s] copying /home/nano/final_project_ws/build/ros2_aruco/build/lib/ros2_aruco/__init__.py -> /home/nano/final_project_ws/install/ros2_aruco/lib/python3.10/site-packages/ros2_aruco
+[3.104s] byte-compiling /home/nano/final_project_ws/install/ros2_aruco/lib/python3.10/site-packages/ros2_aruco/aruco_node.py to aruco_node.cpython-310.pyc
+[3.109s] byte-compiling /home/nano/final_project_ws/install/ros2_aruco/lib/python3.10/site-packages/ros2_aruco/aruco_generate_marker.py to aruco_generate_marker.cpython-310.pyc
+[3.110s] byte-compiling /home/nano/final_project_ws/install/ros2_aruco/lib/python3.10/site-packages/ros2_aruco/__init__.py to __init__.cpython-310.pyc
+[3.111s] running install_data
+[3.112s] creating /home/nano/final_project_ws/install/ros2_aruco/share/ament_index
+[3.112s] creating /home/nano/final_project_ws/install/ros2_aruco/share/ament_index/resource_index
+[3.113s] creating /home/nano/final_project_ws/install/ros2_aruco/share/ament_index/resource_index/packages
+[3.113s] copying resource/ros2_aruco -> /home/nano/final_project_ws/install/ros2_aruco/share/ament_index/resource_index/packages
+[3.114s] copying package.xml -> /home/nano/final_project_ws/install/ros2_aruco/share/ros2_aruco
+[3.115s] creating /home/nano/final_project_ws/install/ros2_aruco/share/ros2_aruco/launch
+[3.115s] copying launch/aruco_recognition.launch.py -> /home/nano/final_project_ws/install/ros2_aruco/share/ros2_aruco/launch
+[3.116s] creating /home/nano/final_project_ws/install/ros2_aruco/share/ros2_aruco/config
+[3.117s] copying config/aruco_parameters_old.yaml -> /home/nano/final_project_ws/install/ros2_aruco/share/ros2_aruco/config
+[3.117s] copying config/aruco_parameters.yaml -> /home/nano/final_project_ws/install/ros2_aruco/share/ros2_aruco/config
+[3.118s] running install_egg_info
+[3.123s] Copying ../../../../build/ros2_aruco/ros2_aruco.egg-info to /home/nano/final_project_ws/install/ros2_aruco/lib/python3.10/site-packages/ros2_aruco-0.1.0-py3.10.egg-info
+[3.127s] running install_scripts
+[3.182s] Installing aruco_generate_marker script to /home/nano/final_project_ws/install/ros2_aruco/lib/ros2_aruco
+[3.183s] Installing aruco_node script to /home/nano/final_project_ws/install/ros2_aruco/lib/ros2_aruco
+[3.184s] writing list of installed files to '/home/nano/final_project_ws/build/ros2_aruco/install.log'
+[3.293s] Invoked command in '/home/nano/final_project_ws/src/perception/ros2_aruco/ros2_aruco' returned '0': PYTHONPATH=/home/nano/final_project_ws/build/ros2_aruco/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/nano/final_project_ws/install/ros2_aruco/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../../../build/ros2_aruco build --build-base /home/nano/final_project_ws/build/ros2_aruco/build install --record /home/nano/final_project_ws/build/ros2_aruco/install.log --single-version-externally-managed install_data

@@ -1,0 +1,32 @@
+[2.910s] Invoking command in '/home/nano/final_project_ws/src/perception/ros2_aruco/ros2_aruco': PYTHONPATH=/home/nano/final_project_ws/build/ros2_aruco/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/nano/final_project_ws/install/ros2_aruco/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../../../build/ros2_aruco build --build-base /home/nano/final_project_ws/build/ros2_aruco/build install --record /home/nano/final_project_ws/build/ros2_aruco/install.log --single-version-externally-managed install_data
+[3.259s] /home/nano/.local/lib/python3.10/site-packages/setuptools/_distutils/dist.py:289: UserWarning: Unknown distribution option: 'tests_require'
+[3.259s]   warnings.warn(msg)
+[3.498s] running egg_info
+[3.536s] writing ../../../../build/ros2_aruco/ros2_aruco.egg-info/PKG-INFO
+[3.556s] writing dependency_links to ../../../../build/ros2_aruco/ros2_aruco.egg-info/dependency_links.txt
+[3.556s] writing entry points to ../../../../build/ros2_aruco/ros2_aruco.egg-info/entry_points.txt
+[3.557s] writing requirements to ../../../../build/ros2_aruco/ros2_aruco.egg-info/requires.txt
+[3.557s] writing top-level names to ../../../../build/ros2_aruco/ros2_aruco.egg-info/top_level.txt
+[4.084s] reading manifest file '../../../../build/ros2_aruco/ros2_aruco.egg-info/SOURCES.txt'
+[4.496s] writing manifest file '../../../../build/ros2_aruco/ros2_aruco.egg-info/SOURCES.txt'
+[4.497s] running build
+[4.498s] running build_py
+[8.306s] copying ros2_aruco/aruco_node.py -> /home/nano/final_project_ws/build/ros2_aruco/build/lib/ros2_aruco
+[8.312s] copying ros2_aruco/aruco_generate_marker.py -> /home/nano/final_project_ws/build/ros2_aruco/build/lib/ros2_aruco
+[8.316s] copying ros2_aruco/__init__.py -> /home/nano/final_project_ws/build/ros2_aruco/build/lib/ros2_aruco
+[8.316s] running install
+[8.329s] running install_lib
+[8.407s] running install_data
+[8.407s] copying resource/ros2_aruco -> /home/nano/final_project_ws/install/ros2_aruco/share/ament_index/resource_index/packages
+[8.408s] copying package.xml -> /home/nano/final_project_ws/install/ros2_aruco/share/ros2_aruco
+[8.408s] copying launch/aruco_recognition.launch.py -> /home/nano/final_project_ws/install/ros2_aruco/share/ros2_aruco/launch
+[8.408s] copying config/aruco_parameters_old.yaml -> /home/nano/final_project_ws/install/ros2_aruco/share/ros2_aruco/config
+[8.408s] copying config/aruco_parameters.yaml -> /home/nano/final_project_ws/install/ros2_aruco/share/ros2_aruco/config
+[8.409s] running install_egg_info
+[8.456s] removing '/home/nano/final_project_ws/install/ros2_aruco/lib/python3.10/site-packages/ros2_aruco-0.1.0-py3.10.egg-info' (and everything under it)
+[8.457s] Copying ../../../../build/ros2_aruco/ros2_aruco.egg-info to /home/nano/final_project_ws/install/ros2_aruco/lib/python3.10/site-packages/ros2_aruco-0.1.0-py3.10.egg-info
+[8.460s] running install_scripts
+[8.538s] Installing aruco_generate_marker script to /home/nano/final_project_ws/install/ros2_aruco/lib/ros2_aruco
+[8.541s] Installing aruco_node script to /home/nano/final_project_ws/install/ros2_aruco/lib/ros2_aruco
+[8.542s] writing list of installed files to '/home/nano/final_project_ws/build/ros2_aruco/install.log'
+[8.624s] Invoked command in '/home/nano/final_project_ws/src/perception/ros2_aruco/ros2_aruco' returned '0': PYTHONPATH=/home/nano/final_project_ws/build/ros2_aruco/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/nano/final_project_ws/install/ros2_aruco/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../../../build/ros2_aruco build --build-base /home/nano/final_project_ws/build/ros2_aruco/build install --record /home/nano/final_project_ws/build/ros2_aruco/install.log --single-version-externally-managed install_data

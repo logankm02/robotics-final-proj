@@ -1,0 +1,155 @@
+[1.717s] Invoking command in '/home/nano/final_project_ws/build/ros2_aruco_interfaces': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/nano/final_project_ws/install/ros2_aruco:/home/nano/final_project_ws/install/realsense_cv:/home/nano/final_project_ws/install/planning:/home/nano/tmdriver_ws/install/tm_mod_urdf:/home/nano/tmdriver_ws/install/tm_get_status:/opt/ros/humble /usr/bin/cmake --build /home/nano/final_project_ws/build/ros2_aruco_interfaces -- -j6 -l6
+[1.879s] [35m[1mConsolidate compiler generated dependencies of target ros2_aruco_interfaces__rosidl_generator_c[0m
+[1.879s] [  3%] Built target ros2_aruco_interfaces__cpp
+[1.912s] [ 12%] Built target ros2_aruco_interfaces__rosidl_generator_c
+[1.942s] [35m[1mConsolidate compiler generated dependencies of target ros2_aruco_interfaces__rosidl_typesupport_cpp[0m
+[1.945s] [35m[1mConsolidate compiler generated dependencies of target ros2_aruco_interfaces__rosidl_typesupport_fastrtps_cpp[0m
+[1.952s] [ 12%] Built target ament_cmake_python_copy_ros2_aruco_interfaces
+[1.954s] [35m[1mConsolidate compiler generated dependencies of target ros2_aruco_interfaces__rosidl_typesupport_introspection_cpp[0m
+[1.984s] [35m[1mConsolidate compiler generated dependencies of target ros2_aruco_interfaces__rosidl_typesupport_fastrtps_c[0m
+[1.985s] [ 22%] Built target ros2_aruco_interfaces__rosidl_typesupport_cpp
+[1.990s] [35m[1mConsolidate compiler generated dependencies of target ros2_aruco_interfaces__rosidl_typesupport_introspection_c[0m
+[1.998s] [ 32%] Built target ros2_aruco_interfaces__rosidl_typesupport_introspection_cpp
+[2.011s] [35m[1mConsolidate compiler generated dependencies of target ros2_aruco_interfaces__rosidl_typesupport_c[0m
+[2.012s] [ 41%] Built target ros2_aruco_interfaces__rosidl_typesupport_fastrtps_cpp
+[2.033s] [ 51%] Built target ros2_aruco_interfaces__rosidl_typesupport_fastrtps_c
+[2.062s] [ 61%] Built target ros2_aruco_interfaces__rosidl_typesupport_c
+[2.068s] [ 70%] Built target ros2_aruco_interfaces__rosidl_typesupport_introspection_c
+[2.115s] [ 70%] Built target ros2_aruco_interfaces
+[2.167s] [ 74%] Built target ros2_aruco_interfaces__py
+[2.203s] [35m[1mConsolidate compiler generated dependencies of target ros2_aruco_interfaces__rosidl_generator_py[0m
+[2.231s] [ 80%] Built target ros2_aruco_interfaces__rosidl_generator_py
+[2.263s] [35m[1mConsolidate compiler generated dependencies of target ros2_aruco_interfaces__rosidl_typesupport_fastrtps_c__pyext[0m
+[2.296s] [35m[1mConsolidate compiler generated dependencies of target ros2_aruco_interfaces__rosidl_typesupport_introspection_c__pyext[0m
+[2.304s] [35m[1mConsolidate compiler generated dependencies of target ros2_aruco_interfaces__rosidl_typesupport_c__pyext[0m
+[2.314s] [ 87%] Built target ros2_aruco_interfaces__rosidl_typesupport_fastrtps_c__pyext
+[2.334s] [ 93%] Built target ros2_aruco_interfaces__rosidl_typesupport_c__pyext
+[2.355s] [100%] Built target ros2_aruco_interfaces__rosidl_typesupport_introspection_c__pyext
+[2.561s] running egg_info
+[2.562s] writing ros2_aruco_interfaces.egg-info/PKG-INFO
+[2.563s] writing dependency_links to ros2_aruco_interfaces.egg-info/dependency_links.txt
+[2.563s] writing top-level names to ros2_aruco_interfaces.egg-info/top_level.txt
+[2.568s] reading manifest file 'ros2_aruco_interfaces.egg-info/SOURCES.txt'
+[2.570s] writing manifest file 'ros2_aruco_interfaces.egg-info/SOURCES.txt'
+[2.643s] [100%] Built target ament_cmake_python_build_ros2_aruco_interfaces_egg
+[2.737s] Invoked command in '/home/nano/final_project_ws/build/ros2_aruco_interfaces' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/nano/final_project_ws/install/ros2_aruco:/home/nano/final_project_ws/install/realsense_cv:/home/nano/final_project_ws/install/planning:/home/nano/tmdriver_ws/install/tm_mod_urdf:/home/nano/tmdriver_ws/install/tm_get_status:/opt/ros/humble /usr/bin/cmake --build /home/nano/final_project_ws/build/ros2_aruco_interfaces -- -j6 -l6
+[2.744s] Invoking command in '/home/nano/final_project_ws/build/ros2_aruco_interfaces': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/nano/final_project_ws/install/ros2_aruco:/home/nano/final_project_ws/install/realsense_cv:/home/nano/final_project_ws/install/planning:/home/nano/tmdriver_ws/install/tm_mod_urdf:/home/nano/tmdriver_ws/install/tm_get_status:/opt/ros/humble /usr/bin/cmake --install /home/nano/final_project_ws/build/ros2_aruco_interfaces
+[2.766s] -- Install configuration: ""
+[2.766s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/share/ament_index/resource_index/rosidl_interfaces/ros2_aruco_interfaces
+[2.767s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/include/ros2_aruco_interfaces/ros2_aruco_interfaces
+[2.767s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/include/ros2_aruco_interfaces/ros2_aruco_interfaces/msg
+[2.768s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/include/ros2_aruco_interfaces/ros2_aruco_interfaces/msg/rosidl_generator_c__visibility_control.h
+[2.768s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/include/ros2_aruco_interfaces/ros2_aruco_interfaces/msg/aruco_markers.h
+[2.768s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/include/ros2_aruco_interfaces/ros2_aruco_interfaces/msg/detail
+[2.770s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/include/ros2_aruco_interfaces/ros2_aruco_interfaces/msg/detail/aruco_markers__functions.c
+[2.770s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/include/ros2_aruco_interfaces/ros2_aruco_interfaces/msg/detail/aruco_markers__type_support.h
+[2.771s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/include/ros2_aruco_interfaces/ros2_aruco_interfaces/msg/detail/aruco_markers__struct.h
+[2.771s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/include/ros2_aruco_interfaces/ros2_aruco_interfaces/msg/detail/aruco_markers__functions.h
+[2.771s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/share/ros2_aruco_interfaces/environment/library_path.sh
+[2.771s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/share/ros2_aruco_interfaces/environment/library_path.dsv
+[2.772s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/lib/libros2_aruco_interfaces__rosidl_generator_c.so
+[2.772s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/include/ros2_aruco_interfaces/ros2_aruco_interfaces
+[2.772s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/include/ros2_aruco_interfaces/ros2_aruco_interfaces/msg
+[2.772s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/include/ros2_aruco_interfaces/ros2_aruco_interfaces/msg/rosidl_typesupport_fastrtps_c__visibility_control.h
+[2.773s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/include/ros2_aruco_interfaces/ros2_aruco_interfaces/msg/detail
+[2.773s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/include/ros2_aruco_interfaces/ros2_aruco_interfaces/msg/detail/aruco_markers__rosidl_typesupport_fastrtps_c.h
+[2.775s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/lib/libros2_aruco_interfaces__rosidl_typesupport_fastrtps_c.so
+[2.775s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/include/ros2_aruco_interfaces/ros2_aruco_interfaces
+[2.775s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/include/ros2_aruco_interfaces/ros2_aruco_interfaces/msg
+[2.776s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/include/ros2_aruco_interfaces/ros2_aruco_interfaces/msg/rosidl_generator_cpp__visibility_control.hpp
+[2.776s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/include/ros2_aruco_interfaces/ros2_aruco_interfaces/msg/aruco_markers.hpp
+[2.776s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/include/ros2_aruco_interfaces/ros2_aruco_interfaces/msg/detail
+[2.776s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/include/ros2_aruco_interfaces/ros2_aruco_interfaces/msg/detail/aruco_markers__type_support.hpp
+[2.776s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/include/ros2_aruco_interfaces/ros2_aruco_interfaces/msg/detail/aruco_markers__struct.hpp
+[2.776s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/include/ros2_aruco_interfaces/ros2_aruco_interfaces/msg/detail/aruco_markers__traits.hpp
+[2.776s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/include/ros2_aruco_interfaces/ros2_aruco_interfaces/msg/detail/aruco_markers__builder.hpp
+[2.776s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/include/ros2_aruco_interfaces/ros2_aruco_interfaces
+[2.776s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/include/ros2_aruco_interfaces/ros2_aruco_interfaces/msg
+[2.777s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/include/ros2_aruco_interfaces/ros2_aruco_interfaces/msg/detail
+[2.777s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/include/ros2_aruco_interfaces/ros2_aruco_interfaces/msg/detail/aruco_markers__rosidl_typesupport_fastrtps_cpp.hpp
+[2.777s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/include/ros2_aruco_interfaces/ros2_aruco_interfaces/msg/detail/dds_fastrtps
+[2.777s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/include/ros2_aruco_interfaces/ros2_aruco_interfaces/msg/rosidl_typesupport_fastrtps_cpp__visibility_control.h
+[2.779s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/lib/libros2_aruco_interfaces__rosidl_typesupport_fastrtps_cpp.so
+[2.779s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/include/ros2_aruco_interfaces/ros2_aruco_interfaces
+[2.779s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/include/ros2_aruco_interfaces/ros2_aruco_interfaces/msg
+[2.780s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/include/ros2_aruco_interfaces/ros2_aruco_interfaces/msg/rosidl_typesupport_introspection_c__visibility_control.h
+[2.780s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/include/ros2_aruco_interfaces/ros2_aruco_interfaces/msg/detail
+[2.780s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/include/ros2_aruco_interfaces/ros2_aruco_interfaces/msg/detail/aruco_markers__rosidl_typesupport_introspection_c.h
+[2.780s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/include/ros2_aruco_interfaces/ros2_aruco_interfaces/msg/detail/aruco_markers__type_support.c
+[2.781s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/lib/libros2_aruco_interfaces__rosidl_typesupport_introspection_c.so
+[2.782s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/lib/libros2_aruco_interfaces__rosidl_typesupport_c.so
+[2.783s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/include/ros2_aruco_interfaces/ros2_aruco_interfaces
+[2.784s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/include/ros2_aruco_interfaces/ros2_aruco_interfaces/msg
+[2.784s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/include/ros2_aruco_interfaces/ros2_aruco_interfaces/msg/detail
+[2.784s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/include/ros2_aruco_interfaces/ros2_aruco_interfaces/msg/detail/aruco_markers__type_support.cpp
+[2.784s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/include/ros2_aruco_interfaces/ros2_aruco_interfaces/msg/detail/aruco_markers__rosidl_typesupport_introspection_cpp.hpp
+[2.787s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/lib/libros2_aruco_interfaces__rosidl_typesupport_introspection_cpp.so
+[2.788s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/lib/libros2_aruco_interfaces__rosidl_typesupport_cpp.so
+[2.788s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/share/ros2_aruco_interfaces/environment/pythonpath.sh
+[2.788s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/share/ros2_aruco_interfaces/environment/pythonpath.dsv
+[2.788s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/local/lib/python3.10/dist-packages/ros2_aruco_interfaces-0.1.0-py3.10.egg-info
+[2.789s] -- Installing: /home/nano/final_project_ws/install/ros2_aruco_interfaces/local/lib/python3.10/dist-packages/ros2_aruco_interfaces-0.1.0-py3.10.egg-info/SOURCES.txt
+[2.789s] -- Installing: /home/nano/final_project_ws/install/ros2_aruco_interfaces/local/lib/python3.10/dist-packages/ros2_aruco_interfaces-0.1.0-py3.10.egg-info/PKG-INFO
+[2.789s] -- Installing: /home/nano/final_project_ws/install/ros2_aruco_interfaces/local/lib/python3.10/dist-packages/ros2_aruco_interfaces-0.1.0-py3.10.egg-info/dependency_links.txt
+[2.789s] -- Installing: /home/nano/final_project_ws/install/ros2_aruco_interfaces/local/lib/python3.10/dist-packages/ros2_aruco_interfaces-0.1.0-py3.10.egg-info/top_level.txt
+[2.790s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/local/lib/python3.10/dist-packages/ros2_aruco_interfaces
+[2.792s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/local/lib/python3.10/dist-packages/ros2_aruco_interfaces/libros2_aruco_interfaces__rosidl_generator_py.so
+[2.792s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/local/lib/python3.10/dist-packages/ros2_aruco_interfaces/_ros2_aruco_interfaces_s.ep.rosidl_typesupport_c.c
+[2.792s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/local/lib/python3.10/dist-packages/ros2_aruco_interfaces/_ros2_aruco_interfaces_s.ep.rosidl_typesupport_introspection_c.c
+[2.792s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/local/lib/python3.10/dist-packages/ros2_aruco_interfaces/msg
+[2.793s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/local/lib/python3.10/dist-packages/ros2_aruco_interfaces/msg/_aruco_markers_s.c
+[2.793s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/local/lib/python3.10/dist-packages/ros2_aruco_interfaces/msg/__init__.py
+[2.793s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/local/lib/python3.10/dist-packages/ros2_aruco_interfaces/msg/_aruco_markers.py
+[2.793s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/local/lib/python3.10/dist-packages/ros2_aruco_interfaces/_ros2_aruco_interfaces_s.ep.rosidl_typesupport_fastrtps_c.c
+[2.793s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/local/lib/python3.10/dist-packages/ros2_aruco_interfaces/ros2_aruco_interfaces_s__rosidl_typesupport_fastrtps_c.cpython-310-aarch64-linux-gnu.so
+[2.794s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/local/lib/python3.10/dist-packages/ros2_aruco_interfaces/ros2_aruco_interfaces_s__rosidl_typesupport_c.cpython-310-aarch64-linux-gnu.so
+[2.794s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/local/lib/python3.10/dist-packages/ros2_aruco_interfaces/ros2_aruco_interfaces_s__rosidl_typesupport_introspection_c.cpython-310-aarch64-linux-gnu.so
+[2.794s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/local/lib/python3.10/dist-packages/ros2_aruco_interfaces/__init__.py
+[2.879s] Listing '/home/nano/final_project_ws/install/ros2_aruco_interfaces/local/lib/python3.10/dist-packages/ros2_aruco_interfaces'...
+[2.879s] Listing '/home/nano/final_project_ws/install/ros2_aruco_interfaces/local/lib/python3.10/dist-packages/ros2_aruco_interfaces/msg'...
+[2.897s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/local/lib/python3.10/dist-packages/ros2_aruco_interfaces/ros2_aruco_interfaces_s__rosidl_typesupport_fastrtps_c.cpython-310-aarch64-linux-gnu.so
+[2.898s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/local/lib/python3.10/dist-packages/ros2_aruco_interfaces/ros2_aruco_interfaces_s__rosidl_typesupport_introspection_c.cpython-310-aarch64-linux-gnu.so
+[2.899s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/local/lib/python3.10/dist-packages/ros2_aruco_interfaces/ros2_aruco_interfaces_s__rosidl_typesupport_c.cpython-310-aarch64-linux-gnu.so
+[2.901s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/lib/libros2_aruco_interfaces__rosidl_generator_py.so
+[2.902s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/share/ros2_aruco_interfaces/msg/ArucoMarkers.idl
+[2.902s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/share/ros2_aruco_interfaces/msg/ArucoMarkers.msg
+[2.903s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/share/ament_index/resource_index/package_run_dependencies/ros2_aruco_interfaces
+[2.903s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/share/ament_index/resource_index/parent_prefix_path/ros2_aruco_interfaces
+[2.903s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/share/ros2_aruco_interfaces/environment/ament_prefix_path.sh
+[2.903s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/share/ros2_aruco_interfaces/environment/ament_prefix_path.dsv
+[2.904s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/share/ros2_aruco_interfaces/environment/path.sh
+[2.904s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/share/ros2_aruco_interfaces/environment/path.dsv
+[2.904s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/share/ros2_aruco_interfaces/local_setup.bash
+[2.904s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/share/ros2_aruco_interfaces/local_setup.sh
+[2.904s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/share/ros2_aruco_interfaces/local_setup.zsh
+[2.904s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/share/ros2_aruco_interfaces/local_setup.dsv
+[2.904s] -- Installing: /home/nano/final_project_ws/install/ros2_aruco_interfaces/share/ros2_aruco_interfaces/package.dsv
+[2.906s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/share/ament_index/resource_index/packages/ros2_aruco_interfaces
+[2.918s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/share/ros2_aruco_interfaces/cmake/export_ros2_aruco_interfaces__rosidl_generator_cExport.cmake
+[2.918s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/share/ros2_aruco_interfaces/cmake/export_ros2_aruco_interfaces__rosidl_generator_cExport-noconfig.cmake
+[2.919s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/share/ros2_aruco_interfaces/cmake/export_ros2_aruco_interfaces__rosidl_typesupport_fastrtps_cExport.cmake
+[2.921s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/share/ros2_aruco_interfaces/cmake/export_ros2_aruco_interfaces__rosidl_typesupport_fastrtps_cExport-noconfig.cmake
+[2.921s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/share/ros2_aruco_interfaces/cmake/export_ros2_aruco_interfaces__rosidl_generator_cppExport.cmake
+[2.922s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/share/ros2_aruco_interfaces/cmake/export_ros2_aruco_interfaces__rosidl_typesupport_fastrtps_cppExport.cmake
+[2.923s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/share/ros2_aruco_interfaces/cmake/export_ros2_aruco_interfaces__rosidl_typesupport_fastrtps_cppExport-noconfig.cmake
+[2.924s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/share/ros2_aruco_interfaces/cmake/ros2_aruco_interfaces__rosidl_typesupport_introspection_cExport.cmake
+[2.926s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/share/ros2_aruco_interfaces/cmake/ros2_aruco_interfaces__rosidl_typesupport_introspection_cExport-noconfig.cmake
+[2.931s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/share/ros2_aruco_interfaces/cmake/ros2_aruco_interfaces__rosidl_typesupport_cExport.cmake
+[2.931s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/share/ros2_aruco_interfaces/cmake/ros2_aruco_interfaces__rosidl_typesupport_cExport-noconfig.cmake
+[2.931s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/share/ros2_aruco_interfaces/cmake/ros2_aruco_interfaces__rosidl_typesupport_introspection_cppExport.cmake
+[2.931s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/share/ros2_aruco_interfaces/cmake/ros2_aruco_interfaces__rosidl_typesupport_introspection_cppExport-noconfig.cmake
+[2.931s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/share/ros2_aruco_interfaces/cmake/ros2_aruco_interfaces__rosidl_typesupport_cppExport.cmake
+[2.934s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/share/ros2_aruco_interfaces/cmake/ros2_aruco_interfaces__rosidl_typesupport_cppExport-noconfig.cmake
+[2.934s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/share/ros2_aruco_interfaces/cmake/export_ros2_aruco_interfaces__rosidl_generator_pyExport.cmake
+[2.934s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/share/ros2_aruco_interfaces/cmake/export_ros2_aruco_interfaces__rosidl_generator_pyExport-noconfig.cmake
+[2.934s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/share/ros2_aruco_interfaces/cmake/rosidl_cmake-extras.cmake
+[2.934s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/share/ros2_aruco_interfaces/cmake/ament_cmake_export_dependencies-extras.cmake
+[2.934s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/share/ros2_aruco_interfaces/cmake/ament_cmake_export_include_directories-extras.cmake
+[2.934s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/share/ros2_aruco_interfaces/cmake/ament_cmake_export_libraries-extras.cmake
+[2.934s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/share/ros2_aruco_interfaces/cmake/ament_cmake_export_targets-extras.cmake
+[2.935s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/share/ros2_aruco_interfaces/cmake/rosidl_cmake_export_typesupport_targets-extras.cmake
+[2.935s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/share/ros2_aruco_interfaces/cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake
+[2.935s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/share/ros2_aruco_interfaces/cmake/ros2_aruco_interfacesConfig.cmake
+[2.935s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/share/ros2_aruco_interfaces/cmake/ros2_aruco_interfacesConfig-version.cmake
+[2.935s] -- Up-to-date: /home/nano/final_project_ws/install/ros2_aruco_interfaces/share/ros2_aruco_interfaces/package.xml
+[2.941s] Invoked command in '/home/nano/final_project_ws/build/ros2_aruco_interfaces' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/nano/final_project_ws/install/ros2_aruco:/home/nano/final_project_ws/install/realsense_cv:/home/nano/final_project_ws/install/planning:/home/nano/tmdriver_ws/install/tm_mod_urdf:/home/nano/tmdriver_ws/install/tm_get_status:/opt/ros/humble /usr/bin/cmake --install /home/nano/final_project_ws/build/ros2_aruco_interfaces
