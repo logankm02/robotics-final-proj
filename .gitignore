@@ -7,3 +7,5 @@ src/**/log/
 .claude/
 *.png
 *.jpg
+models/*
+*.pt
