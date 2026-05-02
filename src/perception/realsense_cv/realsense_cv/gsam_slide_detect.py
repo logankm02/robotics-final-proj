@@ -13,7 +13,7 @@ import supervision as sv
 import pycocotools.mask as mask_util
 from pathlib import Path
 from supervision.draw.color import ColorPalette
-from utils.supervision_utils import CUSTOM_COLOR_MAP
+from realsense_cv.utils.supervision_utils import CUSTOM_COLOR_MAP
 from PIL import Image as PILImage
 from sam2.build_sam import build_sam2
 from geometry_msgs.msg import TransformStamped
@@ -77,6 +77,9 @@ class GSAMSlideDetectNode(Node):
         self.declare_parameter('sam2_checkpoint', "/home/bryan/final_project_ws/src/perception/realsense_cv/models/sam2.1_hiera_small.pt")
         self.declare_parameter('sam2_model_config', "configs/sam2.1/sam2.1_hiera_s.yaml")
         self.declare_parameter('force_cpu', False)
+        self.declare_parameter('num_slots', 25)
+        self.declare_parameter('depth_topic', '/camera/camera/aligned_depth_to_color/image_raw')
+        self.declare_parameter('depth_diff_threshold', 10)  # mm shallower than tray floor = wafer
 
         # Get parameters
         self.grounding_model = self.get_parameter('grounding_model').value
@@ -85,7 +88,10 @@ class GSAMSlideDetectNode(Node):
         self.sam2_model_config = self.get_parameter('sam2_model_config').value
         self.camera_frame = self.get_parameter('camera_frame').value
         force_cpu = self.get_parameter('force_cpu').value
+        self.num_slots = self.get_parameter('num_slots').value
+        self.depth_diff_threshold = self.get_parameter('depth_diff_threshold').value
         input_topic = self.get_parameter('input_image_topic').value
+        depth_topic = self.get_parameter('depth_topic').value
         output_topic = self.get_parameter('output_image_topic').value
         service_name = self.get_parameter('service_name').value
         info_topic = self.get_parameter('camera_info_topic').value
@@ -95,6 +101,7 @@ class GSAMSlideDetectNode(Node):
 
         self.last_image = None
         self.last_msg = None
+        self.last_depth = None
 
         self.camera_matrix = None
         self.caminfo_sub = self.create_subscription(CameraInfo, info_topic, self.camera_info_callback, 10)
@@ -106,17 +113,19 @@ class GSAMSlideDetectNode(Node):
         torch.autocast(device_type=self.device, dtype=torch.bfloat16).__enter__()
 
         if torch.cuda.is_available() and torch.cuda.get_device_properties(0).major >= 8:
-            # turn on tfloat32 for Ampere GPUs (https://pytorch.org/docs/stable/notes/cuda.html#tensorfloat-32-tf32-on-ampere-devices)
             torch.backends.cuda.matmul.allow_tf32 = True
             torch.backends.cudnn.allow_tf32 = True
 
-        # Subscriber to original camera image
-        self.image_sub = self.create_subscription(
-            Image,
-            input_topic,
-            self.image_callback,
-            10
-        )
+        # Load models once at startup
+        self.get_logger().info('Loading SAM2 and Grounding DINO models...')
+        sam2_model = build_sam2(self.sam2_model_config, self.sam2_checkpoint, device=self.device)
+        self.sam2_predictor = SAM2ImagePredictor(sam2_model)
+        self.processor = AutoProcessor.from_pretrained(self.grounding_model)
+        self.grounding_model_net = AutoModelForZeroShotObjectDetection.from_pretrained(self.grounding_model).to(self.device)
+        self.get_logger().info('Models loaded.')
+
+        self.image_sub = self.create_subscription(Image, input_topic, self.image_callback, 10)
+        self.depth_sub = self.create_subscription(Image, depth_topic, self.depth_callback, 10)
 
         # Publisher for debug/intermediate images
         self.edge_pub = self.create_publisher(Image, output_topic, 10)
@@ -129,6 +138,15 @@ class GSAMSlideDetectNode(Node):
         )
 
         self.get_logger().info(f'GSAM Slide Detect Service initialized at {service_name}')
+
+    def cv2_to_ros_image(self, cv_image, encoding='bgr8'):
+        msg = Image()
+        msg.header.stamp = self.get_clock().now().to_msg()
+        msg.height, msg.width = cv_image.shape[:2]
+        msg.encoding = encoding
+        msg.step = cv_image.shape[1] * cv_image.shape[2] if cv_image.ndim == 3 else cv_image.shape[1]
+        msg.data = cv_image.tobytes()
+        return msg
 
     def camera_info_callback(self, msg: CameraInfo):
         if self.camera_matrix is None:
@@ -171,14 +189,21 @@ class GSAMSlideDetectNode(Node):
             self.last_image = cv_image
             self.last_msg = msg
 
+    def depth_callback(self, msg: Image):
+        if not self.processing_image:
+            self.last_depth = np.frombuffer(msg.data, dtype=np.uint16).reshape(msg.height, msg.width)
+
     def detect_slides_service_callback(self, request, response):
-        """
-        Service callback that processes self.last_image and returns detected slides
-        """
         if self.last_image is None:
             response.success = False
             response.message = "No image available. Please wait for camera image."
             self.get_logger().warn('Service called but no image available yet')
+            return response
+
+        if self.last_depth is None:
+            response.success = False
+            response.message = "No depth image available. Check that aligned depth is enabled."
+            self.get_logger().warn('Service called but no depth image available yet')
             return response
 
         try:
@@ -208,8 +233,8 @@ class GSAMSlideDetectNode(Node):
         p3 = points[1]
         return [p1, p2, p3, p4]
     @staticmethod
-    def yukai_kernel(points,width=15,numSlots=25):
-        h, w = (720,1280) # image size
+    def yukai_kernel(points, width=15, numSlots=25, img_shape=(720, 1280)):
+        h, w = img_shape
         p1, p2, p3, p4 = points
         #points = sorted(points, key = lambda x: x[0]**2 + x[1]**2)
         #p1 = points[0]
@@ -256,29 +281,15 @@ class GSAMSlideDetectNode(Node):
         return X, Y, Z
     
     def gsam_mask(self, image, text=None):
-        # build SAM2 image predictor
-        sam2_checkpoint = self.sam2_checkpoint
-        model_cfg = self.sam2_model_config
-        sam2_model = build_sam2(model_cfg, sam2_checkpoint, device=self.device)
-        sam2_predictor = SAM2ImagePredictor(sam2_model)
-
-        # build grounding dino from huggingface
-        model_id = self.grounding_model
-        processor = AutoProcessor.from_pretrained(model_id)
-        grounding_model = AutoModelForZeroShotObjectDetection.from_pretrained(model_id).to(self.device)
-
-        # setup the input image and text prompt for SAM 2 and Grounding DINO
-        # VERY important: text queries need to be lowercased + end with a dot
-
         image = PILImage.fromarray(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
 
-        sam2_predictor.set_image(np.array(image.convert("RGB")))
+        self.sam2_predictor.set_image(np.array(image.convert("RGB")))
 
-        inputs = processor(images=image, text=text, return_tensors="pt").to(self.device)
+        inputs = self.processor(images=image, text=text, return_tensors="pt").to(self.device)
         with torch.no_grad():
-            outputs = grounding_model(**inputs)
+            outputs = self.grounding_model_net(**inputs)
 
-        results = processor.post_process_grounded_object_detection(
+        results = self.processor.post_process_grounded_object_detection(
             outputs,
             inputs.input_ids,
             # threshold=0.4,
@@ -300,35 +311,34 @@ class GSAMSlideDetectNode(Node):
         ]
         """
 
-        # get the box prompt for SAM 2
         input_boxes = results[0]["boxes"].cpu().numpy()
+        if len(input_boxes) == 0:
+            raise ValueError("Grounding DINO detected no objects matching the text prompt")
 
-        masks, scores, logits = sam2_predictor.predict(
-            point_coords=None,
-            point_labels=None,
-            box=input_boxes,
-            multimask_output=False,
-        )
-        print("generated mask",masks.shape)
-        mask = masks[0]  # (H, W) boolean or 0/1 tensor
-        mask = mask.astype(np.uint8) * 255
-        return mask
+        per_box_masks = []
+        for box in input_boxes:
+            masks, scores, logits = self.sam2_predictor.predict(
+                point_coords=None,
+                point_labels=None,
+                box=box,
+                multimask_output=False,
+            )
+            m = masks[0].squeeze().astype(np.uint8) * 255
+            per_box_masks.append(m)
+
+        print(f"detected {len(per_box_masks)} trays")
+        # return masks AND the detection boxes — boxes are used for the perspective warp
+        # since SAM2 masks can include background bleed that throws off mask_to_rect
+        return per_box_masks, input_boxes
     @staticmethod
     def mask_to_rect(mask):
-        # Find outer contours on the filled mask
         contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        rectangles = []
-
         cnt = max(contours, key=cv2.contourArea)
-        peri = cv2.arcLength(cnt, True)
-        approx = cv2.approxPolyDP(cnt, 0.04 * peri, True)  # tune 0.01–0.04
-
-        # Only keep shapes with *exactly 4 corners*
-        if len(approx) == 4:
-            rectangles.append(approx)
-        # Draw contours on a copy of the original image
-        
-        return rectangles
+        # minAreaRect always gives exactly 4 corners regardless of rounded edges
+        rect = cv2.minAreaRect(cnt)
+        box = cv2.boxPoints(rect)
+        box = np.int32(box)
+        return [box.reshape(4, 1, 2)]
 
     @staticmethod
     def filter_non_parallel(img, points, angle_thrd=10):
@@ -344,7 +354,7 @@ class GSAMSlideDetectNode(Node):
         if img.ndim == 3:
             img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         img = img.astype(np.uint8)
-        lines = cv2.HoughLines(img, 1, np.pi/180, threshold=120)
+        lines = cv2.HoughLines(img, 1, np.pi/180, threshold=30)
 
         if lines is None:
             return np.zeros_like(img).astype(bool)
@@ -469,93 +479,123 @@ class GSAMSlideDetectNode(Node):
         
         return filtered_slides
 
-    def detect_slides(self, img, text_prompt=None, slide_thrd=100):
+    def detect_slides(self, img, text_prompt=None):
         """
-        Main method to detect slides in an image
-
-        Args:
-            img_path: Path to the image file
-            text_prompt: Text prompt for object detection (uses self.text_prompt if None)
-            slide_thrd: Threshold for slide detection
+        Detect occupied wafer slots across all detected trays.
+        Warps each tray to a flat top-down view to correct perspective, then uses
+        adaptive thresholding (relative to each tray's background) to ignore shadows.
+        Tray 0 → slots 1..num_slots, tray 1 → slots num_slots+1..2*num_slots, etc.
 
         Returns:
-            List of detected slide slot numbers
+            List of occupied slot numbers (1-indexed, global across all trays)
         """
         if text_prompt is None:
             text_prompt = self.text_prompt
 
-        test_image = "yellow"
-        mask = self.gsam_mask(img, text=text_prompt)
-        cv2.imwrite(f"{test_image}_mask.png", mask)
+        num_slots = self.num_slots
+        depth_img = self.last_depth.astype(np.float32)
 
-        rectangles = self.mask_to_rect(mask)
+        # Raw colorized depth debug image — no warp, just the sensor reading
+        valid_px = depth_img[depth_img > 0]
+        if len(valid_px) > 0:
+            d_min, d_max = np.percentile(valid_px, 1), np.percentile(valid_px, 99)
+            norm = np.clip((depth_img - d_min) / (d_max - d_min) * 255, 0, 255).astype(np.uint8)
+            norm[depth_img == 0] = 0
+            raw_colored = cv2.applyColorMap(norm, cv2.COLORMAP_TURBO)
+            raw_colored[depth_img == 0] = 0
+            cv2.imwrite("debug_depth_raw.jpg", raw_colored)
 
+        masks, det_boxes = self.gsam_mask(img, text=text_prompt)
         overlay = img.copy()
-        cv2.drawContours(overlay, rectangles, -1, (0, 0, 255), thickness=5)
-        cv2.imwrite(f"{test_image}_contour.jpg", overlay)
+        all_detected = []
 
-        # --------
-        # scan slides
+        for tray_idx, (mask, det_box) in enumerate(zip(masks, det_boxes)):
+            cv2.imwrite(f"debug_mask_tray{tray_idx}.png", mask)
 
-        points = [rectangles[0][i][0] for i in range(4)]
-        points = self.sort_points(points)
-        spatial_points = [self.deproject_pixel_to_3d(pt) for pt in points]
+            # Use Grounding DINO box directly — avoids mask_to_rect getting background bleed
+            x1, y1, x2, y2 = det_box.astype(int)
+            p1 = np.array([x1, y1], dtype=np.float32)  # TL
+            p2 = np.array([x2, y1], dtype=np.float32)  # TR
+            p3 = np.array([x1, y2], dtype=np.float32)  # BL
+            p4 = np.array([x2, y2], dtype=np.float32)  # BR
+            points = [p1.tolist(), p2.tolist(), p3.tolist(), p4.tolist()]
 
-        kernels = self.yukai_kernel(points)
+            cv2.rectangle(overlay, (x1, y1), (x2, y2), (255, 0, 0), 3)
 
-        # 1. Smooth (reduces noise → better edges)
-        blur = cv2.GaussianBlur(img, (5, 5), 1.4)
+            spatial_points = [self.deproject_pixel_to_3d(pt) for pt in points]
+            tray_w = int(np.linalg.norm(p2 - p1))
+            tray_h = int(np.linalg.norm(p3 - p1))
+            src_pts = np.array([p1, p2, p4, p3], dtype=np.float32)
+            dst_pts = np.array([[0, 0], [tray_w, 0], [tray_w, tray_h], [0, tray_h]], dtype=np.float32)
+            M = cv2.getPerspectiveTransform(src_pts, dst_pts)
+            M_inv = cv2.invert(M)[1]
 
-        # 2. Canny edge detection TODO: tune thresholds
-        low_thresh  = 40
-        high_thresh = 120
-        edges = cv2.Canny(blur, low_thresh, high_thresh)
-        cv2.imwrite(f"{test_image}_edges.png", edges)
+            # Warp depth with nearest-neighbour to avoid interpolating depth values
+            warped_depth = cv2.warpPerspective(depth_img, M, (tray_w, tray_h),
+                                               flags=cv2.INTER_NEAREST)
 
-        # 3. Apply mask to edges - keep only edges inside the detected box
-        edges_masked = cv2.bitwise_and(edges, mask)
-        cv2.imwrite(f"{test_image}_edges_masked.png", edges_masked)
+            # Colorized depth debug image — normalize to valid pixel range for max contrast
+            valid_px = warped_depth[warped_depth > 0]
+            if len(valid_px) > 0:
+                d_min, d_max = valid_px.min(), valid_px.max()
+                if d_max > d_min:
+                    norm = np.clip((warped_depth - d_min) / (d_max - d_min) * 255, 0, 255).astype(np.uint8)
+                else:
+                    norm = np.zeros_like(warped_depth, dtype=np.uint8)
+                norm[warped_depth == 0] = 0  # keep invalid pixels black
+                colored = cv2.applyColorMap(norm, cv2.COLORMAP_TURBO)
+                colored[warped_depth == 0] = 0
+                cv2.imwrite(f"debug_depth_color_tray{tray_idx}.jpg", colored)
 
-        edges_bool = self.filter_non_parallel(edges_masked, points, angle_thrd=10)
+            sample_radius = max(6, tray_h // (num_slots * 3))
+            slot_depths = []
+            sample_centers = []
 
-        results = []
-        for i, kernel in enumerate(kernels):
-            if i in [0,1,23,24]: # skip edge slots
-                results.append(0)
+            for i in range(1, num_slots + 1):
+                t = i / (num_slots + 1)
+                cx, cy = tray_w // 2, int(t * tray_h)
+                sample_centers.append((cx, cy))
+                x1, x2 = max(0, cx - sample_radius), min(tray_w, cx + sample_radius)
+                y1, y2 = max(0, cy - sample_radius), min(tray_h, cy + sample_radius)
+                region = warped_depth[y1:y2, x1:x2]
+                valid = region[region > 0]
+                slot_depths.append(float(np.median(valid)) if len(valid) > 0 else 0.0)
+
+            valid_depths = [d for d in slot_depths if d > 0]
+            if not valid_depths:
+                self.get_logger().warn(f"Tray {tray_idx}: no valid depth readings, skipping")
                 continue
-            kernel_bool = kernel>1e-6
-            intersection_count = np.count_nonzero(kernel_bool & edges_bool)
-            results.append(intersection_count)
+            tray_floor = np.percentile(valid_depths, 75)
+            self.get_logger().info(
+                f"Tray {tray_idx}: floor depth {tray_floor:.1f} mm, diff threshold {self.depth_diff_threshold} mm"
+            )
 
-            # Create black and white overlap visualization
-            # Shows kernel OR edges (union)
-            overlap = kernel_bool | edges_masked
-            overlap_path = f"{test_image}_overlap_{i}.png"
-            cv2.imwrite(overlap_path, overlap.astype(np.uint8) * 255)
+            slot_offset = tray_idx * num_slots
 
-            conv = kernel_bool | edges_bool
-            conv_path = f"{test_image}_conv_{i}.png"
-            cv2.imwrite(conv_path, conv.astype(np.uint8) * 255)
+            for i, (depth_val, (cx_w, cy_w)) in enumerate(zip(slot_depths, sample_centers), 1):
+                global_slot = slot_offset + i
+                depth_diff = tray_floor - depth_val
+                occupied = depth_val > 0 and depth_diff > self.depth_diff_threshold
+                self.get_logger().info(
+                    f"Tray {tray_idx} slot {i} (global {global_slot}): "
+                    f"depth {depth_val:.1f} mm  diff {depth_diff:.1f} mm  {'OCCUPIED' if occupied else 'empty'}"
+                )
 
-            self.get_logger().info(f"Slot {i+1}: {intersection_count} edge pixels, saved overlap as {overlap_path}")
+                pt = cv2.perspectiveTransform(np.array([[[cx_w, cy_w]]], dtype=np.float32), M_inv)[0][0]
+                cx_o, cy_o = int(pt[0]), int(pt[1])
+                color = (0, 0, 255) if occupied else (0, 255, 0)
+                cv2.circle(overlay, (cx_o, cy_o), 8, color, 2)
+                cv2.putText(overlay, str(global_slot), (cx_o - 8, cy_o - 12),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.4, color, 1)
 
-        detected_slides = []
-        for i, val in enumerate(results):
-            is_peak=True
-            if i:
-                if results[i]<=results[i-1]:
-                    is_peak=False
-            if i+1<len(results):
-                if results[i]<=results[i+1]:
-                    is_peak=False
-            if is_peak and val>slide_thrd:
-                self.get_logger().info(f"Slide detected at slot {i+1}")
-                detected_slides.append(i+1)
-        detected_slides = self.slide_ind_post_process(detected_slides)
-        for ind in detected_slides:
-            self.publish_slide_frames(spatial_points, ind+1)
+                if occupied:
+                    all_detected.append(global_slot)
+                    self.publish_slide_frames(spatial_points, global_slot)
 
-        return detected_slides
+        cv2.imwrite("debug_slots.jpg", overlay)
+        self.edge_pub.publish(self.cv2_to_ros_image(overlay))
+
+        return all_detected
 
 
 def main(args=None):

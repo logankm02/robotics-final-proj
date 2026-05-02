@@ -57,6 +57,7 @@ def generate_launch_description():
         ),
         launch_arguments={
             'rgb_camera.color_profile': '1920x1080x30',
+            'align_depth.enable': 'true',
         }.items(),
     )
     
@@ -84,7 +85,7 @@ def generate_launch_description():
             'text_prompt': 'colored box.',
             'grounding_model': 'IDEA-Research/grounding-dino-tiny',
             # Update these paths to match your setup:
-            'sam2_checkpoint': '/home/bryan/final_project_ws/src/perception/realsense_cv/models/sam2.1_hiera_small.pt',
+            'sam2_checkpoint': '/home/nano/final_project_ws/src/perception/realsense_cv/models/sam2.1_hiera_small.pt',
             'sam2_model_config': 'configs/sam2.1/sam2.1_hiera_s.yaml',
         }]
     )
