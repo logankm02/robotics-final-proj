@@ -82,7 +82,7 @@ def generate_launch_description():
         name='gsam_slide_detect',
         output='screen',
         parameters=[{
-            'text_prompt': 'colored box.',
+            'text_prompt': 'plastic tray.',
             'grounding_model': 'IDEA-Research/grounding-dino-tiny',
             # Update these paths to match your setup:
             'sam2_checkpoint': '/home/nano/final_project_ws/src/perception/realsense_cv/models/sam2.1_hiera_small.pt',
