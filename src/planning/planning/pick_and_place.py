@@ -8,7 +8,21 @@ from rclpy.callback_groups import ReentrantCallbackGroup
 from geometry_msgs.msg import PoseStamped
 from sensor_msgs.msg import JointState
 from control_msgs.action import FollowJointTrajectory
-from planning_interfaces.srv import PickPlaceService, MoveToTarget, ContinuousPickPlace
+from moveit_msgs.action import MoveGroup
+from moveit_msgs.msg import (
+    Constraints,
+    OrientationConstraint,
+    PositionConstraint,
+    MotionPlanRequest,
+    PlanningOptions,
+)
+from shape_msgs.msg import SolidPrimitive
+from planning_interfaces.srv import (
+    PickPlaceService,
+    MoveToTarget,
+    ContinuousPickPlace,
+    WaferPickPlace,
+)
 from std_srvs.srv import SetBool, Trigger
 import tf2_ros
 from tf2_ros import TransformException
@@ -21,6 +35,15 @@ from scipy.spatial.transform import Rotation as R
 import asyncio
 import time
 import re
+
+# Gripper geometry (in meters). Total tool length below the flange,
+# and the length of the soft pads at the end of the fingers.
+# When the pad CENTER must coincide with the wafer center, the flange
+# sits FLANGE_TO_GRIP_CENTER above the wafer pose Z.
+GRIPPER_LENGTH = 0.14002          # 140.02 mm — flange to gripper tip
+GRIPPER_PAD_LENGTH = 0.066        # 66 mm — length of grip pads
+FLANGE_TO_GRIP_CENTER = GRIPPER_LENGTH - GRIPPER_PAD_LENGTH / 2.0  # ~0.107 m
+
 
 class PickAndPlace(Node):
     def __init__(self):
@@ -35,6 +58,8 @@ class PickAndPlace(Node):
         self.declare_parameter('xy_velocity_scale', 0.4) # Moderate
         self.declare_parameter('z_acceleration_scale', 0.2)
         self.declare_parameter('xy_acceleration_scale', 0.4)
+        self.declare_parameter('gsam_service_wait_timeout', 120.0)
+        self.declare_parameter('gsam_service_poll_period', 1.0)
         self.planning_group = self.get_parameter('planning_group').value
         self.end_effector_link = self.get_parameter('end_effector_link').value
         self.base_frame = self.get_parameter('base_frame').value
@@ -43,6 +68,13 @@ class PickAndPlace(Node):
         self.xy_vel_scale = self.get_parameter('xy_velocity_scale').value
         self.z_accel_scale = self.get_parameter('z_acceleration_scale').value
         self.xy_accel_scale = self.get_parameter('xy_acceleration_scale').value
+        self.gsam_service_wait_timeout = float(
+            self.get_parameter('gsam_service_wait_timeout').value
+        )
+        self.gsam_service_poll_period = max(
+            0.1,
+            float(self.get_parameter('gsam_service_poll_period').value)
+        )
 
         # Alignment method selection
         self.declare_parameter('alignment_method', 'perpendicular')
@@ -84,15 +116,27 @@ class PickAndPlace(Node):
             1
         )
 
-        # Action client for trajectory execution
-        self.exec_client = ActionClient(
+        # Use MoveIt's action interface for plan+execute. Direct execution
+        # of trajectories generated via /plan_kinematic_path was returning
+        # CONTROL_FAILED on this TM driver even for trivial, reachable moves,
+        # while MoveGroup execution succeeds on the same targets.
+        self.move_group_client = ActionClient(
+            self,
+            MoveGroup,
+            '/move_action',
+            callback_group=self.callback_group
+        )
+        self.move_group_client.wait_for_server()
+        self.get_logger().info('Connected to MoveGroup executor')
+
+        self.joint_traj_client = ActionClient(
             self,
             FollowJointTrajectory,
             '/tmr_arm_controller/follow_joint_trajectory',
             callback_group=self.callback_group
         )
-        self.exec_client.wait_for_server()
-        self.get_logger().info('Connected to trajectory controller')
+        self.joint_traj_client.wait_for_server()
+        self.get_logger().info('Connected to joint trajectory controller')
 
         # Gripper service client
         self.gripper_client = self.create_client(
@@ -112,12 +156,14 @@ class PickAndPlace(Node):
                 '/detect_slides',
                 callback_group=self.callback_group
             )
-            self.get_logger().info('Waiting for GSAM slide detection service...')
-            if not self.gsam_client.wait_for_service(timeout_sec=10.0):
-                self.get_logger().error('GSAM service not available!')
-                raise RuntimeError('GSAM service /detect_slides not available')
-            else:
+            self.get_logger().info('GSAM slide detection client initialized')
+            if self.gsam_client.wait_for_service(timeout_sec=0.5):
                 self.get_logger().info('Connected to GSAM slide detector')
+            else:
+                self.get_logger().warn(
+                    'GSAM service not ready yet. '
+                    'The node will wait for it when detection is requested.'
+                )
 
         # Service for pick and place
         self.pick_place_srv = self.create_service(
@@ -143,6 +189,14 @@ class PickAndPlace(Node):
             callback_group=self.callback_group
         )
 
+        # Service for container-to-container wafer pick and place
+        self.wafer_pick_place_srv = self.create_service(
+            WaferPickPlace,
+            'wafer_pick_place',
+            self.wafer_pick_place_callback,
+            callback_group=self.callback_group
+        )
+
         self.processing = False
 
         self.get_logger().info('Ready! Pick-and-Place node initialized')
@@ -155,6 +209,9 @@ class PickAndPlace(Node):
             List of slot numbers (e.g., [3, 7, 12, 18]), or empty list if failed
         """
         try:
+            if not self.wait_for_gsam_service():
+                return []
+
             request = Trigger.Request()
             
             self.get_logger().info('Calling GSAM slide detection service...')
@@ -190,13 +247,47 @@ class PickAndPlace(Node):
             traceback.print_exc()
             return []
 
+    def wait_for_gsam_service(self):
+        """Wait for the GSAM service to become ready."""
+        if self.detection_mode != 'gsam':
+            return True
+
+        if self.gsam_client.service_is_ready():
+            return True
+
+        timeout = self.gsam_service_wait_timeout
+        start_time = time.time()
+        self.get_logger().info('Waiting for GSAM slide detection service...')
+
+        while rclpy.ok():
+            if self.gsam_client.wait_for_service(timeout_sec=self.gsam_service_poll_period):
+                waited = time.time() - start_time
+                self.get_logger().info(
+                    f'Connected to GSAM slide detector after {waited:.1f}s'
+                )
+                return True
+
+            waited = time.time() - start_time
+            if timeout > 0.0 and waited >= timeout:
+                self.get_logger().error(
+                    'GSAM service /detect_slides not available after '
+                    f'{timeout:.1f}s'
+                )
+                return False
+
+            self.get_logger().warn(
+                f'GSAM service still loading after {waited:.1f}s; waiting...'
+            )
+
+        return False
+
     def normalize_quaternion(self, quat):
         """
         Normalize a quaternion to ensure it has unit length.
 
         Args:
             quat: Array-like [x, y, z, w] or geometry_msgs Quaternion
-f
+
         Returns:
             Normalized quaternion as numpy array [x, y, z, w]
         """
@@ -316,7 +407,7 @@ f
                 response.success = False
                 response.message = "IK failed for pick approach"
                 return response
-            job_queue.append(ik_result)
+            job_queue.append((pick_approach, self.xy_vel_scale, self.xy_accel_scale))
 
             # 2. Compute IK for pick position
             self.get_logger().info('Step 2/8: Computing IK for pick...')
@@ -334,7 +425,7 @@ f
                 response.success = False
                 response.message = "IK failed for pick"
                 return response
-            job_queue.append(ik_result)
+            job_queue.append((pick_pose, self.z_vel_scale, self.z_accel_scale))
 
             # 3. Close gripper
             job_queue.append('close_gripper')
@@ -355,7 +446,7 @@ f
                 response.success = False
                 response.message = "IK failed for pick retreat"
                 return response
-            job_queue.append(ik_result)
+            job_queue.append((pick_approach, self.z_vel_scale, self.z_accel_scale))
 
             # 5. Place approach
             self.get_logger().info('Step 5/8: Computing IK for place approach...')
@@ -374,7 +465,7 @@ f
                 response.success = False
                 response.message = "IK failed for place approach"
                 return response
-            job_queue.append(ik_result)
+            job_queue.append((place_approach, self.xy_vel_scale, self.xy_accel_scale))
 
             # 6. Place position
             self.get_logger().info('Step 6/8: Computing IK for place...')
@@ -392,7 +483,7 @@ f
                 response.success = False
                 response.message = "IK failed for place"
                 return response
-            job_queue.append(ik_result)
+            job_queue.append((place_pose, self.z_vel_scale, self.z_accel_scale))
 
             # 7. Open gripper
             job_queue.append('open_gripper')
@@ -413,7 +504,7 @@ f
                 response.success = False
                 response.message = "IK failed for place retreat"
                 return response
-            job_queue.append(ik_result)
+            job_queue.append((place_approach, self.z_vel_scale, self.z_accel_scale))
 
             # Execute all jobs
             success = await self.execute_job_queue(job_queue)
@@ -598,7 +689,7 @@ f
                 if ik_align is None:
                     self.get_logger().error('IK failed for align pose - skipping this slide')
                     continue
-                job_queue.append((ik_align, self.xy_vel_scale, self.xy_accel_scale))
+                job_queue.append((align_pose, self.xy_vel_scale, self.xy_accel_scale))
                 current_state = ik_align
                 
                 # Job 2: Lower for grasp
@@ -618,7 +709,7 @@ f
                 if ik_lower is None:
                     self.get_logger().error('IK failed for lower pose - skipping this slide')
                     continue
-                job_queue.append((ik_lower, self.z_vel_scale, self.z_accel_scale))
+                job_queue.append((lower_pose, self.z_vel_scale, self.z_accel_scale))
                 current_state = ik_lower
                 
                 # Job 3: Close gripper
@@ -642,7 +733,7 @@ f
                 if ik_lift is None:
                     self.get_logger().error('IK failed for lift pose - skipping this slide')
                     continue
-                job_queue.append((ik_lift, self.xy_vel_scale, self.xy_accel_scale))
+                job_queue.append((lift_pose, self.xy_vel_scale, self.xy_accel_scale))
                 current_state = ik_lift
                 
                 # Job 5: Move to place scan pose
@@ -660,7 +751,7 @@ f
                 if ik_place_scan is None:
                     self.get_logger().error('IK failed for place scan pose - skipping this slide')
                     continue
-                job_queue.append((ik_place_scan, self.xy_vel_scale, self.xy_accel_scale))
+                job_queue.append((place_scan, self.xy_vel_scale, self.xy_accel_scale))
                 current_state = ik_place_scan
                 
                 # Job 6: Align with target (for now, same as place_scan)
@@ -684,7 +775,7 @@ f
                 if ik_place_lower is None:
                     self.get_logger().error('IK failed for place lower - skipping this slide')
                     continue
-                job_queue.append((ik_place_lower, self.z_vel_scale, self.z_accel_scale))
+                job_queue.append((place_lower_pose, self.z_vel_scale, self.z_accel_scale))
                 current_state = ik_place_lower
                 
                 # Job 8: Open gripper
@@ -708,7 +799,7 @@ f
                 if ik_final_lift is None:
                     self.get_logger().error('IK failed for final lift - skipping this slide')
                     continue
-                job_queue.append((ik_final_lift, self.xy_vel_scale, self.xy_accel_scale))
+                job_queue.append((final_lift_pose, self.xy_vel_scale, self.xy_accel_scale))
                 
                 # ========================================
                 # EXECUTE QUEUE
@@ -745,8 +836,296 @@ f
         
         finally:
             self.processing = False
-        
+
         return response
+
+    async def wafer_pick_place_callback(self, request, response):
+        """
+        Container-to-container wafer pick-and-place.
+
+        Steps:
+          1. Move to scan_pose (also serves as starting/home position).
+          2. Trigger GSAM detection — both trays are seen in the same frame,
+             which makes every slot's TF available afterwards.
+          3. For each occupied slot S in the SOURCE tray, compute the
+             matching slot in the DESTINATION tray and move:
+                 src_approach -> src_grasp -> close
+                 -> src_retreat -> dst_approach -> dst_place -> open
+                 -> dst_retreat
+          4. Return to scan_pose.
+
+        Z values are computed ABSOLUTELY using the wafer's TF Z and the
+        gripper geometry (FLANGE_TO_GRIP_CENTER), so we don't need a tuned
+        `pick_distance` parameter.
+        """
+        if self.processing:
+            response.success = False
+            response.message = "Already processing"
+            response.wafers_picked = 0
+            return response
+
+        if self.current_joint_state is None:
+            response.success = False
+            response.message = "No joint state available"
+            response.wafers_picked = 0
+            return response
+
+        if self.detection_mode != 'gsam':
+            response.success = False
+            response.message = (
+                "wafer_pick_place requires detection_mode='gsam' "
+                f"(currently '{self.detection_mode}'). Restart with that param."
+            )
+            response.wafers_picked = 0
+            return response
+
+        self.processing = True
+        wafers_picked = 0
+
+        scan_pose = request.scan_pose
+        src_tray = int(request.source_tray_index)
+        dst_tray = int(request.dest_tray_index)
+        num_slots = int(request.num_slots) if request.num_slots > 0 else 25
+        approach_clearance = float(request.approach_clearance) if request.approach_clearance > 0 else 0.05
+        lift_clearance = float(request.lift_clearance) if request.lift_clearance > 0 else 0.10
+
+        if src_tray == dst_tray:
+            response.success = False
+            response.message = "source_tray_index must differ from dest_tray_index"
+            response.wafers_picked = 0
+            self.processing = False
+            return response
+
+        # Normalize scan-pose quaternion
+        q = self.normalize_quaternion(scan_pose.pose.orientation)
+        scan_pose.pose.orientation.x = q[0]
+        scan_pose.pose.orientation.y = q[1]
+        scan_pose.pose.orientation.z = q[2]
+        scan_pose.pose.orientation.w = q[3]
+
+        self.get_logger().info('='*60)
+        self.get_logger().info('WAFER CONTAINER-TO-CONTAINER PICK-AND-PLACE')
+        self.get_logger().info('='*60)
+        self.get_logger().info(f'Source tray: {src_tray}   Destination tray: {dst_tray}')
+        self.get_logger().info(f'Slots per tray: {num_slots}')
+        self.get_logger().info(f'Approach clearance: {approach_clearance:.3f} m')
+        self.get_logger().info(f'Lift clearance:     {lift_clearance:.3f} m')
+        self.get_logger().info(f'Gripper length: {GRIPPER_LENGTH*1000:.2f} mm, '
+                               f'flange→grip center: {FLANGE_TO_GRIP_CENTER*1000:.1f} mm')
+        self.get_logger().info('='*60)
+
+        try:
+            # 1. Move to scan/home pose
+            self.get_logger().info('STEP 1: Move to scan/home pose')
+            if not await self.move_to_target(scan_pose,
+                                             velocity_scale=self.xy_vel_scale,
+                                             acceleration_scale=self.xy_accel_scale):
+                response.success = False
+                response.message = "Failed to reach scan pose"
+                response.wafers_picked = 0
+                return response
+
+            time.sleep(0.5)  # let camera settle
+
+            # 2. GSAM detection — populates slide_XX TFs for every slot in every tray
+            self.get_logger().info('STEP 2: Trigger GSAM detection')
+            detected_slots = await self.detect_slides_gsam()
+            if not detected_slots:
+                self.get_logger().info('No wafers detected — operation complete')
+                response.success = True
+                response.message = "No wafers detected"
+                response.wafers_picked = 0
+                self.processing = False
+                return response
+
+            # Filter to source-tray slots only.
+            src_slots = sorted([s for s in detected_slots
+                                if (s - 1) // num_slots == src_tray])
+            if not src_slots:
+                self.get_logger().info(
+                    f'GSAM saw {detected_slots} but none are in source tray {src_tray}'
+                )
+                response.success = True
+                response.message = "No wafers in source tray"
+                response.wafers_picked = 0
+                self.processing = False
+                return response
+
+            self.get_logger().info(
+                f'STEP 3: {len(src_slots)} wafer(s) in source tray: {src_slots}'
+            )
+
+            time.sleep(0.3)  # let TF frames propagate
+
+            # 3. Pick each wafer and place it in the matching slot of dst tray.
+            for src_slot in src_slots:
+                local_slot = ((src_slot - 1) % num_slots) + 1
+                dst_slot = dst_tray * num_slots + local_slot
+
+                self.get_logger().info('')
+                self.get_logger().info('-' * 60)
+                self.get_logger().info(
+                    f'WAFER {wafers_picked+1}/{len(src_slots)}: '
+                    f'src slide_{src_slot:02d} -> dst slide_{dst_slot:02d}'
+                )
+                self.get_logger().info('-' * 60)
+
+                src_pose = self.slide_detector.get_slide_pose(src_slot, timeout=2.0)
+                if src_pose is None:
+                    self.get_logger().error(
+                        f'Could not lookup source TF slide_{src_slot:02d}, skipping'
+                    )
+                    continue
+
+                dst_pose = self.slide_detector.get_slide_pose(dst_slot, timeout=2.0)
+                if dst_pose is None:
+                    self.get_logger().error(
+                        f'Could not lookup destination TF slide_{dst_slot:02d}, skipping'
+                    )
+                    continue
+
+                # Build job queue for this wafer
+                job_queue = self._build_wafer_job_queue(
+                    src_pose, dst_pose, approach_clearance, lift_clearance
+                )
+                if job_queue is None:
+                    self.get_logger().error('IK failed building queue, skipping wafer')
+                    continue
+
+                self.get_logger().info(f'Executing {len(job_queue)} jobs')
+                if await self.execute_job_queue(job_queue):
+                    wafers_picked += 1
+                    self.get_logger().info(f'Wafer {wafers_picked} placed!')
+                else:
+                    self.get_logger().error('Execution failed for this wafer')
+
+                time.sleep(0.5)
+
+            # 4. Return to scan/home pose
+            self.get_logger().info('STEP 4: Return to scan/home pose')
+            await self.move_to_target(scan_pose,
+                                      velocity_scale=self.xy_vel_scale,
+                                      acceleration_scale=self.xy_accel_scale)
+
+            self.get_logger().info('='*60)
+            self.get_logger().info(f'DONE. Picked & placed {wafers_picked} wafer(s).')
+            self.get_logger().info('='*60)
+            response.success = True
+            response.message = f"Picked {wafers_picked} wafer(s)"
+            response.wafers_picked = wafers_picked
+
+        except Exception as e:
+            self.get_logger().error(f'Exception: {e}')
+            import traceback
+            traceback.print_exc()
+            response.success = False
+            response.message = f"Exception after {wafers_picked} wafer(s): {e}"
+            response.wafers_picked = wafers_picked
+
+        finally:
+            self.processing = False
+
+        return response
+
+    def _build_wafer_job_queue(self, src_pose, dst_pose,
+                               approach_clearance, lift_clearance):
+        """
+        Build the IK job queue for one src->dst wafer transfer.
+        Returns a list of (joint_state, vel, accel) tuples and gripper commands,
+        or None if any IK step fails.
+        """
+        queue = []
+        current = self.current_joint_state
+
+        # Use 'direct' alignment for both source and destination — keeps the
+        # gripper jaws aligned with the slot's long axis. (This was the
+        # recommended method for GSAM in the original pipeline.)
+        # Pass current_z=0.0 so compute_alignment_pose doesn't bother
+        # looking up the live link_6 TF; we overwrite Z anyway.
+        align_method = 'direct'
+
+        src_align = self.compute_alignment_pose(src_pose, current_z=0.0, method=align_method)
+        dst_align = self.compute_alignment_pose(dst_pose, current_z=0.0, method=align_method)
+
+        # ---- SOURCE SIDE ----
+        # Approach above source slot
+        src_approach = self._wafer_pose_at(src_align, src_pose,
+                                           offset_z=FLANGE_TO_GRIP_CENTER + approach_clearance)
+        ik = self._ik(current, src_approach)
+        if ik is None: return None
+        queue.append((src_approach, self.xy_vel_scale, self.xy_accel_scale))
+        current = ik
+
+        # Lower to grasp height
+        src_grasp = self._wafer_pose_at(src_align, src_pose,
+                                        offset_z=FLANGE_TO_GRIP_CENTER)
+        ik = self._ik(current, src_grasp)
+        if ik is None: return None
+        queue.append((src_grasp, self.z_vel_scale, self.z_accel_scale))
+        current = ik
+
+        queue.append('close_gripper')
+
+        # Lift up after grasp (transport height)
+        src_lift = self._wafer_pose_at(src_align, src_pose,
+                                       offset_z=FLANGE_TO_GRIP_CENTER + lift_clearance)
+        ik = self._ik(current, src_lift)
+        if ik is None: return None
+        queue.append((src_lift, self.z_vel_scale, self.z_accel_scale))
+        current = ik
+
+        # ---- TRANSPORT to destination approach ----
+        dst_approach = self._wafer_pose_at(dst_align, dst_pose,
+                                           offset_z=FLANGE_TO_GRIP_CENTER + approach_clearance)
+        ik = self._ik(current, dst_approach)
+        if ik is None: return None
+        queue.append((dst_approach, self.xy_vel_scale, self.xy_accel_scale))
+        current = ik
+
+        # Lower to place height
+        dst_place = self._wafer_pose_at(dst_align, dst_pose,
+                                        offset_z=FLANGE_TO_GRIP_CENTER)
+        ik = self._ik(current, dst_place)
+        if ik is None: return None
+        queue.append((dst_place, self.z_vel_scale, self.z_accel_scale))
+        current = ik
+
+        queue.append('open_gripper')
+
+        # Lift up after place
+        dst_lift = self._wafer_pose_at(dst_align, dst_pose,
+                                       offset_z=FLANGE_TO_GRIP_CENTER + lift_clearance)
+        ik = self._ik(current, dst_lift)
+        if ik is None: return None
+        queue.append((dst_lift, self.z_vel_scale, self.z_accel_scale))
+
+        return queue
+
+    def _wafer_pose_at(self, align_pose, slide_pose, offset_z):
+        """
+        Build a target flange PoseStamped at (slide.x, slide.y, slide.z + offset_z)
+        with the orientation from `align_pose` (already aligned with the slot).
+        """
+        out = PoseStamped()
+        out.header = align_pose.header
+        out.pose.position.x = slide_pose.pose.position.x
+        out.pose.position.y = slide_pose.pose.position.y
+        out.pose.position.z = slide_pose.pose.position.z + offset_z
+        out.pose.orientation = align_pose.pose.orientation
+        return out
+
+    def _ik(self, seed_state, pose_stamped):
+        """Thin wrapper around ik_planner.compute_ik using a PoseStamped."""
+        return self.ik_planner.compute_ik(
+            seed_state,
+            pose_stamped.pose.position.x,
+            pose_stamped.pose.position.y,
+            pose_stamped.pose.position.z,
+            pose_stamped.pose.orientation.x,
+            pose_stamped.pose.orientation.y,
+            pose_stamped.pose.orientation.z,
+            pose_stamped.pose.orientation.w,
+        )
 
     def compute_alignment_pose(self, slide_pose, current_z=None, method=None):
         """
@@ -926,32 +1305,51 @@ f
         for i, job in enumerate(job_queue):
             self.get_logger().info(f'Executing job {i+1}/{len(job_queue)}...')
 
-            # Handle tuple (JointState, velocity, acceleration)
+            # Handle tuple (PoseStamped, velocity, acceleration)
             if isinstance(job, tuple) and len(job) == 3:
-                joint_state, vel_scale, accel_scale = job
+                target, vel_scale, accel_scale = job
 
-                trajectory = self.ik_planner.plan_to_joints(
-                    joint_state,
-                    velocity_scale=vel_scale,
-                    acceleration_scale=accel_scale
-                )
-                if trajectory is None:
-                    self.get_logger().error('Planning failed')
+                if isinstance(target, PoseStamped):
+                    if not await self.move_to_target(
+                        target,
+                        velocity_scale=vel_scale,
+                        acceleration_scale=accel_scale
+                    ):
+                        return False
+
+                elif isinstance(target, JointState):
+                    trajectory = self.ik_planner.plan_to_joints(
+                        target,
+                        start_joint_state=self.current_joint_state,
+                        velocity_scale=vel_scale,
+                        acceleration_scale=accel_scale
+                    )
+                    if trajectory is None:
+                        self.get_logger().error('Planning failed for queued joint target')
+                        return False
+
+                    if not await self.execute_joint_trajectory(trajectory):
+                        return False
+
+                    self.print_joint_state(self.current_joint_state, target)
+
+                else:
+                    self.get_logger().error(f'Unsupported queued target type: {type(target)}')
                     return False
-
-                if not await self.execute_trajectory(trajectory.joint_trajectory):
-                    return False
-
-                self.print_joint_state(self.current_joint_state, joint_state)
 
             # Handle old-style JointState (backwards compatibility)
             elif isinstance(job, JointState):
-                trajectory = self.ik_planner.plan_to_joints(job)
+                trajectory = self.ik_planner.plan_to_joints(
+                    job,
+                    start_joint_state=self.current_joint_state,
+                    velocity_scale=self.xy_vel_scale,
+                    acceleration_scale=self.xy_accel_scale
+                )
                 if trajectory is None:
-                    self.get_logger().error('Planning failed')
+                    self.get_logger().error('Planning failed for queued joint target')
                     return False
 
-                if not await self.execute_trajectory(trajectory.joint_trajectory):
+                if not await self.execute_joint_trajectory(trajectory):
                     return False
 
                 self.print_joint_state(self.current_joint_state, job)
@@ -972,18 +1370,87 @@ f
                 
         return True
 
-    async def execute_trajectory(self, joint_trajectory):
-        """Execute a joint trajectory"""
-        goal = FollowJointTrajectory.Goal()
-        goal.trajectory = joint_trajectory
+    async def execute_pose_goal(self, target_pose,
+                                velocity_scale=0.2,
+                                acceleration_scale=0.2):
+        """Plan and execute a pose goal through MoveGroup."""
+        goal = MoveGroup.Goal()
+        goal.request = MotionPlanRequest()
+        goal.request.workspace_parameters.header.frame_id = self.base_frame
+        goal.request.workspace_parameters.header.stamp = self.get_clock().now().to_msg()
+        goal.request.group_name = self.planning_group
+        goal.request.num_planning_attempts = 10
+        goal.request.allowed_planning_time = 5.0
+        goal.request.max_velocity_scaling_factor = velocity_scale
+        goal.request.max_acceleration_scaling_factor = acceleration_scale
 
-        goal_handle = await self.exec_client.send_goal_async(goal)
+        goal_constraints = Constraints()
+        pos_constraint = PositionConstraint()
+        pos_constraint.header.frame_id = target_pose.header.frame_id
+        pos_constraint.link_name = self.end_effector_link
+        pos_constraint.constraint_region.primitives.append(SolidPrimitive())
+        pos_constraint.constraint_region.primitives[0].type = SolidPrimitive.SPHERE
+        pos_constraint.constraint_region.primitives[0].dimensions = [0.01]
+        pos_constraint.constraint_region.primitive_poses.append(target_pose.pose)
+        pos_constraint.weight = 1.0
+
+        ori_constraint = OrientationConstraint()
+        ori_constraint.header.frame_id = target_pose.header.frame_id
+        ori_constraint.link_name = self.end_effector_link
+        ori_constraint.orientation = target_pose.pose.orientation
+        ori_constraint.absolute_x_axis_tolerance = 0.1
+        ori_constraint.absolute_y_axis_tolerance = 0.1
+        ori_constraint.absolute_z_axis_tolerance = 0.1
+        ori_constraint.weight = 1.0
+
+        goal_constraints.position_constraints.append(pos_constraint)
+        goal_constraints.orientation_constraints.append(ori_constraint)
+        goal.request.goal_constraints.append(goal_constraints)
+
+        goal.planning_options = PlanningOptions()
+        goal.planning_options.plan_only = False
+        goal.planning_options.planning_scene_diff.is_diff = True
+        goal.planning_options.planning_scene_diff.robot_state.is_diff = True
+
+        goal_handle = await self.move_group_client.send_goal_async(goal)
         if not goal_handle.accepted:
             self.get_logger().error('Goal rejected')
             return False
 
         result = await goal_handle.get_result_async()
-        return result.result.error_code == 0
+        if result.result.error_code.val != 1:
+            self.get_logger().error(
+                f'MoveGroup execution failed with code {result.result.error_code.val}'
+            )
+            return False
+
+        return True
+
+    async def execute_joint_trajectory(self, trajectory):
+        """Execute a planned joint trajectory on the TM arm controller."""
+        joint_traj = trajectory.joint_trajectory
+        if not joint_traj.points:
+            self.get_logger().error('Planned joint trajectory is empty')
+            return False
+
+        goal = FollowJointTrajectory.Goal()
+        goal.trajectory = joint_traj
+        goal.trajectory.header.stamp = self.get_clock().now().to_msg()
+
+        goal_handle = await self.joint_traj_client.send_goal_async(goal)
+        if not goal_handle.accepted:
+            self.get_logger().error('Joint trajectory goal rejected')
+            return False
+
+        result = await goal_handle.get_result_async()
+        if result.result.error_code != FollowJointTrajectory.Result.SUCCESSFUL:
+            self.get_logger().error(
+                'Joint trajectory execution failed with code '
+                f'{result.result.error_code}: {result.result.error_string}'
+            )
+            return False
+
+        return True
 
     async def control_gripper(self, close: bool):
         """Control gripper: True to close, False to open"""
@@ -1047,16 +1514,18 @@ f
                 self.get_logger().error('IK failed for target position')
                 return False
 
-            # Plan to joint configuration
-            self.get_logger().info('Planning trajectory...')
-            trajectory = self.ik_planner.plan_to_joints(ik_result, velocity_scale=velocity_scale, acceleration_scale=acceleration_scale)
+            trajectory = self.ik_planner.plan_to_joints(
+                ik_result,
+                start_joint_state=self.current_joint_state,
+                velocity_scale=velocity_scale,
+                acceleration_scale=acceleration_scale
+            )
             if trajectory is None:
-                self.get_logger().error('Planning failed')
+                self.get_logger().error('Joint-space planning failed for target position')
                 return False
 
-            # Execute trajectory
-            self.get_logger().info('Executing trajectory...')
-            success = await self.execute_trajectory(trajectory.joint_trajectory)
+            self.get_logger().info('Executing planned joint trajectory...')
+            success = await self.execute_joint_trajectory(trajectory)
 
             if success:
                 self.get_logger().info('='*60)

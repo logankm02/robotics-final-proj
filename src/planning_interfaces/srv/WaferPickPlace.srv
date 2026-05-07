@@ -1,0 +1,26 @@
+# Wafer Pick-and-Place Service
+# Detects wafers in source container (tray) and moves each one
+# to the matching slot in the destination container.
+
+# Scan pose: flange pose where the camera can see BOTH trays.
+# This is also treated as the "starting position" — the arm
+# returns here at the end of the operation.
+geometry_msgs/PoseStamped scan_pose
+
+# Tray indices in the GSAM detection (tray 0 = first detected, tray 1 = second).
+# Source = tray we PICK FROM, Destination = tray we PLACE INTO.
+int32 source_tray_index
+int32 dest_tray_index
+
+# Number of slots per tray (must match gsam_slide_detect.num_slots).
+int32 num_slots
+
+# Cartesian clearances (meters)
+float32 approach_clearance   # hover height above wafer Z before lowering to grasp
+float32 lift_clearance       # height above wafer Z after grasp, used while transporting
+
+---
+
+bool success
+string message
+int32 wafers_picked

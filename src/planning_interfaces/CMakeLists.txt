@@ -15,6 +15,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/PickPlaceService.srv"
   "srv/MoveToTarget.srv"
   "srv/ContinuousPickPlace.srv"
+  "srv/WaferPickPlace.srv"
   DEPENDENCIES geometry_msgs
 )
 

@@ -1,0 +1,6 @@
+waiting for service to become available...
+requester: making request: std_srvs.srv.Trigger_Request()
+
+response:
+std_srvs.srv.Trigger_Response(success=False, message='Error during slide detection: Object of type int64 is not JSON serializable')
+

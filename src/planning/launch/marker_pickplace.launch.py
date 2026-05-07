@@ -31,7 +31,7 @@ def generate_launch_description():
     # Gripper serial port
     gripper_port_arg = DeclareLaunchArgument(
         'gripper_port',
-        default_value='/dev/ttyUSB0',
+        default_value='/dev/ttyCH341USB0',
         description='Serial port for Arduino gripper controller'
     )
     gripper_port = LaunchConfiguration('gripper_port')

@@ -25,18 +25,9 @@ from rclpy.node import Node
 
 from sensor_msgs.msg import Image, CameraInfo
 from std_srvs.srv import Trigger
-from tf2_ros import TransformBroadcaster, StaticTransformBroadcaster
+from tf2_ros import TransformBroadcaster
 
 import math
-
-# RGB wafer detection constants (ported from pick_place.py, F1=1.0 on test image)
-_INTERIOR_X      = (0.12, 0.88)   # exclude tray teeth on left/right
-_BAND_RADIUS     = 12             # vertical half-height of each slot sample band
-_X_HUE           = 0.45          # x fraction for hue sample (center of tray interior)
-_DARK_ABS_THRESH = 42             # Rule 1: min brightness → group wafer
-_SINGLE_THRESH   = 90             # Rule 2: brightness ceiling for single wafer
-_HUE_LOW_CV2     = 70             # Rule 2: hue window low  (cv2 scale 0-180)
-_HUE_HIGH_CV2    = 100            # Rule 2: hue window high
 
 
 def rotation_matrix_to_quaternion(R):
@@ -89,6 +80,10 @@ class GSAMSlideDetectNode(Node):
         self.declare_parameter('num_slots', 25)
         self.declare_parameter('depth_topic', '/camera/camera/aligned_depth_to_color/image_raw')
         self.declare_parameter('depth_diff_threshold', 10)  # mm shallower than tray floor = wafer
+        self.declare_parameter('min_tray_area_fraction', 0.02)
+        self.declare_parameter('max_tray_area_fraction', 0.20)
+        self.declare_parameter('min_tray_short_side_px', 140)
+        self.declare_parameter('max_trays', 2)
 
         # Get parameters
         self.grounding_model = self.get_parameter('grounding_model').value
@@ -99,6 +94,16 @@ class GSAMSlideDetectNode(Node):
         force_cpu = self.get_parameter('force_cpu').value
         self.num_slots = self.get_parameter('num_slots').value
         self.depth_diff_threshold = self.get_parameter('depth_diff_threshold').value
+        self.min_tray_area_fraction = float(
+            self.get_parameter('min_tray_area_fraction').value
+        )
+        self.max_tray_area_fraction = float(
+            self.get_parameter('max_tray_area_fraction').value
+        )
+        self.min_tray_short_side_px = int(
+            self.get_parameter('min_tray_short_side_px').value
+        )
+        self.max_trays = max(1, int(self.get_parameter('max_trays').value))
         input_topic = self.get_parameter('input_image_topic').value
         depth_topic = self.get_parameter('depth_topic').value
         output_topic = self.get_parameter('output_image_topic').value
@@ -106,7 +111,7 @@ class GSAMSlideDetectNode(Node):
         info_topic = self.get_parameter('camera_info_topic').value
 
 
-        self.br = StaticTransformBroadcaster(self)
+        self.br = TransformBroadcaster(self)
 
         self.last_image = None
         self.last_msg = None
@@ -129,8 +134,14 @@ class GSAMSlideDetectNode(Node):
         self.get_logger().info('Loading SAM2 and Grounding DINO models...')
         sam2_model = build_sam2(self.sam2_model_config, self.sam2_checkpoint, device=self.device)
         self.sam2_predictor = SAM2ImagePredictor(sam2_model)
-        self.processor = AutoProcessor.from_pretrained(self.grounding_model)
-        self.grounding_model_net = AutoModelForZeroShotObjectDetection.from_pretrained(self.grounding_model).to(self.device)
+        self.processor = AutoProcessor.from_pretrained(
+            self.grounding_model,
+            local_files_only=True
+        )
+        self.grounding_model_net = AutoModelForZeroShotObjectDetection.from_pretrained(
+            self.grounding_model,
+            local_files_only=True
+        ).to(self.device)
         self.get_logger().info('Models loaded.')
 
         self.image_sub = self.create_subscription(Image, input_topic, self.image_callback, 10)
@@ -207,6 +218,12 @@ class GSAMSlideDetectNode(Node):
             response.success = False
             response.message = "No image available. Please wait for camera image."
             self.get_logger().warn('Service called but no image available yet')
+            return response
+
+        if self.last_depth is None:
+            response.success = False
+            response.message = "No depth image available. Check that aligned depth is enabled."
+            self.get_logger().warn('Service called but no depth image available yet')
             return response
 
         try:
@@ -333,6 +350,74 @@ class GSAMSlideDetectNode(Node):
         # return masks AND the detection boxes — boxes are used for the perspective warp
         # since SAM2 masks can include background bleed that throws off mask_to_rect
         return per_box_masks, input_boxes
+
+    def filter_tray_candidates(self, masks, det_boxes, image_shape):
+        """Discard box detections that are clearly too large/small to be trays."""
+        img_h, img_w = image_shape[:2]
+        image_area = float(img_h * img_w)
+        candidates = []
+
+        for idx, (mask, det_box) in enumerate(zip(masks, det_boxes)):
+            x1, y1, x2, y2 = det_box.astype(int)
+            width = max(1, x2 - x1)
+            height = max(1, y2 - y1)
+            area = float(width * height)
+            area_fraction = area / image_area
+            short_side = min(width, height)
+            mask_fill_fraction = float(np.count_nonzero(mask)) / area
+            center_x = (x1 + x2) / 2.0
+
+            reason = None
+            if area_fraction < self.min_tray_area_fraction:
+                reason = 'too_small'
+            elif area_fraction > self.max_tray_area_fraction:
+                reason = 'too_large'
+            elif short_side < self.min_tray_short_side_px:
+                reason = 'short_side_too_small'
+
+            candidate = {
+                'candidate_index': int(idx),
+                'bbox': [int(x1), int(y1), int(x2), int(y2)],
+                'width': int(width),
+                'height': int(height),
+                'area_fraction': float(area_fraction),
+                'short_side': int(short_side),
+                'mask_fill_fraction': float(mask_fill_fraction),
+                'center_x': float(center_x),
+                'accepted': reason is None,
+                'rejection_reason': reason,
+            }
+            candidates.append(candidate)
+
+        with open('debug_tray_candidates.json', 'w', encoding='utf-8') as f:
+            json.dump(candidates, f, indent=2)
+
+        kept = []
+        for candidate in candidates:
+            self.get_logger().info(
+                'Tray candidate '
+                f"{candidate['candidate_index']}: bbox={candidate['bbox']} "
+                f"area={candidate['area_fraction']:.3f} short={candidate['short_side']} "
+                f"fill={candidate['mask_fill_fraction']:.3f} "
+                f"{'KEEP' if candidate['accepted'] else 'DROP ' + candidate['rejection_reason']}"
+            )
+            if candidate['accepted']:
+                kept.append(candidate)
+
+        if len(kept) > self.max_trays:
+            kept = sorted(kept, key=lambda item: item['area_fraction'], reverse=True)[:self.max_trays]
+
+        # Stable tray numbering matters for source/destination indexing.
+        # Number trays from left to right after filtering.
+        kept = sorted(kept, key=lambda item: item['center_x'])
+
+        selected_masks = [masks[item['candidate_index']] for item in kept]
+        selected_boxes = [det_boxes[item['candidate_index']] for item in kept]
+
+        self.get_logger().info(
+            f'Selected {len(selected_boxes)} tray candidate(s) after filtering'
+        )
+        return selected_masks, selected_boxes
     @staticmethod
     def mask_to_rect(mask):
         contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -418,8 +503,14 @@ class GSAMSlideDetectNode(Node):
         return output.astype(bool)
 
     def publish_slide_frames(self, points, slotInd, msg=None):
-        
+
         """
+        Publish a TF for `slide_{slotInd:02d}` based on this tray's corner points.
+
+        slotInd is the GLOBAL slot index. The local slot within the current
+        tray is computed via `((slotInd - 1) % num_slots) + 1` so the X-offset
+        formula stays consistent regardless of which tray we're in.
+
         Parent -> Child: (R_pc, t_pc)
         Child  -> New : (R_cn, t_cn)
 
@@ -440,8 +531,11 @@ class GSAMSlideDetectNode(Node):
 
         R_box_cam = np.column_stack((e_long, e_short, z_cam))
         T_box_cam = (p1+p2)/2
+        # Convert global slot index back to a per-tray local index for the
+        # X offset along the tray's long axis (slots are 1..num_slots).
+        local_slot = ((slotInd - 1) % self.num_slots) + 1
         T_slide_box = np.array([
-            -0.00528*slotInd-0.01,
+            -0.00528*local_slot-0.01,
             0.0,
             0.0,
         ], dtype=np.float64)
@@ -482,111 +576,12 @@ class GSAMSlideDetectNode(Node):
         
         return filtered_slides
 
-    # ------------------------------------------------------------------
-    # RGB wafer detection helpers (ported from pick_place.py)
-    # ------------------------------------------------------------------
-
-    @staticmethod
-    def _hue_at_patch(roi_rgb, cy, cx, r, h, w):
-        patch = roi_rgb[max(0, cy-r):min(h, cy+r), max(0, cx-r):min(w, cx+r)]
-        if patch.size == 0:
-            return 0.0
-        rp = patch[:,:,0].astype(np.float32)/255
-        gp = patch[:,:,1].astype(np.float32)/255
-        bp = patch[:,:,2].astype(np.float32)/255
-        maxc = np.maximum(rp, np.maximum(gp, bp))
-        diff = maxc - np.minimum(rp, np.minimum(gp, bp))
-        hue = np.zeros_like(rp)
-        mr = (maxc == rp) & (diff > 0)
-        mg = (maxc == gp) & (diff > 0)
-        mb = (maxc == bp) & (diff > 0)
-        hue[mr] = (60.0 * ((gp[mr]-bp[mr])/diff[mr])) % 360
-        hue[mg] = 60.0 * ((bp[mg]-rp[mg])/diff[mg]) + 120
-        hue[mb] = 60.0 * ((rp[mb]-gp[mb])/diff[mb]) + 240
-        return float(np.mean(hue)) / 2.0
-
-    @staticmethod
-    def _detect_wafers_rgb(img_rgb: np.ndarray, bbox: tuple, num_slots: int) -> list:
-        """Return per-slot occupancy using RGB brightness + hue rules."""
-        x1, y1, x2, y2 = bbox
-        roi = img_rgb[y1:y2, x1:x2]
-        h, w = roi.shape[:2]
-        gray = np.mean(roi, axis=2).astype(np.float32)
-        xi_s = int(_INTERIOR_X[0] * w)
-        xi_e = int(_INTERIOR_X[1] * w)
-        occupied = []
-        for slot in range(1, num_slots + 1):
-            t = slot / (num_slots + 1)
-            cy = int(t * h)
-            band = gray[max(0, cy-_BAND_RADIUS):min(h, cy+_BAND_RADIUS), xi_s:xi_e]
-            if band.size == 0:
-                occupied.append(False)
-                continue
-            min_b = float(np.min(np.mean(band, axis=0)))
-            cx_hue = int(_X_HUE * w)
-            hue = GSAMSlideDetectNode._hue_at_patch(roi, cy, cx_hue, _BAND_RADIUS, h, w)
-            rule1 = min_b < _DARK_ABS_THRESH
-            rule2 = (_HUE_LOW_CV2 < hue < _HUE_HIGH_CV2) and (min_b < _SINGLE_THRESH)
-            occupied.append(rule1 or rule2)
-        return occupied
-
-    @staticmethod
-    def _slot_pixel(bbox: tuple, slot: int, num_slots: int) -> tuple:
-        """Pixel coords of slot center in the original image frame."""
-        x1, y1, x2, y2 = bbox
-        t = slot / (num_slots + 1)
-        cy = int(y1 + t * (y2 - y1))
-        cx = (x1 + x2) // 2
-        return (cx, cy)
-
-    @staticmethod
-    def _mask_angle(mask: np.ndarray) -> float:
-        """
-        Return tray tilt in degrees from vertical using cv2.minAreaRect on the SAM2 mask.
-        Positive = clockwise. 0 = perfectly upright.
-        """
-        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        if not contours:
-            return 0.0
-        cnt = max(contours, key=cv2.contourArea)
-        _, (w, h), angle = cv2.minAreaRect(cnt)
-        # minAreaRect angle is in [-90, 0). For a tall box (h > w after swap),
-        # add 90 so the angle describes tilt from vertical rather than from horizontal.
-        if w > h:
-            angle += 90.0
-        return float(angle)
-
-    def publish_pick_place(self, pick_xyz: tuple, place_xyz: tuple,
-                           pick_angle_deg: float = 0.0, place_angle_deg: float = 0.0,
-                           msg=None):
-        """Publish pick_pose and place_pose as static TF frames in the camera frame.
-        Rotation is a Z-axis yaw equal to the tray tilt angle from vertical."""
-        if msg is None:
-            msg = self.last_msg
-        stamp = msg.header.stamp if msg else self.get_clock().now().to_msg()
-        for name, xyz, angle_deg in [
-            ("pick_pose",  pick_xyz,  pick_angle_deg),
-            ("place_pose", place_xyz, place_angle_deg),
-        ]:
-            a = np.radians(angle_deg) / 2.0
-            tfmsg = TransformStamped()
-            tfmsg.header.stamp = stamp
-            tfmsg.header.frame_id = self.camera_frame
-            tfmsg.child_frame_id = name
-            tfmsg.transform.translation.x = float(xyz[0])
-            tfmsg.transform.translation.y = float(xyz[1])
-            tfmsg.transform.translation.z = float(xyz[2])
-            tfmsg.transform.rotation.x = 0.0
-            tfmsg.transform.rotation.y = 0.0
-            tfmsg.transform.rotation.z = float(np.sin(a))
-            tfmsg.transform.rotation.w = float(np.cos(a))
-            self.br.sendTransform(tfmsg)
-
     def detect_slides(self, img, text_prompt=None):
         """
-        Detect occupied wafer slots using RGB brightness + hue rules (ported from pick_place.py).
-        Identifies source tray (has wafers) and dest tray (empty), then computes pick/place
-        pixel coords, depjects to 3D, and publishes pick_pose / place_pose TF frames.
+        Detect occupied wafer slots across all detected trays.
+        Warps each tray to a flat top-down view to correct perspective, then uses
+        adaptive thresholding (relative to each tray's background) to ignore shadows.
+        Tray 0 → slots 1..num_slots, tray 1 → slots num_slots+1..2*num_slots, etc.
 
         Returns:
             List of occupied slot numbers (1-indexed, global across all trays)
@@ -595,89 +590,155 @@ class GSAMSlideDetectNode(Node):
             text_prompt = self.text_prompt
 
         num_slots = self.num_slots
-        img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        depth_img = self.last_depth.astype(np.float32)
+
+        # Raw colorized depth debug image — no warp, just the sensor reading
+        valid_px = depth_img[depth_img > 0]
+        if len(valid_px) > 0:
+            d_min, d_max = np.percentile(valid_px, 1), np.percentile(valid_px, 99)
+            norm = np.clip((depth_img - d_min) / (d_max - d_min) * 255, 0, 255).astype(np.uint8)
+            norm[depth_img == 0] = 0
+            raw_colored = cv2.applyColorMap(norm, cv2.COLORMAP_TURBO)
+            raw_colored[depth_img == 0] = 0
+            cv2.imwrite("debug_depth_raw.jpg", raw_colored)
 
         masks, det_boxes = self.gsam_mask(img, text=text_prompt)
+        masks, det_boxes = self.filter_tray_candidates(masks, det_boxes, img.shape)
         overlay = img.copy()
         all_detected = []
-
-        tray_bboxes = []
-        tray_occupancies = []
-        tray_spatial_points = []
-        tray_angles = []
+        debug_trays = []
 
         for tray_idx, (mask, det_box) in enumerate(zip(masks, det_boxes)):
             cv2.imwrite(f"debug_mask_tray{tray_idx}.png", mask)
 
-            x1, y1, x2, y2 = det_box.astype(int)
-            bbox = (x1, y1, x2, y2)
-            tray_bboxes.append(bbox)
+            # Use Grounding DINO box directly — avoids mask_to_rect getting background bleed
+            tray_x1, tray_y1, tray_x2, tray_y2 = det_box.astype(int)
+            p1 = np.array([tray_x1, tray_y1], dtype=np.float32)  # TL
+            p2 = np.array([tray_x2, tray_y1], dtype=np.float32)  # TR
+            p3 = np.array([tray_x1, tray_y2], dtype=np.float32)  # BL
+            p4 = np.array([tray_x2, tray_y2], dtype=np.float32)  # BR
+            points = [p1.tolist(), p2.tolist(), p3.tolist(), p4.tolist()]
 
-            p1 = [x1, y1]; p2 = [x2, y1]; p3 = [x1, y2]; p4 = [x2, y2]
-            spatial_points = [self.deproject_pixel_to_3d(pt) for pt in [p1, p2, p3, p4]]
-            tray_spatial_points.append(spatial_points)
+            cv2.rectangle(overlay, (tray_x1, tray_y1), (tray_x2, tray_y2), (255, 0, 0), 3)
 
-            cv2.rectangle(overlay, (x1, y1), (x2, y2), (255, 0, 0), 3)
+            spatial_points = [self.deproject_pixel_to_3d(pt) for pt in points]
+            tray_w = int(np.linalg.norm(p2 - p1))
+            tray_h = int(np.linalg.norm(p3 - p1))
+            src_pts = np.array([p1, p2, p4, p3], dtype=np.float32)
+            dst_pts = np.array([[0, 0], [tray_w, 0], [tray_w, tray_h], [0, tray_h]], dtype=np.float32)
+            M = cv2.getPerspectiveTransform(src_pts, dst_pts)
+            M_inv = cv2.invert(M)[1]
 
-            tray_angles.append(self._mask_angle(mask))
-            occupied = self._detect_wafers_rgb(img_rgb, bbox, num_slots)
-            tray_occupancies.append(occupied)
+            # Warp depth with nearest-neighbour to avoid interpolating depth values
+            warped_depth = cv2.warpPerspective(depth_img, M, (tray_w, tray_h),
+                                               flags=cv2.INTER_NEAREST)
+
+            # Colorized depth debug image — normalize to valid pixel range for max contrast
+            valid_px = warped_depth[warped_depth > 0]
+            if len(valid_px) > 0:
+                d_min, d_max = valid_px.min(), valid_px.max()
+                if d_max > d_min:
+                    norm = np.clip((warped_depth - d_min) / (d_max - d_min) * 255, 0, 255).astype(np.uint8)
+                else:
+                    norm = np.zeros_like(warped_depth, dtype=np.uint8)
+                norm[warped_depth == 0] = 0  # keep invalid pixels black
+                colored = cv2.applyColorMap(norm, cv2.COLORMAP_TURBO)
+                colored[warped_depth == 0] = 0
+                cv2.imwrite(f"debug_depth_color_tray{tray_idx}.jpg", colored)
+
+            sample_radius = max(6, tray_h // (num_slots * 3))
+            slot_depths = []
+            sample_centers = []
+
+            for i in range(1, num_slots + 1):
+                t = i / (num_slots + 1)
+                cx, cy = tray_w // 2, int(t * tray_h)
+                sample_centers.append((cx, cy))
+                sample_x1 = max(0, cx - sample_radius)
+                sample_x2 = min(tray_w, cx + sample_radius)
+                sample_y1 = max(0, cy - sample_radius)
+                sample_y2 = min(tray_h, cy + sample_radius)
+                region = warped_depth[sample_y1:sample_y2, sample_x1:sample_x2]
+                valid = region[region > 0]
+                slot_depths.append(float(np.median(valid)) if len(valid) > 0 else 0.0)
+
+            valid_depths = [d for d in slot_depths if d > 0]
+            if not valid_depths:
+                self.get_logger().warn(f"Tray {tray_idx}: no valid depth readings, skipping")
+                continue
+            tray_floor = np.percentile(valid_depths, 75)
+            self.get_logger().info(
+                f"Tray {tray_idx}: floor depth {tray_floor:.1f} mm, diff threshold {self.depth_diff_threshold} mm"
+            )
 
             slot_offset = tray_idx * num_slots
-            for i, occ in enumerate(occupied, 1):
+
+            tray_debug = {
+                'tray_index': int(tray_idx),
+                'bbox': {
+                    'x1': int(tray_x1),
+                    'y1': int(tray_y1),
+                    'x2': int(tray_x2),
+                    'y2': int(tray_y2),
+                    'width': int(tray_x2 - tray_x1),
+                    'height': int(tray_y2 - tray_y1),
+                },
+                'tray_floor_depth_mm': float(tray_floor),
+                'slot_sample_centers': [],
+            }
+
+            for i, (depth_val, (cx_w, cy_w)) in enumerate(zip(slot_depths, sample_centers), 1):
                 global_slot = slot_offset + i
-                cx_o, cy_o = self._slot_pixel(bbox, i, num_slots)
-                color = (0, 0, 255) if occ else (0, 255, 0)
+                depth_diff = tray_floor - depth_val
+                occupied = depth_val > 0 and depth_diff > self.depth_diff_threshold
+                self.get_logger().info(
+                    f"Tray {tray_idx} slot {i} (global {global_slot}): "
+                    f"depth {depth_val:.1f} mm  diff {depth_diff:.1f} mm  {'OCCUPIED' if occupied else 'empty'}"
+                )
+
+                pt = cv2.perspectiveTransform(np.array([[[cx_w, cy_w]]], dtype=np.float32), M_inv)[0][0]
+                cx_o, cy_o = int(pt[0]), int(pt[1])
+                color = (0, 0, 255) if occupied else (0, 255, 0)
                 cv2.circle(overlay, (cx_o, cy_o), 8, color, 2)
                 cv2.putText(overlay, str(global_slot), (cx_o - 8, cy_o - 12),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.4, color, 1)
-                if occ:
+
+                # Publish a frame for every slot (occupied or empty) so that the
+                # planner can look up destination slots in another tray, not just
+                # the source slots that have wafers.
+                _, t_pn = self.publish_slide_frames(spatial_points, global_slot)
+                tray_debug['slot_sample_centers'].append({
+                    'slot': int(i),
+                    'global_slot': int(global_slot),
+                    'pixel_x': int(cx_o),
+                    'pixel_y': int(cy_o),
+                    'warped_pixel_x': int(cx_w),
+                    'warped_pixel_y': int(cy_w),
+                    'depth_mm': float(depth_val),
+                    'depth_diff_mm': float(depth_diff),
+                    'occupied': bool(occupied),
+                    'camera_frame_xyz': {
+                        'x': float(t_pn[0]),
+                        'y': float(t_pn[1]),
+                        'z': float(t_pn[2]),
+                    },
+                })
+                if occupied:
                     all_detected.append(global_slot)
-                    self.publish_slide_frames(spatial_points, global_slot)
 
-            self.get_logger().info(
-                f"Tray {tray_idx}: {sum(occupied)}/{num_slots} slots occupied"
-            )
-
-        # --- Pick / Place ---
-        if len(tray_bboxes) >= 2:
-            occ_counts = [sum(o) for o in tray_occupancies]
-            src_idx  = int(np.argmax(occ_counts))
-            dest_idx = 1 - src_idx
-
-            src_filled = [s + 1 for s, o in enumerate(tray_occupancies[src_idx])  if o]
-            dest_empty  = [s + 1 for s, o in enumerate(tray_occupancies[dest_idx]) if not o]
-
-            if src_filled and dest_empty:
-                pick_slot  = src_filled[0]
-                place_slot = dest_empty[len(dest_empty) // 2]
-
-                pick_px  = self._slot_pixel(tray_bboxes[src_idx],  pick_slot,  num_slots)
-                place_px = self._slot_pixel(tray_bboxes[dest_idx], place_slot, num_slots)
-
-                pick_xyz  = self.deproject_pixel_to_3d(pick_px)
-                place_xyz = self.deproject_pixel_to_3d(place_px)
-
-                pick_angle  = tray_angles[src_idx]
-                place_angle = tray_angles[dest_idx]
-
-                self.get_logger().info(
-                    f"PICK  slot {pick_slot:>2} tray {src_idx}  "
-                    f"px={pick_px}  xyz=({pick_xyz[0]:.4f}, {pick_xyz[1]:.4f}, {pick_xyz[2]:.4f})  "
-                    f"angle={pick_angle:+.2f}°"
-                )
-                self.get_logger().info(
-                    f"PLACE slot {place_slot:>2} tray {dest_idx}  "
-                    f"px={place_px}  xyz=({place_xyz[0]:.4f}, {place_xyz[1]:.4f}, {place_xyz[2]:.4f})  "
-                    f"angle={place_angle:+.2f}°"
-                )
-
-                self.publish_pick_place(pick_xyz, place_xyz, pick_angle, place_angle)
-
-                cv2.drawMarker(overlay, pick_px,  (0, 255, 80),  cv2.MARKER_CROSS, 30, 3)
-                cv2.drawMarker(overlay, place_px, (0, 180, 255), cv2.MARKER_CROSS, 30, 3)
+            debug_trays.append(tray_debug)
 
         cv2.imwrite("debug_slots.jpg", overlay)
+        with open('debug_slot_geometry.json', 'w', encoding='utf-8') as f:
+            json.dump(
+                {
+                    'camera_frame': self.camera_frame,
+                    'detected_slots': [int(slot) for slot in all_detected],
+                    'trays': debug_trays,
+                },
+                f,
+                indent=2,
+            )
         self.edge_pub.publish(self.cv2_to_ros_image(overlay))
 
         return all_detected

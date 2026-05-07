@@ -1,0 +1,837 @@
+{
+  "camera_frame": "camera_color_optical_frame",
+  "detected_slots": [
+    48,
+    49
+  ],
+  "trays": [
+    {
+      "tray_index": 0,
+      "bbox": {
+        "x1": 447,
+        "y1": 297,
+        "x2": 680,
+        "y2": 559,
+        "width": 233,
+        "height": 262
+      },
+      "tray_floor_depth_mm": 613.0,
+      "slot_sample_centers": [
+        {
+          "slot": 1,
+          "global_slot": 1,
+          "pixel_x": 563,
+          "pixel_y": 307,
+          "warped_pixel_x": 116,
+          "warped_pixel_y": 10,
+          "depth_mm": 611.0,
+          "depth_diff_mm": 2.0,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": -0.025056069414802457,
+            "y": -0.007530753126659016,
+            "z": 0.288
+          }
+        },
+        {
+          "slot": 2,
+          "global_slot": 2,
+          "pixel_x": 563,
+          "pixel_y": 317,
+          "warped_pixel_x": 116,
+          "warped_pixel_y": 20,
+          "depth_mm": 610.0,
+          "depth_diff_mm": 3.0,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": -0.025056069414802457,
+            "y": -0.0022507531266590143,
+            "z": 0.288
+          }
+        },
+        {
+          "slot": 3,
+          "global_slot": 3,
+          "pixel_x": 563,
+          "pixel_y": 327,
+          "warped_pixel_x": 116,
+          "warped_pixel_y": 30,
+          "depth_mm": 612.0,
+          "depth_diff_mm": 1.0,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": -0.025056069414802457,
+            "y": 0.0030292468733409857,
+            "z": 0.288
+          }
+        },
+        {
+          "slot": 4,
+          "global_slot": 4,
+          "pixel_x": 563,
+          "pixel_y": 337,
+          "warped_pixel_x": 116,
+          "warped_pixel_y": 40,
+          "depth_mm": 613.0,
+          "depth_diff_mm": 0.0,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": -0.025056069414802457,
+            "y": 0.008309246873340986,
+            "z": 0.288
+          }
+        },
+        {
+          "slot": 5,
+          "global_slot": 5,
+          "pixel_x": 563,
+          "pixel_y": 347,
+          "warped_pixel_x": 116,
+          "warped_pixel_y": 50,
+          "depth_mm": 613.0,
+          "depth_diff_mm": 0.0,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": -0.025056069414802457,
+            "y": 0.013589246873340986,
+            "z": 0.288
+          }
+        },
+        {
+          "slot": 6,
+          "global_slot": 6,
+          "pixel_x": 563,
+          "pixel_y": 357,
+          "warped_pixel_x": 116,
+          "warped_pixel_y": 60,
+          "depth_mm": 614.0,
+          "depth_diff_mm": -1.0,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": -0.025056069414802457,
+            "y": 0.018869246873340986,
+            "z": 0.288
+          }
+        },
+        {
+          "slot": 7,
+          "global_slot": 7,
+          "pixel_x": 563,
+          "pixel_y": 367,
+          "warped_pixel_x": 116,
+          "warped_pixel_y": 70,
+          "depth_mm": 613.0,
+          "depth_diff_mm": 0.0,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": -0.025056069414802457,
+            "y": 0.024149246873340986,
+            "z": 0.288
+          }
+        },
+        {
+          "slot": 8,
+          "global_slot": 8,
+          "pixel_x": 563,
+          "pixel_y": 377,
+          "warped_pixel_x": 116,
+          "warped_pixel_y": 80,
+          "depth_mm": 612.0,
+          "depth_diff_mm": 1.0,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": -0.025056069414802457,
+            "y": 0.029429246873340986,
+            "z": 0.288
+          }
+        },
+        {
+          "slot": 9,
+          "global_slot": 9,
+          "pixel_x": 563,
+          "pixel_y": 387,
+          "warped_pixel_x": 116,
+          "warped_pixel_y": 90,
+          "depth_mm": 613.0,
+          "depth_diff_mm": 0.0,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": -0.025056069414802457,
+            "y": 0.03470924687334098,
+            "z": 0.288
+          }
+        },
+        {
+          "slot": 10,
+          "global_slot": 10,
+          "pixel_x": 563,
+          "pixel_y": 397,
+          "warped_pixel_x": 116,
+          "warped_pixel_y": 100,
+          "depth_mm": 613.0,
+          "depth_diff_mm": 0.0,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": -0.025056069414802457,
+            "y": 0.039989246873340975,
+            "z": 0.288
+          }
+        },
+        {
+          "slot": 11,
+          "global_slot": 11,
+          "pixel_x": 563,
+          "pixel_y": 407,
+          "warped_pixel_x": 116,
+          "warped_pixel_y": 110,
+          "depth_mm": 612.0,
+          "depth_diff_mm": 1.0,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": -0.025056069414802457,
+            "y": 0.04526924687334098,
+            "z": 0.288
+          }
+        },
+        {
+          "slot": 12,
+          "global_slot": 12,
+          "pixel_x": 563,
+          "pixel_y": 417,
+          "warped_pixel_x": 116,
+          "warped_pixel_y": 120,
+          "depth_mm": 612.0,
+          "depth_diff_mm": 1.0,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": -0.025056069414802457,
+            "y": 0.050549246873340975,
+            "z": 0.288
+          }
+        },
+        {
+          "slot": 13,
+          "global_slot": 13,
+          "pixel_x": 563,
+          "pixel_y": 428,
+          "warped_pixel_x": 116,
+          "warped_pixel_y": 131,
+          "depth_mm": 613.0,
+          "depth_diff_mm": 0.0,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": -0.025056069414802457,
+            "y": 0.05582924687334098,
+            "z": 0.288
+          }
+        },
+        {
+          "slot": 14,
+          "global_slot": 14,
+          "pixel_x": 563,
+          "pixel_y": 438,
+          "warped_pixel_x": 116,
+          "warped_pixel_y": 141,
+          "depth_mm": 613.0,
+          "depth_diff_mm": 0.0,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": -0.025056069414802457,
+            "y": 0.061109246873340975,
+            "z": 0.288
+          }
+        },
+        {
+          "slot": 15,
+          "global_slot": 15,
+          "pixel_x": 563,
+          "pixel_y": 448,
+          "warped_pixel_x": 116,
+          "warped_pixel_y": 151,
+          "depth_mm": 613.0,
+          "depth_diff_mm": 0.0,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": -0.025056069414802457,
+            "y": 0.06638924687334097,
+            "z": 0.288
+          }
+        },
+        {
+          "slot": 16,
+          "global_slot": 16,
+          "pixel_x": 563,
+          "pixel_y": 458,
+          "warped_pixel_x": 116,
+          "warped_pixel_y": 161,
+          "depth_mm": 613.0,
+          "depth_diff_mm": 0.0,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": -0.025056069414802457,
+            "y": 0.07166924687334097,
+            "z": 0.288
+          }
+        },
+        {
+          "slot": 17,
+          "global_slot": 17,
+          "pixel_x": 563,
+          "pixel_y": 468,
+          "warped_pixel_x": 116,
+          "warped_pixel_y": 171,
+          "depth_mm": 612.0,
+          "depth_diff_mm": 1.0,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": -0.025056069414802457,
+            "y": 0.07694924687334098,
+            "z": 0.288
+          }
+        },
+        {
+          "slot": 18,
+          "global_slot": 18,
+          "pixel_x": 563,
+          "pixel_y": 478,
+          "warped_pixel_x": 116,
+          "warped_pixel_y": 181,
+          "depth_mm": 613.0,
+          "depth_diff_mm": 0.0,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": -0.025056069414802457,
+            "y": 0.08222924687334097,
+            "z": 0.288
+          }
+        },
+        {
+          "slot": 19,
+          "global_slot": 19,
+          "pixel_x": 563,
+          "pixel_y": 488,
+          "warped_pixel_x": 116,
+          "warped_pixel_y": 191,
+          "depth_mm": 613.0,
+          "depth_diff_mm": 0.0,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": -0.025056069414802457,
+            "y": 0.08750924687334097,
+            "z": 0.288
+          }
+        },
+        {
+          "slot": 20,
+          "global_slot": 20,
+          "pixel_x": 563,
+          "pixel_y": 498,
+          "warped_pixel_x": 116,
+          "warped_pixel_y": 201,
+          "depth_mm": 613.0,
+          "depth_diff_mm": 0.0,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": -0.025056069414802457,
+            "y": 0.09278924687334097,
+            "z": 0.288
+          }
+        },
+        {
+          "slot": 21,
+          "global_slot": 21,
+          "pixel_x": 563,
+          "pixel_y": 508,
+          "warped_pixel_x": 116,
+          "warped_pixel_y": 211,
+          "depth_mm": 612.0,
+          "depth_diff_mm": 1.0,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": -0.025056069414802457,
+            "y": 0.09806924687334098,
+            "z": 0.288
+          }
+        },
+        {
+          "slot": 22,
+          "global_slot": 22,
+          "pixel_x": 563,
+          "pixel_y": 518,
+          "warped_pixel_x": 116,
+          "warped_pixel_y": 221,
+          "depth_mm": 611.0,
+          "depth_diff_mm": 2.0,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": -0.025056069414802457,
+            "y": 0.10334924687334097,
+            "z": 0.288
+          }
+        },
+        {
+          "slot": 23,
+          "global_slot": 23,
+          "pixel_x": 563,
+          "pixel_y": 528,
+          "warped_pixel_x": 116,
+          "warped_pixel_y": 231,
+          "depth_mm": 612.0,
+          "depth_diff_mm": 1.0,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": -0.025056069414802457,
+            "y": 0.10862924687334098,
+            "z": 0.288
+          }
+        },
+        {
+          "slot": 24,
+          "global_slot": 24,
+          "pixel_x": 563,
+          "pixel_y": 538,
+          "warped_pixel_x": 116,
+          "warped_pixel_y": 241,
+          "depth_mm": 0.0,
+          "depth_diff_mm": 613.0,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": -0.025056069414802457,
+            "y": 0.11390924687334099,
+            "z": 0.288
+          }
+        },
+        {
+          "slot": 25,
+          "global_slot": 25,
+          "pixel_x": 563,
+          "pixel_y": 548,
+          "warped_pixel_x": 116,
+          "warped_pixel_y": 251,
+          "depth_mm": 0.0,
+          "depth_diff_mm": 613.0,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": -0.025056069414802457,
+            "y": 0.119189246873341,
+            "z": 0.288
+          }
+        }
+      ]
+    },
+    {
+      "tray_index": 1,
+      "bbox": {
+        "x1": 814,
+        "y1": 284,
+        "x2": 1055,
+        "y2": 550,
+        "width": 241,
+        "height": 266
+      },
+      "tray_floor_depth_mm": 605.0,
+      "slot_sample_centers": [
+        {
+          "slot": 1,
+          "global_slot": 26,
+          "pixel_x": 934,
+          "pixel_y": 294,
+          "warped_pixel_x": 120,
+          "warped_pixel_y": 10,
+          "depth_mm": 610.0,
+          "depth_diff_mm": -5.0,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": 0.0927371683856141,
+            "y": -0.01166131903490454,
+            "z": 0.288
+          }
+        },
+        {
+          "slot": 2,
+          "global_slot": 27,
+          "pixel_x": 934,
+          "pixel_y": 304,
+          "warped_pixel_x": 120,
+          "warped_pixel_y": 20,
+          "depth_mm": 606.0,
+          "depth_diff_mm": -1.0,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": 0.0927371683856141,
+            "y": -0.0063813190349045375,
+            "z": 0.288
+          }
+        },
+        {
+          "slot": 3,
+          "global_slot": 28,
+          "pixel_x": 934,
+          "pixel_y": 314,
+          "warped_pixel_x": 120,
+          "warped_pixel_y": 30,
+          "depth_mm": 605.0,
+          "depth_diff_mm": 0.0,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": 0.0927371683856141,
+            "y": -0.0011013190349045375,
+            "z": 0.288
+          }
+        },
+        {
+          "slot": 4,
+          "global_slot": 29,
+          "pixel_x": 934,
+          "pixel_y": 324,
+          "warped_pixel_x": 120,
+          "warped_pixel_y": 40,
+          "depth_mm": 606.0,
+          "depth_diff_mm": -1.0,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": 0.0927371683856141,
+            "y": 0.0041786809650954625,
+            "z": 0.288
+          }
+        },
+        {
+          "slot": 5,
+          "global_slot": 30,
+          "pixel_x": 934,
+          "pixel_y": 335,
+          "warped_pixel_x": 120,
+          "warped_pixel_y": 51,
+          "depth_mm": 606.5,
+          "depth_diff_mm": -1.5,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": 0.0927371683856141,
+            "y": 0.009458680965095462,
+            "z": 0.288
+          }
+        },
+        {
+          "slot": 6,
+          "global_slot": 31,
+          "pixel_x": 934,
+          "pixel_y": 345,
+          "warped_pixel_x": 120,
+          "warped_pixel_y": 61,
+          "depth_mm": 606.0,
+          "depth_diff_mm": -1.0,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": 0.0927371683856141,
+            "y": 0.014738680965095462,
+            "z": 0.288
+          }
+        },
+        {
+          "slot": 7,
+          "global_slot": 32,
+          "pixel_x": 934,
+          "pixel_y": 355,
+          "warped_pixel_x": 120,
+          "warped_pixel_y": 71,
+          "depth_mm": 605.0,
+          "depth_diff_mm": 0.0,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": 0.0927371683856141,
+            "y": 0.020018680965095462,
+            "z": 0.288
+          }
+        },
+        {
+          "slot": 8,
+          "global_slot": 33,
+          "pixel_x": 934,
+          "pixel_y": 365,
+          "warped_pixel_x": 120,
+          "warped_pixel_y": 81,
+          "depth_mm": 605.0,
+          "depth_diff_mm": 0.0,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": 0.0927371683856141,
+            "y": 0.025298680965095462,
+            "z": 0.288
+          }
+        },
+        {
+          "slot": 9,
+          "global_slot": 34,
+          "pixel_x": 934,
+          "pixel_y": 376,
+          "warped_pixel_x": 120,
+          "warped_pixel_y": 92,
+          "depth_mm": 604.0,
+          "depth_diff_mm": 1.0,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": 0.0927371683856141,
+            "y": 0.030578680965095462,
+            "z": 0.288
+          }
+        },
+        {
+          "slot": 10,
+          "global_slot": 35,
+          "pixel_x": 934,
+          "pixel_y": 386,
+          "warped_pixel_x": 120,
+          "warped_pixel_y": 102,
+          "depth_mm": 604.0,
+          "depth_diff_mm": 1.0,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": 0.0927371683856141,
+            "y": 0.03585868096509545,
+            "z": 0.288
+          }
+        },
+        {
+          "slot": 11,
+          "global_slot": 36,
+          "pixel_x": 934,
+          "pixel_y": 396,
+          "warped_pixel_x": 120,
+          "warped_pixel_y": 112,
+          "depth_mm": 604.0,
+          "depth_diff_mm": 1.0,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": 0.0927371683856141,
+            "y": 0.04113868096509546,
+            "z": 0.288
+          }
+        },
+        {
+          "slot": 12,
+          "global_slot": 37,
+          "pixel_x": 934,
+          "pixel_y": 406,
+          "warped_pixel_x": 120,
+          "warped_pixel_y": 122,
+          "depth_mm": 604.0,
+          "depth_diff_mm": 1.0,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": 0.0927371683856141,
+            "y": 0.04641868096509545,
+            "z": 0.288
+          }
+        },
+        {
+          "slot": 13,
+          "global_slot": 38,
+          "pixel_x": 934,
+          "pixel_y": 417,
+          "warped_pixel_x": 120,
+          "warped_pixel_y": 133,
+          "depth_mm": 604.5,
+          "depth_diff_mm": 0.5,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": 0.0927371683856141,
+            "y": 0.05169868096509546,
+            "z": 0.288
+          }
+        },
+        {
+          "slot": 14,
+          "global_slot": 39,
+          "pixel_x": 934,
+          "pixel_y": 427,
+          "warped_pixel_x": 120,
+          "warped_pixel_y": 143,
+          "depth_mm": 605.0,
+          "depth_diff_mm": 0.0,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": 0.0927371683856141,
+            "y": 0.05697868096509545,
+            "z": 0.288
+          }
+        },
+        {
+          "slot": 15,
+          "global_slot": 40,
+          "pixel_x": 934,
+          "pixel_y": 437,
+          "warped_pixel_x": 120,
+          "warped_pixel_y": 153,
+          "depth_mm": 604.0,
+          "depth_diff_mm": 1.0,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": 0.0927371683856141,
+            "y": 0.062258680965095445,
+            "z": 0.288
+          }
+        },
+        {
+          "slot": 16,
+          "global_slot": 41,
+          "pixel_x": 934,
+          "pixel_y": 447,
+          "warped_pixel_x": 120,
+          "warped_pixel_y": 163,
+          "depth_mm": 604.5,
+          "depth_diff_mm": 0.5,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": 0.0927371683856141,
+            "y": 0.06753868096509545,
+            "z": 0.288
+          }
+        },
+        {
+          "slot": 17,
+          "global_slot": 42,
+          "pixel_x": 934,
+          "pixel_y": 457,
+          "warped_pixel_x": 120,
+          "warped_pixel_y": 173,
+          "depth_mm": 604.5,
+          "depth_diff_mm": 0.5,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": 0.0927371683856141,
+            "y": 0.07281868096509546,
+            "z": 0.288
+          }
+        },
+        {
+          "slot": 18,
+          "global_slot": 43,
+          "pixel_x": 934,
+          "pixel_y": 468,
+          "warped_pixel_x": 120,
+          "warped_pixel_y": 184,
+          "depth_mm": 604.0,
+          "depth_diff_mm": 1.0,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": 0.0927371683856141,
+            "y": 0.07809868096509545,
+            "z": 0.288
+          }
+        },
+        {
+          "slot": 19,
+          "global_slot": 44,
+          "pixel_x": 934,
+          "pixel_y": 478,
+          "warped_pixel_x": 120,
+          "warped_pixel_y": 194,
+          "depth_mm": 603.0,
+          "depth_diff_mm": 2.0,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": 0.0927371683856141,
+            "y": 0.08337868096509544,
+            "z": 0.288
+          }
+        },
+        {
+          "slot": 20,
+          "global_slot": 45,
+          "pixel_x": 934,
+          "pixel_y": 488,
+          "warped_pixel_x": 120,
+          "warped_pixel_y": 204,
+          "depth_mm": 602.0,
+          "depth_diff_mm": 3.0,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": 0.0927371683856141,
+            "y": 0.08865868096509545,
+            "z": 0.288
+          }
+        },
+        {
+          "slot": 21,
+          "global_slot": 46,
+          "pixel_x": 934,
+          "pixel_y": 498,
+          "warped_pixel_x": 120,
+          "warped_pixel_y": 214,
+          "depth_mm": 601.0,
+          "depth_diff_mm": 4.0,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": 0.0927371683856141,
+            "y": 0.09393868096509546,
+            "z": 0.288
+          }
+        },
+        {
+          "slot": 22,
+          "global_slot": 47,
+          "pixel_x": 934,
+          "pixel_y": 509,
+          "warped_pixel_x": 120,
+          "warped_pixel_y": 225,
+          "depth_mm": 599.0,
+          "depth_diff_mm": 6.0,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": 0.0927371683856141,
+            "y": 0.09921868096509545,
+            "z": 0.288
+          }
+        },
+        {
+          "slot": 23,
+          "global_slot": 48,
+          "pixel_x": 934,
+          "pixel_y": 519,
+          "warped_pixel_x": 120,
+          "warped_pixel_y": 235,
+          "depth_mm": 589.0,
+          "depth_diff_mm": 16.0,
+          "occupied": true,
+          "camera_frame_xyz": {
+            "x": 0.0927371683856141,
+            "y": 0.10449868096509546,
+            "z": 0.288
+          }
+        },
+        {
+          "slot": 24,
+          "global_slot": 49,
+          "pixel_x": 934,
+          "pixel_y": 529,
+          "warped_pixel_x": 120,
+          "warped_pixel_y": 245,
+          "depth_mm": 590.0,
+          "depth_diff_mm": 15.0,
+          "occupied": true,
+          "camera_frame_xyz": {
+            "x": 0.0927371683856141,
+            "y": 0.10977868096509547,
+            "z": 0.288
+          }
+        },
+        {
+          "slot": 25,
+          "global_slot": 50,
+          "pixel_x": 934,
+          "pixel_y": 539,
+          "warped_pixel_x": 120,
+          "warped_pixel_y": 255,
+          "depth_mm": 606.0,
+          "depth_diff_mm": -1.0,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": 0.0927371683856141,
+            "y": 0.11505868096509547,
+            "z": 0.288
+          }
+        }
+      ]
+    }
+  ]
+}

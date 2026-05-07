@@ -119,6 +119,42 @@ class SlideDetector(Node):
         self.picked_slides.clear()
         self.get_logger().info('Picked slides reset')
 
+    def get_slide_pose(self, slot_idx, timeout=2.0):
+        """
+        Look up the TF for a specific slot (occupied or empty) and return
+        its pose in the base frame. Used for destination slots in a
+        container-to-container pick-and-place.
+
+        Args:
+            slot_idx: Global slot index (1-indexed across all trays)
+            timeout: Max time to wait for the frame to appear (seconds)
+
+        Returns:
+            PoseStamped in 'base' frame, or None on failure.
+        """
+        slide_frame = f"slide_{slot_idx:02d}"
+        start = time.time()
+        while (time.time() - start) < timeout:
+            try:
+                transform = self.tf_buffer.lookup_transform(
+                    'base',
+                    slide_frame,
+                    rclpy.time.Time(),
+                    timeout=rclpy.duration.Duration(seconds=0.1)
+                )
+                pose = PoseStamped()
+                pose.header.frame_id = 'base'
+                pose.header.stamp = self.get_clock().now().to_msg()
+                pose.pose.position.x = transform.transform.translation.x
+                pose.pose.position.y = transform.transform.translation.y
+                pose.pose.position.z = transform.transform.translation.z
+                pose.pose.orientation = transform.transform.rotation
+                return pose
+            except TransformException:
+                time.sleep(0.05)
+        self.get_logger().warn(f'Could not find TF for {slide_frame} within {timeout}s')
+        return None
+
 
 def main(args=None):
     rclpy.init(args=args)

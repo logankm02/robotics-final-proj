@@ -136,7 +136,7 @@ class IKPlanner(Node):
 
         # velocity and acceleration scaling
         req.motion_plan_request.max_velocity_scaling_factor = velocity_scale
-        req.motion_plan_request.max_acceleration_scale_factor = acceleration_scale
+        req.motion_plan_request.max_acceleration_scaling_factor = acceleration_scale
         self.get_logger().info(f'Planning with velocity={velocity_scale*100:.0f}%, accel={acceleration_scale*100:.0f}%')
 
         # Apply joint limits as path constraints

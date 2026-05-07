@@ -30,10 +30,17 @@ def generate_launch_description():
     # Gripper serial port
     gripper_port_arg = DeclareLaunchArgument(
         'gripper_port',
-        default_value='/dev/ttyUSB0',
+        default_value='/dev/ttyCH341USB0',
         description='Serial port for Arduino gripper controller'
     )
     gripper_port = LaunchConfiguration('gripper_port')
+
+    require_gripper_arg = DeclareLaunchArgument(
+        'require_gripper',
+        default_value='false',
+        description='Fail launch if the gripper hardware is not available'
+    )
+    require_gripper = LaunchConfiguration('require_gripper')
     
     # Alignment method (direct for GSAM recommended)
     alignment_method_arg = DeclareLaunchArgument(
@@ -42,6 +49,13 @@ def generate_launch_description():
         description='Gripper alignment method: direct or perpendicular'
     )
     alignment_method = LaunchConfiguration('alignment_method')
+
+    force_gsam_cpu_arg = DeclareLaunchArgument(
+        'force_gsam_cpu',
+        default_value='false',
+        description='Force the GSAM detector to run on CPU instead of CUDA'
+    )
+    force_gsam_cpu = LaunchConfiguration('force_gsam_cpu')
 
     # =========================================================================
     # CAMERA: RealSense D435i
@@ -56,7 +70,7 @@ def generate_launch_description():
             )
         ),
         launch_arguments={
-            'rgb_camera.color_profile': '1920x1080x30',
+            'rgb_camera.color_profile': '1280x720x30',
             'align_depth.enable': 'true',
         }.items(),
     )
@@ -84,9 +98,9 @@ def generate_launch_description():
         parameters=[{
             'text_prompt': 'plastic tray.',
             'grounding_model': 'IDEA-Research/grounding-dino-tiny',
-            # Update these paths to match your setup:
-            'sam2_checkpoint': '/home/nano/final_project_ws/src/perception/realsense_cv/models/sam2.1_hiera_small.pt',
+            'sam2_checkpoint': '/home/nano/CV/GSAM/checkpoints/sam2.1_hiera_small.pt',
             'sam2_model_config': 'configs/sam2.1/sam2.1_hiera_s.yaml',
+            'force_cpu': force_gsam_cpu,
         }]
     )
     
@@ -101,6 +115,7 @@ def generate_launch_description():
         output='screen',
         parameters=[{
             'serial_port': gripper_port,
+            'require_hardware': require_gripper,
         }]
     )
     
@@ -137,7 +152,9 @@ def generate_launch_description():
     return LaunchDescription([
         # Arguments
         gripper_port_arg,
+        require_gripper_arg,
         alignment_method_arg,
+        force_gsam_cpu_arg,
 
         # Nodes
         realsense_launch,
