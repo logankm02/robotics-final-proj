@@ -24,6 +24,7 @@ from planning_interfaces.srv import (
     WaferPickPlace,
 )
 from std_srvs.srv import SetBool, Trigger
+from tm_msgs.srv import SetPositions
 import tf2_ros
 from tf2_ros import TransformException
 
@@ -32,17 +33,27 @@ from realsense_cv.slide_detector import SlideDetector
 
 import numpy as np
 from scipy.spatial.transform import Rotation as R
-import asyncio
 import time
 import re
 
-# Gripper geometry (in meters). Total tool length below the flange,
-# and the length of the soft pads at the end of the fingers.
-# When the pad CENTER must coincide with the wafer center, the flange
-# sits FLANGE_TO_GRIP_CENTER above the wafer pose Z.
-GRIPPER_LENGTH = 0.14002          # 140.02 mm — flange to gripper tip
-GRIPPER_PAD_LENGTH = 0.066        # 66 mm — length of grip pads
-FLANGE_TO_GRIP_CENTER = GRIPPER_LENGTH - GRIPPER_PAD_LENGTH / 2.0  # ~0.107 m
+# Gripper / wafer calibration (in meters).
+# The robot targets `link_6` / flange poses, so the commanded Z must include:
+# 1) wafer elevation above the tray/slot base
+# 2) flange-to-gripper body length
+# 3) gripper pad extension
+GRIPPER_LENGTH = 0.142            # 142 mm — flange to gripper body
+GRIPPER_PAD_LENGTH = 0.066        # 66 mm — pad extension below gripper body
+FLANGE_TO_PAD_BOTTOM = GRIPPER_LENGTH + GRIPPER_PAD_LENGTH
+WAFER_SUPPORT_HEIGHT = 0.15       # conservative end of the user-reported 10–15 cm range
+GRASP_HEIGHT_ABOVE_SLOT_BASE = WAFER_SUPPORT_HEIGHT + FLANGE_TO_PAD_BOTTOM
+ARM_JOINT_NAMES = [
+    'joint_1',
+    'joint_2',
+    'joint_3',
+    'joint_4',
+    'joint_5',
+    'joint_6',
+]
 
 
 class PickAndPlace(Node):
@@ -80,6 +91,7 @@ class PickAndPlace(Node):
         self.declare_parameter('alignment_method', 'perpendicular')
         self.alignment_method = self.get_parameter('alignment_method').value
         self.get_logger().info(f'Alignment method: {self.alignment_method}')
+        self.get_logger().info('Using GSAM-detected occupied slots')
 
         # Detection mode selection
         self.declare_parameter('detection_mode', 'marker')  # 'marker' or 'gsam'
@@ -137,6 +149,16 @@ class PickAndPlace(Node):
         )
         self.joint_traj_client.wait_for_server()
         self.get_logger().info('Connected to joint trajectory controller')
+
+        self.set_positions_client = self.create_client(
+            SetPositions,
+            '/set_positions',
+            callback_group=self.callback_group
+        )
+        if self.set_positions_client.wait_for_service(timeout_sec=5.0):
+            self.get_logger().info('Connected to TM set_positions service')
+        else:
+            self.get_logger().warn('TM set_positions service not available yet')
 
         # Gripper service client
         self.gripper_client = self.create_client(
@@ -855,7 +877,7 @@ class PickAndPlace(Node):
           4. Return to scan_pose.
 
         Z values are computed ABSOLUTELY using the wafer's TF Z and the
-        gripper geometry (FLANGE_TO_GRIP_CENTER), so we don't need a tuned
+        gripper geometry (FLANGE_TO_GRIP_STOP), so we don't need a tuned
         `pick_distance` parameter.
         """
         if self.processing:
@@ -887,7 +909,7 @@ class PickAndPlace(Node):
         dst_tray = int(request.dest_tray_index)
         num_slots = int(request.num_slots) if request.num_slots > 0 else 25
         approach_clearance = float(request.approach_clearance) if request.approach_clearance > 0 else 0.05
-        lift_clearance = float(request.lift_clearance) if request.lift_clearance > 0 else 0.10
+        lift_clearance = float(request.lift_clearance) if request.lift_clearance > 0 else 0.15
 
         if src_tray == dst_tray:
             response.success = False
@@ -910,8 +932,16 @@ class PickAndPlace(Node):
         self.get_logger().info(f'Slots per tray: {num_slots}')
         self.get_logger().info(f'Approach clearance: {approach_clearance:.3f} m')
         self.get_logger().info(f'Lift clearance:     {lift_clearance:.3f} m')
-        self.get_logger().info(f'Gripper length: {GRIPPER_LENGTH*1000:.2f} mm, '
-                               f'flange→grip center: {FLANGE_TO_GRIP_CENTER*1000:.1f} mm')
+        self.get_logger().info(f'Wafer support height: {WAFER_SUPPORT_HEIGHT:.3f} m')
+        self.get_logger().info(
+            f'Configured flange grasp height above slot base: '
+            f'{GRASP_HEIGHT_ABOVE_SLOT_BASE:.3f} m'
+        )
+        self.get_logger().info(
+            f'Gripper body: {GRIPPER_LENGTH*1000:.1f} mm, '
+            f'pads: {GRIPPER_PAD_LENGTH*1000:.1f} mm, '
+            f'flange→pad-bottom: {FLANGE_TO_PAD_BOTTOM*1000:.1f} mm'
+        )
         self.get_logger().info('='*60)
 
         try:
@@ -930,6 +960,7 @@ class PickAndPlace(Node):
             # 2. GSAM detection — populates slide_XX TFs for every slot in every tray
             self.get_logger().info('STEP 2: Trigger GSAM detection')
             detected_slots = await self.detect_slides_gsam()
+
             if not detected_slots:
                 self.get_logger().info('No wafers detected — operation complete')
                 response.success = True
@@ -1047,18 +1078,36 @@ class PickAndPlace(Node):
         src_align = self.compute_alignment_pose(src_pose, current_z=0.0, method=align_method)
         dst_align = self.compute_alignment_pose(dst_pose, current_z=0.0, method=align_method)
 
+        # Make transport between trays purely horizontal by using one shared
+        # world-Z transport height for both source and destination.
+        src_transport_z = (
+            src_pose.pose.position.z + GRASP_HEIGHT_ABOVE_SLOT_BASE + lift_clearance
+        )
+        dst_transport_z = (
+            dst_pose.pose.position.z + GRASP_HEIGHT_ABOVE_SLOT_BASE + lift_clearance
+        )
+        transport_z = max(src_transport_z, dst_transport_z)
+
+        queue.append('open_gripper')
+
         # ---- SOURCE SIDE ----
         # Approach above source slot
-        src_approach = self._wafer_pose_at(src_align, src_pose,
-                                           offset_z=FLANGE_TO_GRIP_CENTER + approach_clearance)
+        src_approach = self._wafer_pose_at(
+            src_align,
+            src_pose,
+            height_above_slot_base=GRASP_HEIGHT_ABOVE_SLOT_BASE + approach_clearance,
+        )
         ik = self._ik(current, src_approach)
         if ik is None: return None
         queue.append((src_approach, self.xy_vel_scale, self.xy_accel_scale))
         current = ik
 
         # Lower to grasp height
-        src_grasp = self._wafer_pose_at(src_align, src_pose,
-                                        offset_z=FLANGE_TO_GRIP_CENTER)
+        src_grasp = self._wafer_pose_at(
+            src_align,
+            src_pose,
+            height_above_slot_base=GRASP_HEIGHT_ABOVE_SLOT_BASE,
+        )
         ik = self._ik(current, src_grasp)
         if ik is None: return None
         queue.append((src_grasp, self.z_vel_scale, self.z_accel_scale))
@@ -1067,24 +1116,35 @@ class PickAndPlace(Node):
         queue.append('close_gripper')
 
         # Lift up after grasp (transport height)
-        src_lift = self._wafer_pose_at(src_align, src_pose,
-                                       offset_z=FLANGE_TO_GRIP_CENTER + lift_clearance)
+        src_lift = self._pose_with_world_z(
+            src_align,
+            src_pose.pose.position.x,
+            src_pose.pose.position.y,
+            transport_z,
+        )
         ik = self._ik(current, src_lift)
         if ik is None: return None
         queue.append((src_lift, self.z_vel_scale, self.z_accel_scale))
         current = ik
 
-        # ---- TRANSPORT to destination approach ----
-        dst_approach = self._wafer_pose_at(dst_align, dst_pose,
-                                           offset_z=FLANGE_TO_GRIP_CENTER + approach_clearance)
-        ik = self._ik(current, dst_approach)
+        # ---- TRANSPORT to destination ----
+        dst_transport = self._pose_with_world_z(
+            dst_align,
+            dst_pose.pose.position.x,
+            dst_pose.pose.position.y,
+            transport_z,
+        )
+        ik = self._ik(current, dst_transport)
         if ik is None: return None
-        queue.append((dst_approach, self.xy_vel_scale, self.xy_accel_scale))
+        queue.append((dst_transport, self.xy_vel_scale, self.xy_accel_scale))
         current = ik
 
         # Lower to place height
-        dst_place = self._wafer_pose_at(dst_align, dst_pose,
-                                        offset_z=FLANGE_TO_GRIP_CENTER)
+        dst_place = self._wafer_pose_at(
+            dst_align,
+            dst_pose,
+            height_above_slot_base=GRASP_HEIGHT_ABOVE_SLOT_BASE,
+        )
         ik = self._ik(current, dst_place)
         if ik is None: return None
         queue.append((dst_place, self.z_vel_scale, self.z_accel_scale))
@@ -1093,24 +1153,38 @@ class PickAndPlace(Node):
         queue.append('open_gripper')
 
         # Lift up after place
-        dst_lift = self._wafer_pose_at(dst_align, dst_pose,
-                                       offset_z=FLANGE_TO_GRIP_CENTER + lift_clearance)
+        dst_lift = self._pose_with_world_z(
+            dst_align,
+            dst_pose.pose.position.x,
+            dst_pose.pose.position.y,
+            transport_z,
+        )
         ik = self._ik(current, dst_lift)
         if ik is None: return None
         queue.append((dst_lift, self.z_vel_scale, self.z_accel_scale))
 
         return queue
 
-    def _wafer_pose_at(self, align_pose, slide_pose, offset_z):
+    def _wafer_pose_at(self, align_pose, slide_pose, height_above_slot_base):
         """
-        Build a target flange PoseStamped at (slide.x, slide.y, slide.z + offset_z)
+        Build a target flange PoseStamped at
+        (slide.x, slide.y, slide.z + height_above_slot_base)
         with the orientation from `align_pose` (already aligned with the slot).
         """
         out = PoseStamped()
         out.header = align_pose.header
         out.pose.position.x = slide_pose.pose.position.x
         out.pose.position.y = slide_pose.pose.position.y
-        out.pose.position.z = slide_pose.pose.position.z + offset_z
+        out.pose.position.z = slide_pose.pose.position.z + height_above_slot_base
+        out.pose.orientation = align_pose.pose.orientation
+        return out
+
+    def _pose_with_world_z(self, align_pose, x, y, z):
+        out = PoseStamped()
+        out.header = align_pose.header
+        out.pose.position.x = x
+        out.pose.position.y = y
+        out.pose.position.z = z
         out.pose.orientation = align_pose.pose.orientation
         return out
 
@@ -1318,17 +1392,11 @@ class PickAndPlace(Node):
                         return False
 
                 elif isinstance(target, JointState):
-                    trajectory = self.ik_planner.plan_to_joints(
+                    if not await self.execute_tm_joint_target(
                         target,
-                        start_joint_state=self.current_joint_state,
                         velocity_scale=vel_scale,
-                        acceleration_scale=accel_scale
-                    )
-                    if trajectory is None:
-                        self.get_logger().error('Planning failed for queued joint target')
-                        return False
-
-                    if not await self.execute_joint_trajectory(trajectory):
+                        acceleration_scale=accel_scale,
+                    ):
                         return False
 
                     self.print_joint_state(self.current_joint_state, target)
@@ -1339,17 +1407,11 @@ class PickAndPlace(Node):
 
             # Handle old-style JointState (backwards compatibility)
             elif isinstance(job, JointState):
-                trajectory = self.ik_planner.plan_to_joints(
+                if not await self.execute_tm_joint_target(
                     job,
-                    start_joint_state=self.current_joint_state,
                     velocity_scale=self.xy_vel_scale,
-                    acceleration_scale=self.xy_accel_scale
-                )
-                if trajectory is None:
-                    self.get_logger().error('Planning failed for queued joint target')
-                    return False
-
-                if not await self.execute_joint_trajectory(trajectory):
+                    acceleration_scale=self.xy_accel_scale,
+                ):
                     return False
 
                 self.print_joint_state(self.current_joint_state, job)
@@ -1452,25 +1514,89 @@ class PickAndPlace(Node):
 
         return True
 
+    async def execute_tm_joint_target(
+        self,
+        target_joint_state,
+        velocity_scale=0.2,
+        acceleration_scale=0.2,
+        tolerance=0.02,
+        timeout_sec=20.0,
+    ):
+        """Execute a joint target through TM's direct set_positions service."""
+        if not self.set_positions_client.service_is_ready():
+            self.get_logger().error('TM set_positions service not available')
+            return False
+
+        positions_by_name = dict(zip(target_joint_state.name, target_joint_state.position))
+        try:
+            ordered_positions = [positions_by_name[name] for name in ARM_JOINT_NAMES]
+        except KeyError as exc:
+            self.get_logger().error(f'Missing joint in IK result: {exc}')
+            return False
+
+        request = SetPositions.Request()
+        request.motion_type = SetPositions.Request.PTP_J
+        request.positions = ordered_positions
+        request.velocity = max(0.05, min(float(velocity_scale), 0.5))
+        request.acc_time = max(
+            200.0,
+            min(1000.0 * (1.1 - float(acceleration_scale)), 1000.0)
+        )
+        request.blend_percentage = 0
+        request.fine_goal = True
+
+        future = self.set_positions_client.call_async(request)
+        response = await future
+        if response is None or not response.ok:
+            self.get_logger().error('TM set_positions command failed')
+            return False
+
+        deadline = time.time() + timeout_sec
+        while time.time() < deadline:
+            if self.current_joint_state is not None:
+                current_map = dict(
+                    zip(self.current_joint_state.name, self.current_joint_state.position)
+                )
+                max_error = 0.0
+                for name, target in zip(ARM_JOINT_NAMES, ordered_positions):
+                    current = current_map.get(name)
+                    if current is None:
+                        max_error = float('inf')
+                        break
+                    max_error = max(max_error, abs(current - target))
+                if max_error <= tolerance:
+                    return True
+            time.sleep(0.05)
+
+        self.get_logger().error('Timed out waiting for TM joint target to finish')
+        return False
+
     async def control_gripper(self, close: bool):
         """Control gripper: True to close, False to open"""
         if not self.gripper_client.service_is_ready():
             self.get_logger().warn('Gripper service not available')
             return True  # Continue anyway
 
-        request = SetBool.Request()
-        request.data = close
+        action = "close" if close else "open"
+        for attempt in (1, 2):
+            request = SetBool.Request()
+            request.data = close
+            future = self.gripper_client.call_async(request)
+            response = await future
 
-        future = self.gripper_client.call_async(request)
-        response = await future
+            if response.success:
+                state = "closed" if close else "opened"
+                self.get_logger().info(f'Gripper {state}: {response.message}')
+                return True
 
-        if response.success:
-            action = "closed" if close else "opened"
-            self.get_logger().info(f'Gripper {action}: {response.message}')
-            return True
-        else:
-            self.get_logger().error(f'Gripper control failed: {response.message}')
-            return False
+            self.get_logger().warn(
+                f'Gripper {action} attempt {attempt} failed: {response.message}'
+            )
+            if attempt == 1:
+                time.sleep(0.3)
+
+        self.get_logger().error(f'Gripper {action} failed after retry')
+        return False
 
     def get_approach_pose(self, target_pose):
         """Get approach pose above target"""
@@ -1514,18 +1640,12 @@ class PickAndPlace(Node):
                 self.get_logger().error('IK failed for target position')
                 return False
 
-            trajectory = self.ik_planner.plan_to_joints(
+            self.get_logger().info('Executing IK target through TM set_positions...')
+            success = await self.execute_tm_joint_target(
                 ik_result,
-                start_joint_state=self.current_joint_state,
                 velocity_scale=velocity_scale,
-                acceleration_scale=acceleration_scale
+                acceleration_scale=acceleration_scale,
             )
-            if trajectory is None:
-                self.get_logger().error('Joint-space planning failed for target position')
-                return False
-
-            self.get_logger().info('Executing planned joint trajectory...')
-            success = await self.execute_joint_trajectory(trajectory)
 
             if success:
                 self.get_logger().info('='*60)

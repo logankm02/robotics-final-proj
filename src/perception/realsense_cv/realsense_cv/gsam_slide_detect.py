@@ -5,6 +5,7 @@ import sys
 
 import argparse
 import os
+import gc
 import cv2
 import json
 import torch
@@ -25,9 +26,49 @@ from rclpy.node import Node
 
 from sensor_msgs.msg import Image, CameraInfo
 from std_srvs.srv import Trigger
-from tf2_ros import TransformBroadcaster
+from tf2_ros import TransformBroadcaster, StaticTransformBroadcaster
 
 import math
+
+
+DEFAULT_SAM2_CHECKPOINT = "/home/nano/CV/GSAM/checkpoints/sam2.1_hiera_small.pt"
+
+
+def _candidate_checkpoint_paths(path_str):
+    raw = os.path.expanduser(str(path_str))
+    basename = Path(raw).name
+
+    candidates = [
+        raw,
+        DEFAULT_SAM2_CHECKPOINT,
+    ]
+
+    if basename:
+        candidates.extend(
+            [
+                f"/home/nano/CV/GSAM/checkpoints/{basename}",
+                f"/home/nano/final_project_ws/src/perception/realsense_cv/models/{basename}",
+            ]
+        )
+
+    seen = set()
+    ordered = []
+    for candidate in candidates:
+        if candidate not in seen:
+            seen.add(candidate)
+            ordered.append(candidate)
+    return ordered
+
+
+def resolve_sam2_checkpoint(path_str):
+    candidates = _candidate_checkpoint_paths(path_str)
+    for candidate in candidates:
+        if os.path.isfile(candidate):
+            return candidate
+
+    raise FileNotFoundError(
+        "SAM2 checkpoint not found. Checked: " + ", ".join(candidates)
+    )
 
 
 def rotation_matrix_to_quaternion(R):
@@ -74,7 +115,7 @@ class GSAMSlideDetectNode(Node):
         self.declare_parameter('service_name', '/detect_slides')
         self.declare_parameter('grounding_model', "IDEA-Research/grounding-dino-tiny")
         self.declare_parameter('text_prompt', "colored box.")
-        self.declare_parameter('sam2_checkpoint', "/home/bryan/final_project_ws/src/perception/realsense_cv/models/sam2.1_hiera_small.pt")
+        self.declare_parameter('sam2_checkpoint', DEFAULT_SAM2_CHECKPOINT)
         self.declare_parameter('sam2_model_config', "configs/sam2.1/sam2.1_hiera_s.yaml")
         self.declare_parameter('force_cpu', False)
         self.declare_parameter('num_slots', 25)
@@ -84,11 +125,17 @@ class GSAMSlideDetectNode(Node):
         self.declare_parameter('max_tray_area_fraction', 0.20)
         self.declare_parameter('min_tray_short_side_px', 140)
         self.declare_parameter('max_trays', 2)
+        self.declare_parameter(
+            'debug_output_dir',
+            str(Path.home() / 'final_project_ws'),
+        )
 
         # Get parameters
         self.grounding_model = self.get_parameter('grounding_model').value
         self.text_prompt = self.get_parameter('text_prompt').value
-        self.sam2_checkpoint = self.get_parameter('sam2_checkpoint').value
+        self.sam2_checkpoint = resolve_sam2_checkpoint(
+            self.get_parameter('sam2_checkpoint').value
+        )
         self.sam2_model_config = self.get_parameter('sam2_model_config').value
         self.camera_frame = self.get_parameter('camera_frame').value
         force_cpu = self.get_parameter('force_cpu').value
@@ -104,6 +151,10 @@ class GSAMSlideDetectNode(Node):
             self.get_parameter('min_tray_short_side_px').value
         )
         self.max_trays = max(1, int(self.get_parameter('max_trays').value))
+        self.debug_output_dir = Path(
+            self.get_parameter('debug_output_dir').value
+        ).expanduser()
+        self.debug_output_dir.mkdir(parents=True, exist_ok=True)
         input_topic = self.get_parameter('input_image_topic').value
         depth_topic = self.get_parameter('depth_topic').value
         output_topic = self.get_parameter('output_image_topic').value
@@ -112,6 +163,7 @@ class GSAMSlideDetectNode(Node):
 
 
         self.br = TransformBroadcaster(self)
+        self.static_br = StaticTransformBroadcaster(self)
 
         self.last_image = None
         self.last_msg = None
@@ -122,27 +174,18 @@ class GSAMSlideDetectNode(Node):
 
         self.processing_image = False
         self.device = "cuda" if torch.cuda.is_available() and not force_cpu else "cpu"
-        self.get_logger().info(f'Using device: {self.device}')
-
-        torch.autocast(device_type=self.device, dtype=torch.bfloat16).__enter__()
+        self.get_logger().info(
+            f'Using SAM2 checkpoint: {self.sam2_checkpoint}'
+        )
+        self.get_logger().info(
+            f'Debug outputs will be written to: {self.debug_output_dir}'
+        )
 
         if torch.cuda.is_available() and torch.cuda.get_device_properties(0).major >= 8:
             torch.backends.cuda.matmul.allow_tf32 = True
             torch.backends.cudnn.allow_tf32 = True
 
-        # Load models once at startup
-        self.get_logger().info('Loading SAM2 and Grounding DINO models...')
-        sam2_model = build_sam2(self.sam2_model_config, self.sam2_checkpoint, device=self.device)
-        self.sam2_predictor = SAM2ImagePredictor(sam2_model)
-        self.processor = AutoProcessor.from_pretrained(
-            self.grounding_model,
-            local_files_only=True
-        )
-        self.grounding_model_net = AutoModelForZeroShotObjectDetection.from_pretrained(
-            self.grounding_model,
-            local_files_only=True
-        ).to(self.device)
-        self.get_logger().info('Models loaded.')
+        self._load_models_with_fallback(force_cpu)
 
         self.image_sub = self.create_subscription(Image, input_topic, self.image_callback, 10)
         self.depth_sub = self.create_subscription(Image, depth_topic, self.depth_callback, 10)
@@ -158,6 +201,71 @@ class GSAMSlideDetectNode(Node):
         )
 
         self.get_logger().info(f'GSAM Slide Detect Service initialized at {service_name}')
+
+    def _load_models_on_device(self, device):
+        self.get_logger().info(f'Loading SAM2 on {device}...')
+        sam2_model = build_sam2(
+            self.sam2_model_config,
+            self.sam2_checkpoint,
+            device=device,
+        )
+        sam2_predictor = SAM2ImagePredictor(sam2_model)
+        self.get_logger().info('Loading Grounding DINO processor...')
+        processor = AutoProcessor.from_pretrained(
+            self.grounding_model,
+            local_files_only=True,
+        )
+        self.get_logger().info('Loading Grounding DINO weights...')
+        grounding_model_net = AutoModelForZeroShotObjectDetection.from_pretrained(
+            self.grounding_model,
+            local_files_only=True,
+        )
+        self.get_logger().info(f'Moving Grounding DINO to {device}...')
+        grounding_model_net = grounding_model_net.to(device)
+        return sam2_predictor, processor, grounding_model_net
+
+    def _clear_cuda_memory(self):
+        gc.collect()
+        if not torch.cuda.is_available():
+            return
+        try:
+            torch.cuda.empty_cache()
+        except Exception:
+            pass
+        try:
+            torch.cuda.ipc_collect()
+        except Exception:
+            pass
+
+    def _load_models_with_fallback(self, force_cpu):
+        preferred_device = self.device
+        try:
+            (
+                self.sam2_predictor,
+                self.processor,
+                self.grounding_model_net,
+            ) = self._load_models_on_device(preferred_device)
+            self.device = preferred_device
+            self.get_logger().info(f'Using device: {self.device}')
+            self.get_logger().info('Models loaded.')
+            return
+        except Exception as exc:
+            if preferred_device != "cuda" or force_cpu:
+                raise
+
+            self.get_logger().warning(
+                f'CUDA model load failed: {exc}. Retrying on CPU.'
+            )
+            self._clear_cuda_memory()
+
+        (
+            self.sam2_predictor,
+            self.processor,
+            self.grounding_model_net,
+        ) = self._load_models_on_device("cpu")
+        self.device = "cpu"
+        self.get_logger().info(f'Using device: {self.device}')
+        self.get_logger().info('Models loaded.')
 
     def cv2_to_ros_image(self, cv_image, encoding='bgr8'):
         msg = Image()
@@ -286,7 +394,7 @@ class GSAMSlideDetectNode(Node):
         return kernels
     
     
-    def deproject_pixel_to_3d(self,point):
+    def deproject_pixel_to_3d(self, point, depth_m=None, sample_radius=3):
         u, v = point
         K = self.camera_matrix
         if K is None:
@@ -294,7 +402,38 @@ class GSAMSlideDetectNode(Node):
         fx = K[0, 0]; fy = K[1, 1]
         cx = K[0, 2]; cy = K[1, 2]
 
-        Z = 0.288
+        if depth_m is None:
+            if self.last_depth is None:
+                raise ValueError("Depth image is not available for deprojection.")
+            u_i = int(round(u))
+            v_i = int(round(v))
+            h, w = self.last_depth.shape
+            search_radii = []
+            for radius in (
+                sample_radius,
+                max(sample_radius * 2, 8),
+                max(sample_radius * 4, 16),
+                max(sample_radius * 8, 32),
+            ):
+                if radius not in search_radii:
+                    search_radii.append(radius)
+
+            valid = None
+            for radius in search_radii:
+                x1 = max(0, u_i - radius)
+                x2 = min(w, u_i + radius + 1)
+                y1 = max(0, v_i - radius)
+                y2 = min(h, v_i + radius + 1)
+                region = self.last_depth[y1:y2, x1:x2]
+                valid = region[region > 0]
+                if len(valid) > 0:
+                    break
+
+            if valid is None or len(valid) == 0:
+                raise ValueError(f"No valid depth near pixel ({u}, {v}).")
+            Z = float(np.median(valid)) / 1000.0
+        else:
+            Z = float(depth_m)
         X = (u - cx) * Z / fx
         Y = (v - cy) * Z / fy 
 
@@ -389,7 +528,7 @@ class GSAMSlideDetectNode(Node):
             }
             candidates.append(candidate)
 
-        with open('debug_tray_candidates.json', 'w', encoding='utf-8') as f:
+        with open(self.debug_output_dir / 'debug_tray_candidates.json', 'w', encoding='utf-8') as f:
             json.dump(candidates, f, indent=2)
 
         kept = []
@@ -499,10 +638,10 @@ class GSAMSlideDetectNode(Node):
 
             cv2.line(output, (x1, y1), (x2, y2), 255, 1)
 
-        cv2.imwrite("filtered_edges.png", output)
+        cv2.imwrite(str(self.debug_output_dir / "filtered_edges.png"), output)
         return output.astype(bool)
 
-    def publish_slide_frames(self, points, slotInd, msg=None):
+    def publish_slide_frames(self, points, slotInd, slot_xyz=None, msg=None):
 
         """
         Publish a TF for `slide_{slotInd:02d}` based on this tray's corner points.
@@ -531,15 +670,18 @@ class GSAMSlideDetectNode(Node):
 
         R_box_cam = np.column_stack((e_long, e_short, z_cam))
         T_box_cam = (p1+p2)/2
-        # Convert global slot index back to a per-tray local index for the
-        # X offset along the tray's long axis (slots are 1..num_slots).
-        local_slot = ((slotInd - 1) % self.num_slots) + 1
-        T_slide_box = np.array([
-            -0.00528*local_slot-0.01,
-            0.0,
-            0.0,
-        ], dtype=np.float64)
-        t_pn = R_box_cam @ T_slide_box + T_box_cam   # shape (3,)
+        if slot_xyz is None:
+            # Fallback to the previous tray-model estimate if a direct slot-center
+            # 3D point is unavailable.
+            local_slot = ((slotInd - 1) % self.num_slots) + 1
+            T_slide_box = np.array([
+                -0.00528 * local_slot - 0.01,
+                0.0,
+                0.0,
+            ], dtype=np.float64)
+            t_pn = R_box_cam @ T_slide_box + T_box_cam
+        else:
+            t_pn = np.array(slot_xyz, dtype=np.float64)
         R_pn = R_box_cam
 
         # Convert to quaternion
@@ -561,7 +703,7 @@ class GSAMSlideDetectNode(Node):
         tfmsg.transform.rotation.w = float(qw)
 
         self.br.sendTransform(tfmsg)
-        return R_pn, t_pn
+        return R_pn, t_pn, tfmsg
     @staticmethod
     def slide_ind_post_process(detected_slides):
         # Remove slides that are too close to each other (within 2 slots), will filter out the latter one
@@ -600,16 +742,17 @@ class GSAMSlideDetectNode(Node):
             norm[depth_img == 0] = 0
             raw_colored = cv2.applyColorMap(norm, cv2.COLORMAP_TURBO)
             raw_colored[depth_img == 0] = 0
-            cv2.imwrite("debug_depth_raw.jpg", raw_colored)
+            cv2.imwrite(str(self.debug_output_dir / "debug_depth_raw.jpg"), raw_colored)
 
         masks, det_boxes = self.gsam_mask(img, text=text_prompt)
         masks, det_boxes = self.filter_tray_candidates(masks, det_boxes, img.shape)
         overlay = img.copy()
         all_detected = []
+        static_slot_transforms = []
         debug_trays = []
 
         for tray_idx, (mask, det_box) in enumerate(zip(masks, det_boxes)):
-            cv2.imwrite(f"debug_mask_tray{tray_idx}.png", mask)
+            cv2.imwrite(str(self.debug_output_dir / f"debug_mask_tray{tray_idx}.png"), mask)
 
             # Use Grounding DINO box directly — avoids mask_to_rect getting background bleed
             tray_x1, tray_y1, tray_x2, tray_y2 = det_box.astype(int)
@@ -617,13 +760,31 @@ class GSAMSlideDetectNode(Node):
             p2 = np.array([tray_x2, tray_y1], dtype=np.float32)  # TR
             p3 = np.array([tray_x1, tray_y2], dtype=np.float32)  # BL
             p4 = np.array([tray_x2, tray_y2], dtype=np.float32)  # BR
+            tray_w = int(np.linalg.norm(p2 - p1))
+            tray_h = int(np.linalg.norm(p3 - p1))
             points = [p1.tolist(), p2.tolist(), p3.tolist(), p4.tolist()]
 
             cv2.rectangle(overlay, (tray_x1, tray_y1), (tray_x2, tray_y2), (255, 0, 0), 3)
 
-            spatial_points = [self.deproject_pixel_to_3d(pt) for pt in points]
-            tray_w = int(np.linalg.norm(p2 - p1))
-            tray_h = int(np.linalg.norm(p3 - p1))
+            # Grounding DINO boxes can hug the image border even when the tray is
+            # visible, and aligned depth is often invalid right at those borders.
+            # Use slightly inset points for tray-orientation depth sampling while
+            # still keeping the full box for the 2D warp and overlay.
+            inset_x = max(8, tray_w // 12)
+            inset_y = max(8, tray_h // 12)
+            inset_x = min(inset_x, max(1, tray_w // 2 - 1))
+            inset_y = min(inset_y, max(1, tray_h // 2 - 1))
+            depth_points = [
+                [tray_x1 + inset_x, tray_y1 + inset_y],
+                [tray_x2 - inset_x, tray_y1 + inset_y],
+                [tray_x1 + inset_x, tray_y2 - inset_y],
+                [tray_x2 - inset_x, tray_y2 - inset_y],
+            ]
+            spatial_points = [
+                self.deproject_pixel_to_3d(pt, sample_radius=max(6, min(inset_x, inset_y) // 2))
+                for pt in depth_points
+            ]
+
             src_pts = np.array([p1, p2, p4, p3], dtype=np.float32)
             dst_pts = np.array([[0, 0], [tray_w, 0], [tray_w, tray_h], [0, tray_h]], dtype=np.float32)
             M = cv2.getPerspectiveTransform(src_pts, dst_pts)
@@ -644,7 +805,7 @@ class GSAMSlideDetectNode(Node):
                 norm[warped_depth == 0] = 0  # keep invalid pixels black
                 colored = cv2.applyColorMap(norm, cv2.COLORMAP_TURBO)
                 colored[warped_depth == 0] = 0
-                cv2.imwrite(f"debug_depth_color_tray{tray_idx}.jpg", colored)
+                cv2.imwrite(str(self.debug_output_dir / f"debug_depth_color_tray{tray_idx}.jpg"), colored)
 
             sample_radius = max(6, tray_h // (num_slots * 3))
             slot_depths = []
@@ -683,6 +844,14 @@ class GSAMSlideDetectNode(Node):
                     'width': int(tray_x2 - tray_x1),
                     'height': int(tray_y2 - tray_y1),
                 },
+                'depth_sample_inset_px': {
+                    'x': int(inset_x),
+                    'y': int(inset_y),
+                },
+                'depth_sample_points': [
+                    {'x': int(point[0]), 'y': int(point[1])}
+                    for point in depth_points
+                ],
                 'tray_floor_depth_mm': float(tray_floor),
                 'slot_sample_centers': [],
             }
@@ -690,10 +859,12 @@ class GSAMSlideDetectNode(Node):
             for i, (depth_val, (cx_w, cy_w)) in enumerate(zip(slot_depths, sample_centers), 1):
                 global_slot = slot_offset + i
                 depth_diff = tray_floor - depth_val
-                occupied = depth_val > 0 and depth_diff > self.depth_diff_threshold
+                depth_occupied = depth_val > 0 and depth_diff > self.depth_diff_threshold
+                occupied = depth_occupied
                 self.get_logger().info(
                     f"Tray {tray_idx} slot {i} (global {global_slot}): "
-                    f"depth {depth_val:.1f} mm  diff {depth_diff:.1f} mm  {'OCCUPIED' if occupied else 'empty'}"
+                    f"depth {depth_val:.1f} mm  diff {depth_diff:.1f} mm  "
+                    f"final={'OCCUPIED' if occupied else 'empty'}"
                 )
 
                 pt = cv2.perspectiveTransform(np.array([[[cx_w, cy_w]]], dtype=np.float32), M_inv)[0][0]
@@ -706,7 +877,14 @@ class GSAMSlideDetectNode(Node):
                 # Publish a frame for every slot (occupied or empty) so that the
                 # planner can look up destination slots in another tray, not just
                 # the source slots that have wafers.
-                _, t_pn = self.publish_slide_frames(spatial_points, global_slot)
+                slot_depth_m = (depth_val if depth_val > 0 else tray_floor) / 1000.0
+                slot_xyz = self.deproject_pixel_to_3d((cx_o, cy_o), depth_m=slot_depth_m)
+                _, t_pn, tfmsg = self.publish_slide_frames(
+                    spatial_points,
+                    global_slot,
+                    slot_xyz=slot_xyz,
+                )
+                static_slot_transforms.append(tfmsg)
                 tray_debug['slot_sample_centers'].append({
                     'slot': int(i),
                     'global_slot': int(global_slot),
@@ -716,6 +894,7 @@ class GSAMSlideDetectNode(Node):
                     'warped_pixel_y': int(cy_w),
                     'depth_mm': float(depth_val),
                     'depth_diff_mm': float(depth_diff),
+                    'depth_cv_occupied': bool(depth_occupied),
                     'occupied': bool(occupied),
                     'camera_frame_xyz': {
                         'x': float(t_pn[0]),
@@ -728,8 +907,11 @@ class GSAMSlideDetectNode(Node):
 
             debug_trays.append(tray_debug)
 
-        cv2.imwrite("debug_slots.jpg", overlay)
-        with open('debug_slot_geometry.json', 'w', encoding='utf-8') as f:
+        if static_slot_transforms:
+            self.static_br.sendTransform(static_slot_transforms)
+
+        cv2.imwrite(str(self.debug_output_dir / "debug_slots.jpg"), overlay)
+        with open(self.debug_output_dir / 'debug_slot_geometry.json', 'w', encoding='utf-8') as f:
             json.dump(
                 {
                     'camera_frame': self.camera_frame,
