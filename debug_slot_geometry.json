@@ -1,8 +1,1240 @@
 {
   "camera_frame": "camera_color_optical_frame",
-  "hardcoded_occupied_slots": [
-    12
+  "detected_slots": [
+    32,
+    33,
+    35,
+    36,
+    37,
+    40,
+    41,
+    42,
+    44
   ],
-  "detected_slots": [],
-  "trays": []
+  "color_detection": {
+    "enabled": true,
+    "interior_x_min": 0.12,
+    "interior_x_max": 0.88,
+    "hue_x": 0.45,
+    "dark_abs_thresh": 42.0,
+    "single_thresh": 90.0,
+    "hue_low_cv2": 70.0,
+    "hue_high_cv2": 100.0
+  },
+  "trays": [
+    {
+      "tray_index": 0,
+      "bbox": {
+        "x1": 461,
+        "y1": 169,
+        "x2": 654,
+        "y2": 386,
+        "width": 193,
+        "height": 217
+      },
+      "quad_source": "oriented_min_area_rect",
+      "quad_angle_deg": 0.0,
+      "quad_corners": {
+        "p1_tl": [
+          465.0,
+          175.0
+        ],
+        "p2_tr": [
+          652.0,
+          175.0
+        ],
+        "p3_bl": [
+          465.0,
+          384.0
+        ],
+        "p4_br": [
+          652.0,
+          384.0
+        ]
+      },
+      "warped_size_px": {
+        "w": 187,
+        "h": 209
+      },
+      "depth_sample_radius_px": 7,
+      "depth_sample_points": [
+        {
+          "x": 472,
+          "y": 183
+        },
+        {
+          "x": 644,
+          "y": 183
+        },
+        {
+          "x": 472,
+          "y": 375
+        },
+        {
+          "x": 644,
+          "y": 375
+        }
+      ],
+      "tray_floor_depth_mm": 714.0,
+      "slot_sample_centers": [
+        {
+          "slot": 1,
+          "global_slot": 1,
+          "pixel_x": 558,
+          "pixel_y": 183,
+          "warped_pixel_x": 93,
+          "warped_pixel_y": 8,
+          "depth_mm": 711.5,
+          "depth_diff_mm": 2.5,
+          "depth_cv_occupied": false,
+          "color_min_b": 161.5,
+          "color_hue_cv2": 96.015625,
+          "color_rule1_dark": false,
+          "color_rule2_hue": false,
+          "color_occupied": false,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": -0.06621478488137292,
+            "y": -0.14583931421707672,
+            "z": 0.7115
+          }
+        },
+        {
+          "slot": 2,
+          "global_slot": 2,
+          "pixel_x": 558,
+          "pixel_y": 191,
+          "warped_pixel_x": 93,
+          "warped_pixel_y": 16,
+          "depth_mm": 710.0,
+          "depth_diff_mm": 4.0,
+          "depth_cv_occupied": false,
+          "color_min_b": 168.625,
+          "color_hue_cv2": 97.1875,
+          "color_rule1_dark": false,
+          "color_rule2_hue": false,
+          "color_occupied": false,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": -0.06607518941078674,
+            "y": -0.13926539573013375,
+            "z": 0.71
+          }
+        },
+        {
+          "slot": 3,
+          "global_slot": 3,
+          "pixel_x": 558,
+          "pixel_y": 199,
+          "warped_pixel_x": 93,
+          "warped_pixel_y": 24,
+          "depth_mm": 710.0,
+          "depth_diff_mm": 4.0,
+          "depth_cv_occupied": false,
+          "color_min_b": 161.625,
+          "color_hue_cv2": 98.46875,
+          "color_rule1_dark": false,
+          "color_rule2_hue": false,
+          "color_occupied": false,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": -0.06607518941078674,
+            "y": -0.13299893890352196,
+            "z": 0.71
+          }
+        },
+        {
+          "slot": 4,
+          "global_slot": 4,
+          "pixel_x": 558,
+          "pixel_y": 207,
+          "warped_pixel_x": 93,
+          "warped_pixel_y": 32,
+          "depth_mm": 711.0,
+          "depth_diff_mm": 3.0,
+          "depth_cv_occupied": false,
+          "color_min_b": 146.125,
+          "color_hue_cv2": 90.0,
+          "color_rule1_dark": false,
+          "color_rule2_hue": false,
+          "color_occupied": false,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": -0.06616825305784418,
+            "y": -0.12691097853053962,
+            "z": 0.711
+          }
+        },
+        {
+          "slot": 5,
+          "global_slot": 5,
+          "pixel_x": 558,
+          "pixel_y": 215,
+          "warped_pixel_x": 93,
+          "warped_pixel_y": 40,
+          "depth_mm": 712.0,
+          "depth_diff_mm": 2.0,
+          "depth_cv_occupied": false,
+          "color_min_b": 136.75,
+          "color_hue_cv2": 62.78125,
+          "color_rule1_dark": false,
+          "color_rule2_hue": false,
+          "color_occupied": false,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": -0.06626131670490164,
+            "y": -0.1208053661664964,
+            "z": 0.712
+          }
+        },
+        {
+          "slot": 6,
+          "global_slot": 6,
+          "pixel_x": 558,
+          "pixel_y": 223,
+          "warped_pixel_x": 93,
+          "warped_pixel_y": 48,
+          "depth_mm": 712.0,
+          "depth_diff_mm": 2.0,
+          "depth_cv_occupied": false,
+          "color_min_b": 119.5,
+          "color_hue_cv2": 69.78125,
+          "color_rule1_dark": false,
+          "color_rule2_hue": false,
+          "color_occupied": false,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": -0.06626131670490164,
+            "y": -0.11452125734882372,
+            "z": 0.712
+          }
+        },
+        {
+          "slot": 7,
+          "global_slot": 7,
+          "pixel_x": 558,
+          "pixel_y": 231,
+          "warped_pixel_x": 93,
+          "warped_pixel_y": 56,
+          "depth_mm": 712.0,
+          "depth_diff_mm": 2.0,
+          "depth_cv_occupied": false,
+          "color_min_b": 105.125,
+          "color_hue_cv2": 68.4375,
+          "color_rule1_dark": false,
+          "color_rule2_hue": false,
+          "color_occupied": false,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": -0.06626131670490164,
+            "y": -0.10823714853115105,
+            "z": 0.712
+          }
+        },
+        {
+          "slot": 8,
+          "global_slot": 8,
+          "pixel_x": 558,
+          "pixel_y": 239,
+          "warped_pixel_x": 93,
+          "warped_pixel_y": 64,
+          "depth_mm": 713.0,
+          "depth_diff_mm": 1.0,
+          "depth_cv_occupied": false,
+          "color_min_b": 109.5,
+          "color_hue_cv2": 37.140625,
+          "color_rule1_dark": false,
+          "color_rule2_hue": false,
+          "color_occupied": false,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": -0.06635438035195908,
+            "y": -0.10209623218498605,
+            "z": 0.713
+          }
+        },
+        {
+          "slot": 9,
+          "global_slot": 9,
+          "pixel_x": 558,
+          "pixel_y": 247,
+          "warped_pixel_x": 93,
+          "warped_pixel_y": 72,
+          "depth_mm": 714.0,
+          "depth_diff_mm": 0.0,
+          "depth_cv_occupied": false,
+          "color_min_b": 124.75,
+          "color_hue_cv2": 42.421875,
+          "color_rule1_dark": false,
+          "color_rule2_hue": false,
+          "color_occupied": false,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": -0.06644744399901653,
+            "y": -0.0959376638477602,
+            "z": 0.714
+          }
+        },
+        {
+          "slot": 10,
+          "global_slot": 10,
+          "pixel_x": 558,
+          "pixel_y": 255,
+          "warped_pixel_x": 93,
+          "warped_pixel_y": 80,
+          "depth_mm": 712.5,
+          "depth_diff_mm": 1.5,
+          "depth_cv_occupied": false,
+          "color_min_b": 122.375,
+          "color_hue_cv2": 39.375,
+          "color_rule1_dark": false,
+          "color_rule2_hue": false,
+          "color_occupied": false,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": -0.06630784852843036,
+            "y": -0.08944759231835643,
+            "z": 0.7125
+          }
+        },
+        {
+          "slot": 11,
+          "global_slot": 11,
+          "pixel_x": 558,
+          "pixel_y": 263,
+          "warped_pixel_x": 93,
+          "warped_pixel_y": 88,
+          "depth_mm": 711.5,
+          "depth_diff_mm": 2.5,
+          "depth_cv_occupied": false,
+          "color_min_b": 117.625,
+          "color_hue_cv2": 43.1875,
+          "color_rule1_dark": false,
+          "color_rule2_hue": false,
+          "color_occupied": false,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": -0.06621478488137292,
+            "y": -0.08304235601800214,
+            "z": 0.7115
+          }
+        },
+        {
+          "slot": 12,
+          "global_slot": 12,
+          "pixel_x": 558,
+          "pixel_y": 271,
+          "warped_pixel_x": 93,
+          "warped_pixel_y": 96,
+          "depth_mm": 712.0,
+          "depth_diff_mm": 2.0,
+          "depth_cv_occupied": false,
+          "color_min_b": 110.875,
+          "color_hue_cv2": 31.25,
+          "color_rule1_dark": false,
+          "color_rule2_hue": false,
+          "color_occupied": false,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": -0.06626131670490164,
+            "y": -0.07681660444278765,
+            "z": 0.712
+          }
+        },
+        {
+          "slot": 13,
+          "global_slot": 13,
+          "pixel_x": 558,
+          "pixel_y": 279,
+          "warped_pixel_x": 93,
+          "warped_pixel_y": 104,
+          "depth_mm": 714.0,
+          "depth_diff_mm": 0.0,
+          "depth_cv_occupied": false,
+          "color_min_b": 117.0,
+          "color_hue_cv2": 31.53125,
+          "color_rule1_dark": false,
+          "color_rule2_hue": false,
+          "color_occupied": false,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": -0.06644744399901653,
+            "y": -0.07073062061282598,
+            "z": 0.714
+          }
+        },
+        {
+          "slot": 14,
+          "global_slot": 14,
+          "pixel_x": 558,
+          "pixel_y": 287,
+          "warped_pixel_x": 93,
+          "warped_pixel_y": 112,
+          "depth_mm": 715.0,
+          "depth_diff_mm": -1.0,
+          "depth_cv_occupied": false,
+          "color_min_b": 110.5,
+          "color_hue_cv2": 30.78125,
+          "color_rule1_dark": false,
+          "color_rule2_hue": false,
+          "color_occupied": false,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": -0.06654050764607397,
+            "y": -0.06451909630241748,
+            "z": 0.715
+          }
+        },
+        {
+          "slot": 15,
+          "global_slot": 15,
+          "pixel_x": 558,
+          "pixel_y": 295,
+          "warped_pixel_x": 93,
+          "warped_pixel_y": 120,
+          "depth_mm": 714.0,
+          "depth_diff_mm": 0.0,
+          "depth_cv_occupied": false,
+          "color_min_b": 113.625,
+          "color_hue_cv2": 22.6875,
+          "color_rule1_dark": false,
+          "color_rule2_hue": false,
+          "color_occupied": false,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": -0.06644744399901653,
+            "y": -0.05812709899535886,
+            "z": 0.714
+          }
+        },
+        {
+          "slot": 16,
+          "global_slot": 16,
+          "pixel_x": 558,
+          "pixel_y": 303,
+          "warped_pixel_x": 93,
+          "warped_pixel_y": 128,
+          "depth_mm": 714.0,
+          "depth_diff_mm": 0.0,
+          "depth_cv_occupied": false,
+          "color_min_b": 113.875,
+          "color_hue_cv2": 26.8125,
+          "color_rule1_dark": false,
+          "color_rule2_hue": false,
+          "color_occupied": false,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": -0.06644744399901653,
+            "y": -0.05182533818662531,
+            "z": 0.714
+          }
+        },
+        {
+          "slot": 17,
+          "global_slot": 17,
+          "pixel_x": 558,
+          "pixel_y": 311,
+          "warped_pixel_x": 93,
+          "warped_pixel_y": 136,
+          "depth_mm": 713.0,
+          "depth_diff_mm": 1.0,
+          "depth_cv_occupied": false,
+          "color_min_b": 113.5,
+          "color_hue_cv2": 24.390625,
+          "color_rule1_dark": false,
+          "color_rule2_hue": false,
+          "color_occupied": false,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": -0.06635438035195908,
+            "y": -0.04545981886615801,
+            "z": 0.713
+          }
+        },
+        {
+          "slot": 18,
+          "global_slot": 18,
+          "pixel_x": 558,
+          "pixel_y": 319,
+          "warped_pixel_x": 93,
+          "warped_pixel_y": 144,
+          "depth_mm": 712.0,
+          "depth_diff_mm": 2.0,
+          "depth_cv_occupied": false,
+          "color_min_b": 115.125,
+          "color_hue_cv2": 26.140625,
+          "color_rule1_dark": false,
+          "color_rule2_hue": false,
+          "color_occupied": false,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": -0.06626131670490164,
+            "y": -0.03911195153675159,
+            "z": 0.712
+          }
+        },
+        {
+          "slot": 19,
+          "global_slot": 19,
+          "pixel_x": 558,
+          "pixel_y": 327,
+          "warped_pixel_x": 93,
+          "warped_pixel_y": 152,
+          "depth_mm": 712.0,
+          "depth_diff_mm": 2.0,
+          "depth_cv_occupied": false,
+          "color_min_b": 111.125,
+          "color_hue_cv2": 29.046875,
+          "color_rule1_dark": false,
+          "color_rule2_hue": false,
+          "color_occupied": false,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": -0.06626131670490164,
+            "y": -0.03282784271907891,
+            "z": 0.712
+          }
+        },
+        {
+          "slot": 20,
+          "global_slot": 20,
+          "pixel_x": 558,
+          "pixel_y": 335,
+          "warped_pixel_x": 93,
+          "warped_pixel_y": 160,
+          "depth_mm": 714.0,
+          "depth_diff_mm": 0.0,
+          "depth_cv_occupied": false,
+          "color_min_b": 113.25,
+          "color_hue_cv2": 26.09375,
+          "color_rule1_dark": false,
+          "color_rule2_hue": false,
+          "color_occupied": false,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": -0.06644744399901653,
+            "y": -0.026618294951691088,
+            "z": 0.714
+          }
+        },
+        {
+          "slot": 21,
+          "global_slot": 21,
+          "pixel_x": 558,
+          "pixel_y": 343,
+          "warped_pixel_x": 93,
+          "warped_pixel_y": 168,
+          "depth_mm": 715.0,
+          "depth_diff_mm": -1.0,
+          "depth_cv_occupied": false,
+          "color_min_b": 112.0,
+          "color_hue_cv2": 21.53125,
+          "color_rule1_dark": false,
+          "color_rule2_hue": false,
+          "color_occupied": false,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": -0.06654050764607397,
+            "y": -0.020344988672569515,
+            "z": 0.715
+          }
+        },
+        {
+          "slot": 22,
+          "global_slot": 22,
+          "pixel_x": 558,
+          "pixel_y": 351,
+          "warped_pixel_x": 93,
+          "warped_pixel_y": 176,
+          "depth_mm": 716.0,
+          "depth_diff_mm": -2.0,
+          "depth_cv_occupied": false,
+          "color_min_b": 114.75,
+          "color_hue_cv2": 21.875,
+          "color_rule1_dark": false,
+          "color_rule2_hue": false,
+          "color_occupied": false,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": -0.06663357129313141,
+            "y": -0.014054030402387068,
+            "z": 0.716
+          }
+        },
+        {
+          "slot": 23,
+          "global_slot": 23,
+          "pixel_x": 558,
+          "pixel_y": 359,
+          "warped_pixel_x": 93,
+          "warped_pixel_y": 184,
+          "depth_mm": 716.0,
+          "depth_diff_mm": -2.0,
+          "depth_cv_occupied": false,
+          "color_min_b": 114.75,
+          "color_hue_cv2": 20.1875,
+          "color_rule1_dark": false,
+          "color_rule2_hue": false,
+          "color_occupied": false,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": -0.06663357129313141,
+            "y": -0.007734617602592636,
+            "z": 0.716
+          }
+        },
+        {
+          "slot": 24,
+          "global_slot": 24,
+          "pixel_x": 558,
+          "pixel_y": 367,
+          "warped_pixel_x": 93,
+          "warped_pixel_y": 192,
+          "depth_mm": 715.0,
+          "depth_diff_mm": -1.0,
+          "depth_cv_occupied": false,
+          "color_min_b": 122.0,
+          "color_hue_cv2": 25.328125,
+          "color_rule1_dark": false,
+          "color_rule2_hue": false,
+          "color_occupied": false,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": -0.06654050764607397,
+            "y": -0.0014132282597775347,
+            "z": 0.715
+          }
+        },
+        {
+          "slot": 25,
+          "global_slot": 25,
+          "pixel_x": 558,
+          "pixel_y": 375,
+          "warped_pixel_x": 93,
+          "warped_pixel_y": 200,
+          "depth_mm": 712.0,
+          "depth_diff_mm": 2.0,
+          "depth_cv_occupied": false,
+          "color_min_b": 115.5,
+          "color_hue_cv2": 44.359375,
+          "color_rule1_dark": false,
+          "color_rule2_hue": false,
+          "color_occupied": false,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": -0.06626131670490164,
+            "y": 0.004876810186957146,
+            "z": 0.712
+          }
+        }
+      ]
+    },
+    {
+      "tray_index": 1,
+      "bbox": {
+        "x1": 673,
+        "y1": 167,
+        "x2": 867,
+        "y2": 386,
+        "width": 194,
+        "height": 219
+      },
+      "quad_source": "oriented_min_area_rect",
+      "quad_angle_deg": -0.830313503742218,
+      "quad_corners": {
+        "p1_tl": [
+          674.25146484375,
+          173.3586883544922
+        ],
+        "p2_tr": [
+          863.1248779296875,
+          170.6213836669922
+        ],
+        "p3_bl": [
+          677.323486328125,
+          385.32867431640625
+        ],
+        "p4_br": [
+          866.1968994140625,
+          382.59136962890625
+        ]
+      },
+      "warped_size_px": {
+        "w": 189,
+        "h": 212
+      },
+      "depth_sample_radius_px": 7,
+      "depth_sample_points": [
+        {
+          "x": 682,
+          "y": 182
+        },
+        {
+          "x": 855,
+          "y": 179
+        },
+        {
+          "x": 685,
+          "y": 376
+        },
+        {
+          "x": 858,
+          "y": 373
+        }
+      ],
+      "tray_floor_depth_mm": 716.0,
+      "slot_sample_centers": [
+        {
+          "slot": 1,
+          "global_slot": 26,
+          "pixel_x": 768,
+          "pixel_y": 179,
+          "warped_pixel_x": 94,
+          "warped_pixel_y": 8,
+          "depth_mm": 715.0,
+          "depth_diff_mm": 1.0,
+          "depth_cv_occupied": false,
+          "color_min_b": 147.0,
+          "color_hue_cv2": 98.078125,
+          "color_rule1_dark": false,
+          "color_rule2_hue": false,
+          "color_occupied": false,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": 0.09899047707738877,
+            "y": -0.1497120181599814,
+            "z": 0.715
+          }
+        },
+        {
+          "slot": 2,
+          "global_slot": 27,
+          "pixel_x": 768,
+          "pixel_y": 187,
+          "warped_pixel_x": 94,
+          "warped_pixel_y": 16,
+          "depth_mm": 715.0,
+          "depth_diff_mm": 1.0,
+          "depth_cv_occupied": false,
+          "color_min_b": 160.0,
+          "color_hue_cv2": 99.890625,
+          "color_rule1_dark": false,
+          "color_rule2_hue": false,
+          "color_occupied": false,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": 0.09899047707738877,
+            "y": -0.1434014313557174,
+            "z": 0.715
+          }
+        },
+        {
+          "slot": 3,
+          "global_slot": 28,
+          "pixel_x": 768,
+          "pixel_y": 195,
+          "warped_pixel_x": 94,
+          "warped_pixel_y": 24,
+          "depth_mm": 715.0,
+          "depth_diff_mm": 1.0,
+          "depth_cv_occupied": false,
+          "color_min_b": 160.25,
+          "color_hue_cv2": 100.0,
+          "color_rule1_dark": false,
+          "color_rule2_hue": false,
+          "color_occupied": false,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": 0.09899047707738877,
+            "y": -0.1370908445514534,
+            "z": 0.715
+          }
+        },
+        {
+          "slot": 4,
+          "global_slot": 29,
+          "pixel_x": 768,
+          "pixel_y": 203,
+          "warped_pixel_x": 94,
+          "warped_pixel_y": 32,
+          "depth_mm": 715.0,
+          "depth_diff_mm": 1.0,
+          "depth_cv_occupied": false,
+          "color_min_b": 147.25,
+          "color_hue_cv2": 99.5,
+          "color_rule1_dark": false,
+          "color_rule2_hue": false,
+          "color_occupied": false,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": 0.09899047707738877,
+            "y": -0.1307802577471894,
+            "z": 0.715
+          }
+        },
+        {
+          "slot": 5,
+          "global_slot": 30,
+          "pixel_x": 768,
+          "pixel_y": 211,
+          "warped_pixel_x": 94,
+          "warped_pixel_y": 40,
+          "depth_mm": 714.0,
+          "depth_diff_mm": 2.0,
+          "depth_cv_occupied": false,
+          "color_min_b": 122.875,
+          "color_hue_cv2": 92.6875,
+          "color_rule1_dark": false,
+          "color_rule2_hue": false,
+          "color_occupied": false,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": 0.09885202885770011,
+            "y": -0.12429558748706118,
+            "z": 0.714
+          }
+        },
+        {
+          "slot": 6,
+          "global_slot": 31,
+          "pixel_x": 768,
+          "pixel_y": 219,
+          "warped_pixel_x": 94,
+          "warped_pixel_y": 48,
+          "depth_mm": 712.0,
+          "depth_diff_mm": 4.0,
+          "depth_cv_occupied": false,
+          "color_min_b": 105.875,
+          "color_hue_cv2": 81.21875,
+          "color_rule1_dark": false,
+          "color_rule2_hue": false,
+          "color_occupied": false,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": 0.0985751324183228,
+            "y": -0.11766331175766005,
+            "z": 0.712
+          }
+        },
+        {
+          "slot": 7,
+          "global_slot": 32,
+          "pixel_x": 769,
+          "pixel_y": 228,
+          "warped_pixel_x": 94,
+          "warped_pixel_y": 57,
+          "depth_mm": 711.0,
+          "depth_diff_mm": 5.0,
+          "depth_cv_occupied": false,
+          "color_min_b": 46.125,
+          "color_hue_cv2": 95.859375,
+          "color_rule1_dark": false,
+          "color_rule2_hue": true,
+          "color_occupied": true,
+          "occupied": true,
+          "camera_frame_xyz": {
+            "x": 0.0992205172331888,
+            "y": -0.11043836112241624,
+            "z": 0.711
+          }
+        },
+        {
+          "slot": 8,
+          "global_slot": 33,
+          "pixel_x": 769,
+          "pixel_y": 236,
+          "warped_pixel_x": 94,
+          "warped_pixel_y": 65,
+          "depth_mm": 712.0,
+          "depth_diff_mm": 4.0,
+          "depth_cv_occupied": false,
+          "color_min_b": 45.875,
+          "color_hue_cv2": 85.984375,
+          "color_rule1_dark": false,
+          "color_rule2_hue": true,
+          "color_occupied": true,
+          "occupied": true,
+          "camera_frame_xyz": {
+            "x": 0.09936006789033816,
+            "y": -0.10430958052010561,
+            "z": 0.712
+          }
+        },
+        {
+          "slot": 9,
+          "global_slot": 34,
+          "pixel_x": 769,
+          "pixel_y": 244,
+          "warped_pixel_x": 94,
+          "warped_pixel_y": 73,
+          "depth_mm": 713.0,
+          "depth_diff_mm": 3.0,
+          "depth_cv_occupied": false,
+          "color_min_b": 74.5,
+          "color_hue_cv2": 63.703125,
+          "color_rule1_dark": false,
+          "color_rule2_hue": false,
+          "color_occupied": false,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": 0.0994996185474875,
+            "y": -0.09816314792673411,
+            "z": 0.713
+          }
+        },
+        {
+          "slot": 10,
+          "global_slot": 35,
+          "pixel_x": 769,
+          "pixel_y": 252,
+          "warped_pixel_x": 94,
+          "warped_pixel_y": 81,
+          "depth_mm": 715.0,
+          "depth_diff_mm": 1.0,
+          "depth_cv_occupied": false,
+          "color_min_b": 72.5,
+          "color_hue_cv2": 80.9375,
+          "color_rule1_dark": false,
+          "color_rule2_hue": true,
+          "color_occupied": true,
+          "occupied": true,
+          "camera_frame_xyz": {
+            "x": 0.0997787198617862,
+            "y": -0.09212791357107245,
+            "z": 0.715
+          }
+        },
+        {
+          "slot": 11,
+          "global_slot": 36,
+          "pixel_x": 769,
+          "pixel_y": 260,
+          "warped_pixel_x": 94,
+          "warped_pixel_y": 89,
+          "depth_mm": 715.0,
+          "depth_diff_mm": 1.0,
+          "depth_cv_occupied": false,
+          "color_min_b": 57.375,
+          "color_hue_cv2": 93.125,
+          "color_rule1_dark": false,
+          "color_rule2_hue": true,
+          "color_occupied": true,
+          "occupied": true,
+          "camera_frame_xyz": {
+            "x": 0.0997787198617862,
+            "y": -0.08581732676680846,
+            "z": 0.715
+          }
+        },
+        {
+          "slot": 12,
+          "global_slot": 37,
+          "pixel_x": 769,
+          "pixel_y": 268,
+          "warped_pixel_x": 94,
+          "warped_pixel_y": 97,
+          "depth_mm": 715.0,
+          "depth_diff_mm": 1.0,
+          "depth_cv_occupied": false,
+          "color_min_b": 37.5,
+          "color_hue_cv2": 90.359375,
+          "color_rule1_dark": true,
+          "color_rule2_hue": true,
+          "color_occupied": true,
+          "occupied": true,
+          "camera_frame_xyz": {
+            "x": 0.0997787198617862,
+            "y": -0.07950673996254447,
+            "z": 0.715
+          }
+        },
+        {
+          "slot": 13,
+          "global_slot": 38,
+          "pixel_x": 769,
+          "pixel_y": 277,
+          "warped_pixel_x": 94,
+          "warped_pixel_y": 106,
+          "depth_mm": 716.0,
+          "depth_diff_mm": 0.0,
+          "depth_cv_occupied": false,
+          "color_min_b": 53.625,
+          "color_hue_cv2": 50.78125,
+          "color_rule1_dark": false,
+          "color_rule2_hue": false,
+          "color_occupied": false,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": 0.09991827051893555,
+            "y": -0.07250859880048557,
+            "z": 0.716
+          }
+        },
+        {
+          "slot": 14,
+          "global_slot": 39,
+          "pixel_x": 769,
+          "pixel_y": 285,
+          "warped_pixel_x": 94,
+          "warped_pixel_y": 114,
+          "depth_mm": 717.0,
+          "depth_diff_mm": -1.0,
+          "depth_cv_occupied": false,
+          "color_min_b": 62.0,
+          "color_hue_cv2": 46.84375,
+          "color_rule1_dark": false,
+          "color_rule2_hue": false,
+          "color_occupied": false,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": 0.10005782117608492,
+            "y": -0.06628162899789881,
+            "z": 0.717
+          }
+        },
+        {
+          "slot": 15,
+          "global_slot": 40,
+          "pixel_x": 769,
+          "pixel_y": 293,
+          "warped_pixel_x": 94,
+          "warped_pixel_y": 122,
+          "depth_mm": 718.0,
+          "depth_diff_mm": -2.0,
+          "depth_cv_occupied": false,
+          "color_min_b": 57.625,
+          "color_hue_cv2": 76.125,
+          "color_rule1_dark": false,
+          "color_rule2_hue": true,
+          "color_occupied": true,
+          "occupied": true,
+          "camera_frame_xyz": {
+            "x": 0.10019737183323425,
+            "y": -0.060037007204251175,
+            "z": 0.718
+          }
+        },
+        {
+          "slot": 16,
+          "global_slot": 41,
+          "pixel_x": 770,
+          "pixel_y": 301,
+          "warped_pixel_x": 94,
+          "warped_pixel_y": 130,
+          "depth_mm": 717.0,
+          "depth_diff_mm": -1.0,
+          "depth_cv_occupied": false,
+          "color_min_b": 25.75,
+          "color_hue_cv2": 103.984375,
+          "color_rule1_dark": true,
+          "color_rule2_hue": false,
+          "color_occupied": true,
+          "occupied": true,
+          "camera_frame_xyz": {
+            "x": 0.10084826883540375,
+            "y": -0.05362515140724907,
+            "z": 0.717
+          }
+        },
+        {
+          "slot": 17,
+          "global_slot": 42,
+          "pixel_x": 770,
+          "pixel_y": 309,
+          "warped_pixel_x": 94,
+          "warped_pixel_y": 138,
+          "depth_mm": 716.0,
+          "depth_diff_mm": 0.0,
+          "depth_cv_occupied": false,
+          "color_min_b": 40.5,
+          "color_hue_cv2": 66.625,
+          "color_rule1_dark": true,
+          "color_rule2_hue": false,
+          "color_occupied": true,
+          "occupied": true,
+          "camera_frame_xyz": {
+            "x": 0.10070761574079369,
+            "y": -0.047230947601307846,
+            "z": 0.716
+          }
+        },
+        {
+          "slot": 18,
+          "global_slot": 43,
+          "pixel_x": 770,
+          "pixel_y": 317,
+          "warped_pixel_x": 94,
+          "warped_pixel_y": 146,
+          "depth_mm": 714.0,
+          "depth_diff_mm": 2.0,
+          "depth_cv_occupied": false,
+          "color_min_b": 46.125,
+          "color_hue_cv2": 44.265625,
+          "color_rule1_dark": false,
+          "color_rule2_hue": false,
+          "color_occupied": false,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": 0.1004263095515736,
+            "y": -0.040797256771341585,
+            "z": 0.714
+          }
+        },
+        {
+          "slot": 19,
+          "global_slot": 44,
+          "pixel_x": 770,
+          "pixel_y": 325,
+          "warped_pixel_x": 94,
+          "warped_pixel_y": 154,
+          "depth_mm": 713.0,
+          "depth_diff_mm": 3.0,
+          "depth_cv_occupied": false,
+          "color_min_b": 48.5,
+          "color_hue_cv2": 78.359375,
+          "color_rule1_dark": false,
+          "color_rule2_hue": true,
+          "color_occupied": true,
+          "occupied": true,
+          "camera_frame_xyz": {
+            "x": 0.10028565645696357,
+            "y": -0.03444718294305256,
+            "z": 0.713
+          }
+        },
+        {
+          "slot": 20,
+          "global_slot": 45,
+          "pixel_x": 770,
+          "pixel_y": 334,
+          "warped_pixel_x": 94,
+          "warped_pixel_y": 163,
+          "depth_mm": 715.0,
+          "depth_diff_mm": 1.0,
+          "depth_cv_occupied": false,
+          "color_min_b": 57.0,
+          "color_hue_cv2": 43.984375,
+          "color_rule1_dark": false,
+          "color_rule2_hue": false,
+          "color_occupied": false,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": 0.10056696264618364,
+            "y": -0.02744439882736651,
+            "z": 0.715
+          }
+        },
+        {
+          "slot": 21,
+          "global_slot": 46,
+          "pixel_x": 770,
+          "pixel_y": 342,
+          "warped_pixel_x": 94,
+          "warped_pixel_y": 171,
+          "depth_mm": 716.0,
+          "depth_diff_mm": 0.0,
+          "depth_cv_occupied": false,
+          "color_min_b": 62.375,
+          "color_hue_cv2": 48.125,
+          "color_rule1_dark": false,
+          "color_rule2_hue": false,
+          "color_occupied": false,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": 0.10070761574079369,
+            "y": -0.02116336980215581,
+            "z": 0.716
+          }
+        },
+        {
+          "slot": 22,
+          "global_slot": 47,
+          "pixel_x": 770,
+          "pixel_y": 350,
+          "warped_pixel_x": 94,
+          "warped_pixel_y": 179,
+          "depth_mm": 716.0,
+          "depth_diff_mm": 0.0,
+          "depth_cv_occupied": false,
+          "color_min_b": 60.0,
+          "color_hue_cv2": 50.140625,
+          "color_rule1_dark": false,
+          "color_rule2_hue": false,
+          "color_occupied": false,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": 0.10070761574079369,
+            "y": -0.014843957002361375,
+            "z": 0.716
+          }
+        },
+        {
+          "slot": 23,
+          "global_slot": 48,
+          "pixel_x": 770,
+          "pixel_y": 358,
+          "warped_pixel_x": 94,
+          "warped_pixel_y": 187,
+          "depth_mm": 715.0,
+          "depth_diff_mm": 1.0,
+          "depth_cv_occupied": false,
+          "color_min_b": 69.75,
+          "color_hue_cv2": 33.140625,
+          "color_rule1_dark": false,
+          "color_rule2_hue": false,
+          "color_occupied": false,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": 0.10056696264618364,
+            "y": -0.008512638414574529,
+            "z": 0.715
+          }
+        },
+        {
+          "slot": 24,
+          "global_slot": 49,
+          "pixel_x": 771,
+          "pixel_y": 366,
+          "warped_pixel_x": 94,
+          "warped_pixel_y": 195,
+          "depth_mm": 714.0,
+          "depth_diff_mm": 2.0,
+          "depth_cv_occupied": false,
+          "color_min_b": 83.875,
+          "color_hue_cv2": 22.59375,
+          "color_rule1_dark": false,
+          "color_rule2_hue": false,
+          "color_occupied": false,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": 0.10121344989851035,
+            "y": -0.002198971817848561,
+            "z": 0.714
+          }
+        },
+        {
+          "slot": 25,
+          "global_slot": 50,
+          "pixel_x": 771,
+          "pixel_y": 374,
+          "warped_pixel_x": 94,
+          "warped_pixel_y": 203,
+          "depth_mm": 713.0,
+          "depth_diff_mm": 3.0,
+          "depth_cv_occupied": false,
+          "color_min_b": 116.25,
+          "color_hue_cv2": 105.5625,
+          "color_rule1_dark": false,
+          "color_rule2_hue": false,
+          "color_occupied": false,
+          "occupied": false,
+          "camera_frame_xyz": {
+            "x": 0.1010716943664396,
+            "y": 0.004097042787816528,
+            "z": 0.713
+          }
+        }
+      ]
+    }
+  ]
 }

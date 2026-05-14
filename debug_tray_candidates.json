@@ -2,18 +2,52 @@
   {
     "candidate_index": 0,
     "bbox": [
-      211,
-      1,
-      1239,
-      716
+      182,
+      6,
+      970,
+      714
     ],
-    "width": 1028,
-    "height": 715,
-    "area_fraction": 0.7975477430555555,
-    "short_side": 715,
-    "mask_fill_fraction": 0.8181437239802999,
-    "center_x": 725.0,
+    "width": 788,
+    "height": 708,
+    "area_fraction": 0.6053645833333333,
+    "short_side": 708,
+    "mask_fill_fraction": 0.7878667297599588,
+    "center_x": 576.0,
     "accepted": false,
     "rejection_reason": "too_large"
+  },
+  {
+    "candidate_index": 1,
+    "bbox": [
+      461,
+      169,
+      654,
+      386
+    ],
+    "width": 193,
+    "height": 217,
+    "area_fraction": 0.04544379340277778,
+    "short_side": 193,
+    "mask_fill_fraction": 0.5736969031302978,
+    "center_x": 557.5,
+    "accepted": true,
+    "rejection_reason": null
+  },
+  {
+    "candidate_index": 2,
+    "bbox": [
+      673,
+      167,
+      867,
+      386
+    ],
+    "width": 194,
+    "height": 219,
+    "area_fraction": 0.046100260416666664,
+    "short_side": 194,
+    "mask_fill_fraction": 0.869745327872711,
+    "center_x": 770.0,
+    "accepted": true,
+    "rejection_reason": null
   }
 ]

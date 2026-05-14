@@ -1,0 +1,24 @@
+# Named "home / viewing" joint configuration for the TM12 (radians).
+#
+# This is the pose the arm returns to between picks in the /wafer_pick_place
+# loop and the viewpoint GSAM detection runs from. It is also reachable on
+# demand via the /go_to_viewing_pose service.
+#
+# To re-capture: jog the arm to the desired viewing pose on the pendant, then
+#   python3 tools/save_viewing_pose.py
+# which overwrites this file. Relaunch pick_and_place with:
+#   ros2 run planning pick_and_place --ros-args \
+#     --params-file src/planning/config/viewing_pose.yaml \
+#     -p detection_mode:=gsam -p alignment_method:=direct
+#
+# Joint order: joint_1 .. joint_6
+/pick_and_place:
+  ros__parameters:
+    use_viewing_joint_pose: true
+    viewing_joint_positions:
+      - -1.7742730193535288
+      - -0.5500383392949829
+      - 1.7677773031387165
+      - 0.3306137393120884
+      - 1.5730514916059757
+      - 3.444204452462189

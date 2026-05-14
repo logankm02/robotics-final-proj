@@ -55,6 +55,20 @@ ARM_JOINT_NAMES = [
     'joint_6',
 ]
 
+# Default "home / viewing" joint configuration (radians, ordered to match
+# ARM_JOINT_NAMES). This is the pose the arm returns to between picks and the
+# viewpoint GSAM detection runs from. Re-capture by jogging the arm and running
+# tools/save_viewing_pose.py, or override via the `viewing_joint_positions`
+# parameter / a --params-file (see src/planning/config/viewing_pose.yaml).
+DEFAULT_VIEWING_JOINT_POSITIONS = [
+    -1.7742730193535288,
+    -0.5500383392949829,
+    1.7677773031387165,
+    0.3306137393120884,
+    1.5730514916059757,
+    3.444204452462189,
+]
+
 
 class PickAndPlace(Node):
     def __init__(self):
@@ -71,6 +85,10 @@ class PickAndPlace(Node):
         self.declare_parameter('xy_acceleration_scale', 0.4)
         self.declare_parameter('gsam_service_wait_timeout', 120.0)
         self.declare_parameter('gsam_service_poll_period', 1.0)
+        # Safety cap on how many wafers a single /wafer_pick_place call will
+        # transfer. 0 = unlimited (process every detected wafer). Set to 1 for
+        # a controlled single-pick validation run before unleashing the loop.
+        self.declare_parameter('max_wafers', 0)
         self.planning_group = self.get_parameter('planning_group').value
         self.end_effector_link = self.get_parameter('end_effector_link').value
         self.base_frame = self.get_parameter('base_frame').value
@@ -85,6 +103,81 @@ class PickAndPlace(Node):
         self.gsam_service_poll_period = max(
             0.1,
             float(self.get_parameter('gsam_service_poll_period').value)
+        )
+        self.max_wafers = max(0, int(self.get_parameter('max_wafers').value))
+        if self.max_wafers > 0:
+            self.get_logger().warn(
+                f'max_wafers={self.max_wafers}: /wafer_pick_place will stop '
+                f'after {self.max_wafers} wafer(s) per call (single-pick / '
+                'limited mode).'
+            )
+
+        # TM joint-move timeouts. The arm can be slow (e.g. low pendant speed
+        # slider), so a move is NOT failed just for being slow — only if it
+        # STALLS (stops making progress toward the target) for
+        # tm_joint_stall_timeout seconds. tm_joint_timeout is an absolute
+        # backstop so a truly hung move can't lock the pipeline forever.
+        # Set tm_joint_stall_timeout very high to effectively disable the
+        # stall check; set tm_joint_timeout very high to push the backstop out.
+        self.declare_parameter('tm_joint_timeout', 600.0)
+        self.declare_parameter('tm_joint_stall_timeout', 20.0)
+        self.tm_joint_timeout = float(
+            self.get_parameter('tm_joint_timeout').value
+        )
+        self.tm_joint_stall_timeout = float(
+            self.get_parameter('tm_joint_stall_timeout').value
+        )
+        self.get_logger().info(
+            f'TM joint move: stall timeout {self.tm_joint_stall_timeout:.0f}s '
+            f'(no-progress), absolute backstop {self.tm_joint_timeout:.0f}s'
+        )
+
+        # Grasp calibration offset (metres, base frame). Applied to BOTH the
+        # source and destination slot poses, so every downstream target
+        # (approach / grasp / lift / transport / place) is shifted the same
+        # way. Use this to trim a systematic offset between where the arm
+        # goes and where the wafer actually is — e.g. negative z to grasp
+        # lower, negative x to pull back. Tunable live via --params-file or
+        # `ros2 param set`; no rebuild needed.
+        self.declare_parameter('grasp_offset_x', 0.0)
+        self.declare_parameter('grasp_offset_y', 0.0)
+        self.declare_parameter('grasp_offset_z', 0.0)
+        self.grasp_offset_x = float(self.get_parameter('grasp_offset_x').value)
+        self.grasp_offset_y = float(self.get_parameter('grasp_offset_y').value)
+        self.grasp_offset_z = float(self.get_parameter('grasp_offset_z').value)
+        if (self.grasp_offset_x or self.grasp_offset_y or self.grasp_offset_z):
+            self.get_logger().info(
+                f'Grasp offset (base frame): x={self.grasp_offset_x:+.4f} '
+                f'y={self.grasp_offset_y:+.4f} z={self.grasp_offset_z:+.4f} m'
+            )
+
+        # "Home / viewing" joint pose. The arm returns here between picks in
+        # the /wafer_pick_place loop, GSAM detection runs from this viewpoint,
+        # and it's reachable on demand via the /go_to_viewing_pose service.
+        self.declare_parameter('viewing_joint_positions',
+                               DEFAULT_VIEWING_JOINT_POSITIONS)
+        self.declare_parameter('use_viewing_joint_pose', True)
+        viewing_positions = list(
+            self.get_parameter('viewing_joint_positions').value
+        )
+        if len(viewing_positions) != len(ARM_JOINT_NAMES):
+            self.get_logger().error(
+                f'viewing_joint_positions must have {len(ARM_JOINT_NAMES)} '
+                f'values, got {len(viewing_positions)} — using built-in default'
+            )
+            viewing_positions = list(DEFAULT_VIEWING_JOINT_POSITIONS)
+        self.viewing_joint_positions = [float(v) for v in viewing_positions]
+        self.use_viewing_joint_pose = bool(
+            self.get_parameter('use_viewing_joint_pose').value
+        )
+        # Pre-build the JointState that execute_tm_joint_target() consumes.
+        self._viewing_joint_state = JointState()
+        self._viewing_joint_state.name = list(ARM_JOINT_NAMES)
+        self._viewing_joint_state.position = self.viewing_joint_positions
+        self.get_logger().info(
+            f'Viewing/home joint pose: '
+            f'{[round(v, 4) for v in self.viewing_joint_positions]} '
+            f'(use_viewing_joint_pose={self.use_viewing_joint_pose})'
         )
 
         # Alignment method selection
@@ -219,6 +312,14 @@ class PickAndPlace(Node):
             callback_group=self.callback_group
         )
 
+        # Service to send the arm to the saved viewing/home joint pose
+        self.go_to_viewing_pose_srv = self.create_service(
+            Trigger,
+            'go_to_viewing_pose',
+            self.go_to_viewing_pose_callback,
+            callback_group=self.callback_group
+        )
+
         self.processing = False
 
         self.get_logger().info('Ready! Pick-and-Place node initialized')
@@ -226,28 +327,32 @@ class PickAndPlace(Node):
     async def detect_slides_gsam(self):
         """
         Call GSAM service to detect slides in storage box.
-        
+
         Returns:
-            List of slot numbers (e.g., [3, 7, 12, 18]), or empty list if failed
+            list  - slot numbers GSAM reported (e.g. [3, 7, 12]); [] means GSAM
+                    ran successfully and the trays are genuinely empty.
+            None  - the detection FAILED (service unavailable, error response,
+                    unparseable result, or exception). Callers must treat None
+                    as an error/abort, NOT as "no wafers".
         """
         try:
             if not self.wait_for_gsam_service():
-                return []
+                return None
 
             request = Trigger.Request()
-            
+
             self.get_logger().info('Calling GSAM slide detection service...')
             future = self.gsam_client.call_async(request)
             response = await future
-            
+
             if not response.success:
                 self.get_logger().error(f'GSAM detection failed: {response.message}')
-                return []
-            
+                return None
+
             # Parse response message
             # Format: "Detected slides at slots: [3, 7, 12, 18]"
             self.get_logger().info(f'GSAM result: {response.message}')
-            
+
             match = re.search(r'\[([\d, ]+)\]', response.message)
             if match:
                 numbers_str = match.group(1).strip()
@@ -256,18 +361,18 @@ class PickAndPlace(Node):
                     self.get_logger().info(f'Detected slides in {len(slot_numbers)} slots: {slot_numbers}')
                     return slot_numbers
                 else:
-                    # Empty brackets []
+                    # Empty brackets [] — GSAM ran, trays genuinely empty.
                     self.get_logger().info('No slides detected (empty box)')
                     return []
             else:
                 self.get_logger().warn('Could not parse slot numbers from GSAM response')
-                return []
-                
+                return None
+
         except Exception as e:
             self.get_logger().error(f'Exception calling GSAM service: {e}')
             import traceback
             traceback.print_exc()
-            return []
+            return None
 
     def wait_for_gsam_service(self):
         """Wait for the GSAM service to become ready."""
@@ -627,7 +732,23 @@ class PickAndPlace(Node):
                 self.get_logger().info('='*60)
                 
                 detected_slots = await self.detect_slides_gsam()
-                
+
+                # None == detection FAILED (not "tray empty"). Abort instead of
+                # falsely reporting success. Usually means start_cv.sh isn't up.
+                if detected_slots is None:
+                    self.get_logger().error(
+                        'GSAM detection failed (service unavailable or '
+                        'errored). Is start_cv.sh running? Aborting.'
+                    )
+                    response.success = False
+                    response.message = (
+                        "GSAM detection failed — check that the perception "
+                        "stack (start_cv.sh / gsam_slide_detect) is running"
+                    )
+                    response.slides_picked = 0
+                    self.processing = False
+                    return response
+
                 if not detected_slots:
                     self.get_logger().info('No slides detected by GSAM - operation complete')
                     response.success = True
@@ -945,74 +1066,126 @@ class PickAndPlace(Node):
         self.get_logger().info('='*60)
 
         try:
-            # 1. Move to scan/home pose
-            self.get_logger().info('STEP 1: Move to scan/home pose')
-            if not await self.move_to_target(scan_pose,
-                                             velocity_scale=self.xy_vel_scale,
-                                             acceleration_scale=self.xy_accel_scale):
-                response.success = False
-                response.message = "Failed to reach scan pose"
-                response.wafers_picked = 0
-                return response
+            # Re-scan loop: every cycle returns the arm to `scan_pose` (the
+            # "current starting position" the caller passed in), re-runs GSAM
+            # so the tray state is fresh, then picks+places the FIRST wafer
+            # still in the source tray. Repeats until the source tray is empty
+            # (or max_wafers is hit). Slots whose pick fails are remembered so
+            # we don't re-target them forever.
+            failed_slots = set()
+            cycle = 0
+            stop_reason = None
 
-            time.sleep(0.5)  # let camera settle
+            while True:
+                cycle += 1
 
-            # 2. GSAM detection — populates slide_XX TFs for every slot in every tray
-            self.get_logger().info('STEP 2: Trigger GSAM detection')
-            detected_slots = await self.detect_slides_gsam()
+                # 1. Move to the start/viewing pose. Prefer the saved joint
+                #    configuration (repeatable, no IK) over the Cartesian
+                #    scan_pose passed in the request.
+                if self.use_viewing_joint_pose:
+                    self.get_logger().info(
+                        f'CYCLE {cycle} — STEP 1: Move to viewing/home joint pose'
+                    )
+                    reached_start = await self.move_to_viewing_pose()
+                else:
+                    self.get_logger().info(
+                        f'CYCLE {cycle} — STEP 1: Move to scan/home (start) pose'
+                    )
+                    reached_start = await self.move_to_target(
+                        scan_pose,
+                        velocity_scale=self.xy_vel_scale,
+                        acceleration_scale=self.xy_accel_scale)
+                if not reached_start:
+                    response.success = False
+                    response.message = (
+                        f"Failed to reach start pose on cycle {cycle} "
+                        f"after {wafers_picked} wafer(s)"
+                    )
+                    response.wafers_picked = wafers_picked
+                    return response
 
-            if not detected_slots:
-                self.get_logger().info('No wafers detected — operation complete')
-                response.success = True
-                response.message = "No wafers detected"
-                response.wafers_picked = 0
-                self.processing = False
-                return response
+                time.sleep(0.5)  # let camera settle
 
-            # Filter to source-tray slots only.
-            src_slots = sorted([s for s in detected_slots
-                                if (s - 1) // num_slots == src_tray])
-            if not src_slots:
-                self.get_logger().info(
-                    f'GSAM saw {detected_slots} but none are in source tray {src_tray}'
-                )
-                response.success = True
-                response.message = "No wafers in source tray"
-                response.wafers_picked = 0
-                self.processing = False
-                return response
+                # 2. GSAM detection — re-run every cycle so slide_XX TFs
+                #    reflect the tray state AFTER the previous pick.
+                self.get_logger().info(f'CYCLE {cycle} — STEP 2: Trigger GSAM detection')
+                detected_slots = await self.detect_slides_gsam()
 
-            self.get_logger().info(
-                f'STEP 3: {len(src_slots)} wafer(s) in source tray: {src_slots}'
-            )
+                # None == detection FAILED (GSAM service down, error, etc.).
+                # This is NOT "tray empty" — abort rather than falsely report
+                # a clean completion. Most common cause: start_cv.sh / the
+                # gsam_slide_detect node isn't running.
+                if detected_slots is None:
+                    self.get_logger().error(
+                        f'CYCLE {cycle}: GSAM detection failed (service '
+                        'unavailable or errored). Is start_cv.sh running? '
+                        'Aborting.'
+                    )
+                    # Return to a known pose before bailing out.
+                    if self.use_viewing_joint_pose:
+                        await self.move_to_viewing_pose()
+                    response.success = False
+                    response.message = (
+                        f"GSAM detection failed on cycle {cycle} after "
+                        f"{wafers_picked} wafer(s) — check that the perception "
+                        "stack (start_cv.sh / gsam_slide_detect) is running"
+                    )
+                    response.wafers_picked = wafers_picked
+                    return response
 
-            time.sleep(0.3)  # let TF frames propagate
+                # Filter to source-tray slots, excluding ones we already
+                # failed on (avoids an infinite retry on the same slot).
+                src_slots = sorted([
+                    s for s in detected_slots
+                    if (s - 1) // num_slots == src_tray and s not in failed_slots
+                ])
 
-            # 3. Pick each wafer and place it in the matching slot of dst tray.
-            for src_slot in src_slots:
+                if not src_slots:
+                    if failed_slots:
+                        stop_reason = (
+                            f"source tray {src_tray} has no pickable wafers left "
+                            f"({len(failed_slots)} slot(s) failed: "
+                            f"{sorted(failed_slots)})"
+                        )
+                    else:
+                        stop_reason = f"source tray {src_tray} is empty"
+                    self.get_logger().info(f'{stop_reason} — operation complete')
+                    break
+
+                # 3. Always target the FIRST remaining wafer in the source tray.
+                src_slot = src_slots[0]
                 local_slot = ((src_slot - 1) % num_slots) + 1
                 dst_slot = dst_tray * num_slots + local_slot
 
-                self.get_logger().info('')
-                self.get_logger().info('-' * 60)
                 self.get_logger().info(
-                    f'WAFER {wafers_picked+1}/{len(src_slots)}: '
-                    f'src slide_{src_slot:02d} -> dst slide_{dst_slot:02d}'
+                    f'CYCLE {cycle} — STEP 3: {len(src_slots)} wafer(s) in '
+                    f'source tray {src_tray}: {src_slots}'
                 )
                 self.get_logger().info('-' * 60)
+                self.get_logger().info(
+                    f'CYCLE {cycle}: src slide_{src_slot:02d} -> '
+                    f'dst slide_{dst_slot:02d}'
+                )
+                self.get_logger().info('-' * 60)
+
+                time.sleep(0.3)  # let TF frames propagate
 
                 src_pose = self.slide_detector.get_slide_pose(src_slot, timeout=2.0)
                 if src_pose is None:
                     self.get_logger().error(
-                        f'Could not lookup source TF slide_{src_slot:02d}, skipping'
+                        f'Could not lookup source TF slide_{src_slot:02d} — '
+                        'marking slot failed, will re-scan'
                     )
+                    failed_slots.add(src_slot)
                     continue
 
                 dst_pose = self.slide_detector.get_slide_pose(dst_slot, timeout=2.0)
                 if dst_pose is None:
                     self.get_logger().error(
-                        f'Could not lookup destination TF slide_{dst_slot:02d}, skipping'
+                        f'Could not lookup destination TF slide_{dst_slot:02d} — '
+                        'marking source slot failed, will re-scan'
                     )
+                    failed_slots.add(src_slot)
                     continue
 
                 # Build job queue for this wafer
@@ -1020,29 +1193,61 @@ class PickAndPlace(Node):
                     src_pose, dst_pose, approach_clearance, lift_clearance
                 )
                 if job_queue is None:
-                    self.get_logger().error('IK failed building queue, skipping wafer')
+                    self.get_logger().error(
+                        'IK failed building queue — marking slot failed, '
+                        'will re-scan'
+                    )
+                    failed_slots.add(src_slot)
                     continue
 
                 self.get_logger().info(f'Executing {len(job_queue)} jobs')
                 if await self.execute_job_queue(job_queue):
                     wafers_picked += 1
-                    self.get_logger().info(f'Wafer {wafers_picked} placed!')
+                    self.get_logger().info(
+                        f'Wafer {wafers_picked} placed '
+                        f'(slide_{src_slot:02d} -> slide_{dst_slot:02d})'
+                    )
                 else:
-                    self.get_logger().error('Execution failed for this wafer')
+                    self.get_logger().error(
+                        'Execution failed for this wafer — marking slot failed, '
+                        'will re-scan'
+                    )
+                    failed_slots.add(src_slot)
+                    continue
 
                 time.sleep(0.5)
 
-            # 4. Return to scan/home pose
-            self.get_logger().info('STEP 4: Return to scan/home pose')
-            await self.move_to_target(scan_pose,
-                                      velocity_scale=self.xy_vel_scale,
-                                      acceleration_scale=self.xy_accel_scale)
+                # Single-pick / limited mode: stop after N successful wafers.
+                if self.max_wafers > 0 and wafers_picked >= self.max_wafers:
+                    stop_reason = (
+                        f"max_wafers={self.max_wafers} reached"
+                    )
+                    self.get_logger().warn(
+                        f'{stop_reason} — stopping after {wafers_picked} wafer(s)'
+                    )
+                    break
+
+            # Final: return to the start/viewing pose
+            if self.use_viewing_joint_pose:
+                self.get_logger().info('FINAL — Return to viewing/home joint pose')
+                await self.move_to_viewing_pose()
+            else:
+                self.get_logger().info('FINAL — Return to scan/home (start) pose')
+                await self.move_to_target(scan_pose,
+                                          velocity_scale=self.xy_vel_scale,
+                                          acceleration_scale=self.xy_accel_scale)
 
             self.get_logger().info('='*60)
-            self.get_logger().info(f'DONE. Picked & placed {wafers_picked} wafer(s).')
+            self.get_logger().info(
+                f'DONE. Picked & placed {wafers_picked} wafer(s) over '
+                f'{cycle} cycle(s). Stop reason: {stop_reason}'
+            )
             self.get_logger().info('='*60)
             response.success = True
-            response.message = f"Picked {wafers_picked} wafer(s)"
+            response.message = (
+                f"Picked {wafers_picked} wafer(s) over {cycle} cycle(s) "
+                f"({stop_reason})"
+            )
             response.wafers_picked = wafers_picked
 
         except Exception as e:
@@ -1067,6 +1272,12 @@ class PickAndPlace(Node):
         """
         queue = []
         current = self.current_joint_state
+
+        # Apply the calibration grasp offset (base frame) to both endpoints up
+        # front, so every downstream target — approach, grasp, lift, transport,
+        # place — is consistently corrected.
+        src_pose = self._apply_grasp_offset(src_pose)
+        dst_pose = self._apply_grasp_offset(dst_pose)
 
         # Use 'direct' alignment for both source and destination — keeps the
         # gripper jaws aligned with the slot's long axis. (This was the
@@ -1164,6 +1375,22 @@ class PickAndPlace(Node):
         queue.append((dst_lift, self.z_vel_scale, self.z_accel_scale))
 
         return queue
+
+    def _apply_grasp_offset(self, pose):
+        """
+        Return a copy of `pose` shifted by the configured base-frame grasp
+        offset. Orientation is untouched. If all offsets are zero, returns the
+        pose unchanged (no copy).
+        """
+        if not (self.grasp_offset_x or self.grasp_offset_y or self.grasp_offset_z):
+            return pose
+        out = PoseStamped()
+        out.header = pose.header
+        out.pose.position.x = pose.pose.position.x + self.grasp_offset_x
+        out.pose.position.y = pose.pose.position.y + self.grasp_offset_y
+        out.pose.position.z = pose.pose.position.z + self.grasp_offset_z
+        out.pose.orientation = pose.pose.orientation
+        return out
 
     def _wafer_pose_at(self, align_pose, slide_pose, height_above_slot_base):
         """
@@ -1520,9 +1747,21 @@ class PickAndPlace(Node):
         velocity_scale=0.2,
         acceleration_scale=0.2,
         tolerance=0.02,
-        timeout_sec=20.0,
+        timeout_sec=None,
+        stall_timeout=None,
     ):
-        """Execute a joint target through TM's direct set_positions service."""
+        """
+        Execute a joint target through TM's direct set_positions service.
+
+        Waits for the arm to converge. A slow move is fine — it only fails if
+        the arm STALLS (no progress toward the target for `stall_timeout` s)
+        or the absolute `timeout_sec` backstop is hit. Both default to the
+        tm_joint_* node parameters.
+        """
+        if timeout_sec is None:
+            timeout_sec = self.tm_joint_timeout
+        if stall_timeout is None:
+            stall_timeout = self.tm_joint_stall_timeout
         if not self.set_positions_client.service_is_ready():
             self.get_logger().error('TM set_positions service not available')
             return False
@@ -1552,11 +1791,32 @@ class PickAndPlace(Node):
             return False
 
         deadline = time.time() + timeout_sec
-        while time.time() < deadline:
+        start_positions = None        # arm config when we started polling
+        last_max_error = float('inf')
+        joint_state_updates = 0       # how many distinct /joint_states we saw
+        last_seen_state = None
+        # Stall detection: a slow-but-progressing move keeps resetting
+        # last_progress_time; a move that physically stops short of the target
+        # trips the stall timeout. PROGRESS_EPS is the smallest error
+        # improvement (rad) we count as "still moving".
+        PROGRESS_EPS = 0.002
+        best_error = float('inf')
+        last_progress_time = time.time()
+        timed_out_reason = None
+
+        while True:
+            now = time.time()
             if self.current_joint_state is not None:
+                if self.current_joint_state is not last_seen_state:
+                    joint_state_updates += 1
+                    last_seen_state = self.current_joint_state
                 current_map = dict(
                     zip(self.current_joint_state.name, self.current_joint_state.position)
                 )
+                if start_positions is None:
+                    start_positions = {
+                        n: current_map.get(n) for n in ARM_JOINT_NAMES
+                    }
                 max_error = 0.0
                 for name, target in zip(ARM_JOINT_NAMES, ordered_positions):
                     current = current_map.get(name)
@@ -1564,12 +1824,107 @@ class PickAndPlace(Node):
                         max_error = float('inf')
                         break
                     max_error = max(max_error, abs(current - target))
+                last_max_error = max_error
                 if max_error <= tolerance:
                     return True
+                # Still making progress toward the target? Reset the stall clock.
+                if max_error < best_error - PROGRESS_EPS:
+                    best_error = max_error
+                    last_progress_time = now
+
+            if now - last_progress_time > stall_timeout:
+                timed_out_reason = 'stalled'
+                break
+            if now > deadline:
+                timed_out_reason = 'absolute-backstop'
+                break
             time.sleep(0.05)
 
-        self.get_logger().error('Timed out waiting for TM joint target to finish')
+        # Failed. Log enough to tell apart the failure modes:
+        #   moved ~0      -> arm never executed (pendant speed slider at 0%,
+        #                    Manual mode, paused, or project not on Listen node)
+        #   moved partway -> stopped short (obstacle / joint-limit / e-stop),
+        #                    or hit the absolute backstop
+        #   no updates    -> /joint_states feedback stalled
+        moved = 0.0
+        if start_positions is not None and self.current_joint_state is not None:
+            cur_map = dict(
+                zip(self.current_joint_state.name, self.current_joint_state.position)
+            )
+            for name, sp in start_positions.items():
+                cur = cur_map.get(name)
+                if sp is not None and cur is not None:
+                    moved = max(moved, abs(cur - sp))
+
+        if joint_state_updates <= 1:
+            hint = ('/joint_states feedback stalled — the TM driver may have '
+                    'lost the SVR connection.')
+        elif moved < 0.01:
+            hint = ('arm did NOT move. Check the pendant: speed slider must be '
+                    '>0% (often the culprit), robot in AUTO mode, not paused, '
+                    'and the project sitting on the Listen node.')
+        elif timed_out_reason == 'stalled':
+            hint = (f'arm moved {moved:.3f} rad then STALLED short of the '
+                    f'target for {stall_timeout:.0f}s (remaining error '
+                    f'{last_max_error:.3f} rad > tol {tolerance}). Likely an '
+                    'obstacle, joint limit, or e-stop/pause mid-move.')
+        else:
+            hint = (f'arm moved {moved:.3f} rad and was still progressing but '
+                    f'hit the absolute {timeout_sec:.0f}s backstop (remaining '
+                    f'error {last_max_error:.3f} rad). Raise tm_joint_timeout '
+                    'if the move is just genuinely long.')
+        self.get_logger().error(
+            f'TM joint target failed ({timed_out_reason}) — {hint} '
+            f'(final error={last_max_error:.3f} rad, moved={moved:.3f} rad, '
+            f'joint_state updates={joint_state_updates})'
+        )
         return False
+
+    async def move_to_viewing_pose(self, velocity_scale=None, acceleration_scale=None):
+        """
+        Send the arm to the saved viewing/home joint configuration via the TM
+        set_positions service. This is a joint-space move — no IK, so it is
+        fully repeatable regardless of the arm's current configuration.
+        """
+        if velocity_scale is None:
+            velocity_scale = self.xy_vel_scale
+        if acceleration_scale is None:
+            acceleration_scale = self.xy_accel_scale
+        self.get_logger().info(
+            'Moving to viewing/home joint pose '
+            f'{[round(v, 4) for v in self.viewing_joint_positions]}'
+        )
+        return await self.execute_tm_joint_target(
+            self._viewing_joint_state,
+            velocity_scale=velocity_scale,
+            acceleration_scale=acceleration_scale,
+        )
+
+    async def go_to_viewing_pose_callback(self, request, response):
+        """Trigger service: move the arm to the saved viewing/home joint pose."""
+        if self.processing:
+            response.success = False
+            response.message = 'Busy (another operation in progress)'
+            return response
+        if self.current_joint_state is None:
+            response.success = False
+            response.message = 'No joint state available yet'
+            return response
+
+        self.processing = True
+        try:
+            ok = await self.move_to_viewing_pose()
+            response.success = ok
+            response.message = (
+                'At viewing/home pose' if ok
+                else 'Failed to reach viewing/home pose'
+            )
+        except Exception as e:
+            response.success = False
+            response.message = f'Exception: {e}'
+        finally:
+            self.processing = False
+        return response
 
     async def control_gripper(self, close: bool):
         """Control gripper: True to close, False to open"""

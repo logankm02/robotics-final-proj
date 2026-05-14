@@ -122,9 +122,28 @@ class GSAMSlideDetectNode(Node):
         self.declare_parameter('depth_topic', '/camera/camera/aligned_depth_to_color/image_raw')
         self.declare_parameter('depth_diff_threshold', 10)  # mm shallower than tray floor = wafer
         self.declare_parameter('min_tray_area_fraction', 0.02)
-        self.declare_parameter('max_tray_area_fraction', 0.20)
+        # Default raised from 0.20 -> 0.45 because our trays sit close enough to
+        # the camera that a single tray covers ~32% of the frame. Lower this if
+        # you start getting whole-workbench detections through the filter.
+        self.declare_parameter('max_tray_area_fraction', 0.45)
         self.declare_parameter('min_tray_short_side_px', 140)
         self.declare_parameter('max_trays', 2)
+        # Color/hue occupancy detection (mirrors pick_place.py wafer_detect3 rules).
+        # Operates on the perspective-warped tray ROI alongside depth.
+        # Set enable_color_detection=False to fall back to depth-only behavior.
+        # Use cv2.minAreaRect on the bbox-clipped SAM2 mask so the perspective
+        # warp + slot grid follow the tray's actual orientation instead of
+        # the axis-aligned Grounding DINO box. Set False to fall back to the
+        # old axis-aligned behavior.
+        self.declare_parameter('use_oriented_rect', True)
+        self.declare_parameter('enable_color_detection', True)
+        self.declare_parameter('color_interior_x_min', 0.12)  # band x-range as frac of tray_w
+        self.declare_parameter('color_interior_x_max', 0.88)
+        self.declare_parameter('color_hue_x', 0.45)           # hue patch x-center as frac of tray_w
+        self.declare_parameter('dark_abs_thresh', 42.0)       # Rule 1: dark pixel absolute threshold
+        self.declare_parameter('single_thresh', 90.0)         # Rule 2: brightness gate when hue is in range
+        self.declare_parameter('hue_low_cv2', 70)             # Rule 2: lower hue bound (OpenCV 0-180)
+        self.declare_parameter('hue_high_cv2', 100)           # Rule 2: upper hue bound (OpenCV 0-180)
         self.declare_parameter(
             'debug_output_dir',
             str(Path.home() / 'final_project_ws'),
@@ -151,6 +170,23 @@ class GSAMSlideDetectNode(Node):
             self.get_parameter('min_tray_short_side_px').value
         )
         self.max_trays = max(1, int(self.get_parameter('max_trays').value))
+        self.use_oriented_rect = bool(
+            self.get_parameter('use_oriented_rect').value
+        )
+        self.enable_color_detection = bool(
+            self.get_parameter('enable_color_detection').value
+        )
+        self.color_interior_x_min = float(
+            self.get_parameter('color_interior_x_min').value
+        )
+        self.color_interior_x_max = float(
+            self.get_parameter('color_interior_x_max').value
+        )
+        self.color_hue_x = float(self.get_parameter('color_hue_x').value)
+        self.dark_abs_thresh = float(self.get_parameter('dark_abs_thresh').value)
+        self.single_thresh = float(self.get_parameter('single_thresh').value)
+        self.hue_low_cv2 = float(self.get_parameter('hue_low_cv2').value)
+        self.hue_high_cv2 = float(self.get_parameter('hue_high_cv2').value)
         self.debug_output_dir = Path(
             self.get_parameter('debug_output_dir').value
         ).expanduser()
@@ -568,6 +604,88 @@ class GSAMSlideDetectNode(Node):
         return [box.reshape(4, 1, 2)]
 
     @staticmethod
+    def oriented_tray_quad(mask, det_box, image_shape):
+        """
+        Compute the oriented quadrilateral that bounds the tray.
+
+        Pipeline: clip SAM2 mask to the Grounding DINO bbox (suppresses any
+        background bleed outside the detection region), morphologically clean
+        the result, take the largest contour, then `cv2.minAreaRect`.
+
+        Returns:
+            quad: np.ndarray shape (4, 2) float32, in [TL, TR, BL, BR] order
+                  where TL-TR is the short edge of the tray that sits highest
+                  in the image. Compatible with the existing warp src_pts
+                  convention used elsewhere in this file.
+            short_len, long_len: actual edge lengths in pixels.
+            angle_deg: rotation angle of the long axis vs vertical, signed.
+            None on failure.
+        """
+        img_h, img_w = image_shape[:2]
+        x1, y1, x2, y2 = det_box.astype(int)
+        x1 = max(0, x1); y1 = max(0, y1)
+        x2 = min(img_w, x2); y2 = min(img_h, y2)
+        if x2 <= x1 or y2 <= y1:
+            return None
+
+        clipped = np.zeros_like(mask)
+        clipped[y1:y2, x1:x2] = mask[y1:y2, x1:x2]
+
+        # Kernel size scales with image resolution so we don't over-erode on
+        # small frames or under-clean on large ones.
+        k = max(5, min(img_h, img_w) // 200)
+        if k % 2 == 0:
+            k += 1
+        kernel = np.ones((k, k), np.uint8)
+        clipped = cv2.morphologyEx(clipped, cv2.MORPH_CLOSE, kernel)
+        clipped = cv2.morphologyEx(clipped, cv2.MORPH_OPEN, kernel)
+
+        contours, _ = cv2.findContours(clipped, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        if not contours:
+            return None
+        cnt = max(contours, key=cv2.contourArea)
+        if cv2.contourArea(cnt) < 100:
+            return None
+
+        rect = cv2.minAreaRect(cnt)
+        box = cv2.boxPoints(rect)  # (4, 2) clockwise from bottom-most corner
+
+        # Pair adjacent corners into edges; identify which two opposite edges
+        # are the SHORT sides (across-tray, perpendicular to the slot stack).
+        edges = [(0, 1), (1, 2), (2, 3), (3, 0)]
+        edge_lens = [float(np.linalg.norm(box[a] - box[b])) for a, b in edges]
+        if edge_lens[0] < edge_lens[1]:
+            short_edges = [edges[0], edges[2]]
+            short_len, long_len = edge_lens[0], edge_lens[1]
+        else:
+            short_edges = [edges[1], edges[3]]
+            short_len, long_len = edge_lens[1], edge_lens[0]
+
+        # Of the two short edges, the one with smaller mean y is "top".
+        means_y = [(box[a][1] + box[b][1]) / 2.0 for a, b in short_edges]
+        if means_y[0] <= means_y[1]:
+            top_edge, bot_edge = short_edges[0], short_edges[1]
+        else:
+            top_edge, bot_edge = short_edges[1], short_edges[0]
+
+        # Within each short edge, smaller x is "left".
+        top = sorted([box[top_edge[0]], box[top_edge[1]]], key=lambda p: p[0])
+        bot = sorted([box[bot_edge[0]], box[bot_edge[1]]], key=lambda p: p[0])
+        p1, p2 = top  # TL, TR
+        p3, p4 = bot  # BL, BR
+
+        # Angle of long axis (BL -> TL) vs image-up (negative-y). Positive = CW.
+        v_long = np.array(p1) - np.array(p3)
+        angle_deg = float(np.degrees(np.arctan2(v_long[0], -v_long[1])))
+
+        return (
+            np.array([p1, p2, p3, p4], dtype=np.float32),
+            float(short_len),
+            float(long_len),
+            angle_deg,
+        )
+
+    @staticmethod
     def filter_non_parallel(img, points, angle_thrd=10):
         """
         Filter edges to keep only lines parallel to the line (p1, p2)
@@ -689,7 +807,13 @@ class GSAMSlideDetectNode(Node):
 
         # Build and send TF
         tfmsg = TransformStamped()
-        tfmsg.header.stamp = msg.header.stamp
+        # Stamp with the CURRENT time, not msg.header.stamp (the camera image
+        # timestamp). On CPU, GSAM inference takes 60-90s per call, so the
+        # image stamp would be far older than tf2's dynamic buffer window
+        # (~10s) and the frame would be published yet un-lookupable. These
+        # frames go out via the *static* broadcaster (see detect_slides),
+        # which is timestamp-agnostic, so current time is the safe choice.
+        tfmsg.header.stamp = self.get_clock().now().to_msg()
         tfmsg.header.frame_id = self.camera_frame
         tfmsg.child_frame_id = f"slide_{slotInd:02d}"
 
@@ -702,7 +826,10 @@ class GSAMSlideDetectNode(Node):
         tfmsg.transform.rotation.z = float(qz)
         tfmsg.transform.rotation.w = float(qw)
 
-        self.br.sendTransform(tfmsg)
+        # Do NOT publish on the dynamic broadcaster here. detect_slides()
+        # batches every slot into one self.static_br.sendTransform() call.
+        # Publishing the same child frame on both /tf and /tf_static makes
+        # tf2 flip-flop between dynamic and static storage for that frame.
         return R_pn, t_pn, tfmsg
     @staticmethod
     def slide_ind_post_process(detected_slides):
@@ -754,34 +881,60 @@ class GSAMSlideDetectNode(Node):
         for tray_idx, (mask, det_box) in enumerate(zip(masks, det_boxes)):
             cv2.imwrite(str(self.debug_output_dir / f"debug_mask_tray{tray_idx}.png"), mask)
 
-            # Use Grounding DINO box directly — avoids mask_to_rect getting background bleed
             tray_x1, tray_y1, tray_x2, tray_y2 = det_box.astype(int)
-            p1 = np.array([tray_x1, tray_y1], dtype=np.float32)  # TL
-            p2 = np.array([tray_x2, tray_y1], dtype=np.float32)  # TR
-            p3 = np.array([tray_x1, tray_y2], dtype=np.float32)  # BL
-            p4 = np.array([tray_x2, tray_y2], dtype=np.float32)  # BR
-            tray_w = int(np.linalg.norm(p2 - p1))
-            tray_h = int(np.linalg.norm(p3 - p1))
+            quad_angle_deg = 0.0
+            quad_source = 'axis_aligned'
+
+            oriented = None
+            if self.use_oriented_rect:
+                oriented = self.oriented_tray_quad(mask, det_box, img.shape)
+                if oriented is None:
+                    self.get_logger().warn(
+                        f"Tray {tray_idx}: oriented_tray_quad returned None - "
+                        "falling back to axis-aligned bbox"
+                    )
+
+            if oriented is not None:
+                quad, short_len, long_len, quad_angle_deg = oriented
+                p1, p2, p3, p4 = (quad[0], quad[1], quad[2], quad[3])
+                tray_w = max(1, int(round(short_len)))
+                tray_h = max(1, int(round(long_len)))
+                quad_source = 'oriented_min_area_rect'
+                self.get_logger().info(
+                    f"Tray {tray_idx}: oriented quad - short={tray_w}px "
+                    f"long={tray_h}px angle={quad_angle_deg:+.2f}°"
+                )
+            else:
+                # Axis-aligned fallback (legacy behavior).
+                p1 = np.array([tray_x1, tray_y1], dtype=np.float32)  # TL
+                p2 = np.array([tray_x2, tray_y1], dtype=np.float32)  # TR
+                p3 = np.array([tray_x1, tray_y2], dtype=np.float32)  # BL
+                p4 = np.array([tray_x2, tray_y2], dtype=np.float32)  # BR
+                tray_w = int(np.linalg.norm(p2 - p1))
+                tray_h = int(np.linalg.norm(p3 - p1))
+
             points = [p1.tolist(), p2.tolist(), p3.tolist(), p4.tolist()]
 
-            cv2.rectangle(overlay, (tray_x1, tray_y1), (tray_x2, tray_y2), (255, 0, 0), 3)
+            # Draw the actual tray quad (rotated if oriented_tray_quad fired)
+            # plus the original axis-aligned bbox in a fainter color so you
+            # can visually compare orientation alignment.
+            quad_poly = np.array([p1, p2, p4, p3], dtype=np.int32)  # CW for poly draw
+            cv2.polylines(overlay, [quad_poly.reshape(-1, 1, 2)],
+                          isClosed=True, color=(255, 0, 0), thickness=3)
+            cv2.rectangle(overlay, (tray_x1, tray_y1), (tray_x2, tray_y2),
+                          (180, 180, 180), 1)
 
-            # Grounding DINO boxes can hug the image border even when the tray is
-            # visible, and aligned depth is often invalid right at those borders.
-            # Use slightly inset points for tray-orientation depth sampling while
-            # still keeping the full box for the 2D warp and overlay.
-            inset_x = max(8, tray_w // 12)
-            inset_y = max(8, tray_h // 12)
-            inset_x = min(inset_x, max(1, tray_w // 2 - 1))
-            inset_y = min(inset_y, max(1, tray_h // 2 - 1))
-            depth_points = [
-                [tray_x1 + inset_x, tray_y1 + inset_y],
-                [tray_x2 - inset_x, tray_y1 + inset_y],
-                [tray_x1 + inset_x, tray_y2 - inset_y],
-                [tray_x2 - inset_x, tray_y2 - inset_y],
-            ]
+            # Inset 4 corners toward the centroid for depth-plane sampling.
+            # Works regardless of orientation - just shrink the quad slightly.
+            centroid = (p1 + p2 + p3 + p4) / 4.0
+            inset_frac = 1.0 / 12.0  # ~8% toward center
+            depth_points = []
+            for corner in (p1, p2, p3, p4):
+                inset_pt = corner + inset_frac * (centroid - corner)
+                depth_points.append([int(inset_pt[0]), int(inset_pt[1])])
+            depth_sample_radius = max(6, int(min(tray_w, tray_h) / 24))
             spatial_points = [
-                self.deproject_pixel_to_3d(pt, sample_radius=max(6, min(inset_x, inset_y) // 2))
+                self.deproject_pixel_to_3d(pt, sample_radius=depth_sample_radius)
                 for pt in depth_points
             ]
 
@@ -793,6 +946,24 @@ class GSAMSlideDetectNode(Node):
             # Warp depth with nearest-neighbour to avoid interpolating depth values
             warped_depth = cv2.warpPerspective(depth_img, M, (tray_w, tray_h),
                                                flags=cv2.INTER_NEAREST)
+
+            # Warp the color image too so the hue / dark-pixel rules from
+            # pick_place.py (wafer_detect3) operate on a flat tray ROI that
+            # lines up 1:1 with the slot grid we use for depth.
+            if self.enable_color_detection:
+                warped_color = cv2.warpPerspective(
+                    img, M, (tray_w, tray_h), flags=cv2.INTER_LINEAR
+                )
+                warped_hsv = cv2.cvtColor(warped_color, cv2.COLOR_BGR2HSV)
+                warped_gray = cv2.cvtColor(warped_color, cv2.COLOR_BGR2GRAY).astype(np.float32)
+                cv2.imwrite(
+                    str(self.debug_output_dir / f"debug_color_warp_tray{tray_idx}.jpg"),
+                    warped_color,
+                )
+            else:
+                warped_color = None
+                warped_hsv = None
+                warped_gray = None
 
             # Colorized depth debug image — normalize to valid pixel range for max contrast
             valid_px = warped_depth[warped_depth > 0]
@@ -811,6 +982,16 @@ class GSAMSlideDetectNode(Node):
             slot_depths = []
             sample_centers = []
 
+            # Color/hue sampling geometry (warped tray frame)
+            color_band_radius = max(4, tray_h // (num_slots * 2))
+            color_xi_s = int(self.color_interior_x_min * tray_w)
+            color_xi_e = int(self.color_interior_x_max * tray_w)
+            if color_xi_e <= color_xi_s:
+                color_xi_s, color_xi_e = 0, tray_w
+            color_cx_hue = int(self.color_hue_x * tray_w)
+            slot_color_min_b = []  # min column-mean brightness in interior band
+            slot_color_hue = []    # mean hue (OpenCV 0-180) in center patch
+
             for i in range(1, num_slots + 1):
                 t = i / (num_slots + 1)
                 cx, cy = tray_w // 2, int(t * tray_h)
@@ -822,6 +1003,30 @@ class GSAMSlideDetectNode(Node):
                 region = warped_depth[sample_y1:sample_y2, sample_x1:sample_x2]
                 valid = region[region > 0]
                 slot_depths.append(float(np.median(valid)) if len(valid) > 0 else 0.0)
+
+                # Color sampling (mirror pick_place.detect_wafers band+hue patch)
+                if self.enable_color_detection and warped_gray is not None:
+                    cy_b1 = max(0, cy - color_band_radius)
+                    cy_b2 = min(tray_h, cy + color_band_radius)
+                    band = warped_gray[cy_b1:cy_b2, color_xi_s:color_xi_e]
+                    if band.size > 0:
+                        col_means = np.mean(band, axis=0)
+                        min_b = float(np.min(col_means))
+                    else:
+                        min_b = 255.0
+
+                    hx1 = max(0, color_cx_hue - color_band_radius)
+                    hx2 = min(tray_w, color_cx_hue + color_band_radius)
+                    hy1 = max(0, cy - color_band_radius)
+                    hy2 = min(tray_h, cy + color_band_radius)
+                    hue_patch = warped_hsv[hy1:hy2, hx1:hx2, 0]
+                    hue_val = float(np.mean(hue_patch)) if hue_patch.size > 0 else 0.0
+                else:
+                    min_b = float('nan')
+                    hue_val = float('nan')
+
+                slot_color_min_b.append(min_b)
+                slot_color_hue.append(hue_val)
 
             valid_depths = [d for d in slot_depths if d > 0]
             if not valid_depths:
@@ -844,10 +1049,16 @@ class GSAMSlideDetectNode(Node):
                     'width': int(tray_x2 - tray_x1),
                     'height': int(tray_y2 - tray_y1),
                 },
-                'depth_sample_inset_px': {
-                    'x': int(inset_x),
-                    'y': int(inset_y),
+                'quad_source': quad_source,
+                'quad_angle_deg': float(quad_angle_deg),
+                'quad_corners': {
+                    'p1_tl': [float(p1[0]), float(p1[1])],
+                    'p2_tr': [float(p2[0]), float(p2[1])],
+                    'p3_bl': [float(p3[0]), float(p3[1])],
+                    'p4_br': [float(p4[0]), float(p4[1])],
                 },
+                'warped_size_px': {'w': int(tray_w), 'h': int(tray_h)},
+                'depth_sample_radius_px': int(depth_sample_radius),
                 'depth_sample_points': [
                     {'x': int(point[0]), 'y': int(point[1])}
                     for point in depth_points
@@ -860,10 +1071,30 @@ class GSAMSlideDetectNode(Node):
                 global_slot = slot_offset + i
                 depth_diff = tray_floor - depth_val
                 depth_occupied = depth_val > 0 and depth_diff > self.depth_diff_threshold
-                occupied = depth_occupied
+
+                # Color rules (mirror pick_place.detect_wafers): Rule 1 = absolute
+                # dark pixel; Rule 2 = hue in wafer band + moderately dark.
+                min_b = slot_color_min_b[i - 1]
+                hue_val = slot_color_hue[i - 1]
+                if self.enable_color_detection and not (np.isnan(min_b) or np.isnan(hue_val)):
+                    color_rule1 = min_b < self.dark_abs_thresh
+                    color_rule2 = (
+                        (self.hue_low_cv2 < hue_val < self.hue_high_cv2)
+                        and (min_b < self.single_thresh)
+                    )
+                    color_occupied = bool(color_rule1 or color_rule2)
+                else:
+                    color_rule1 = False
+                    color_rule2 = False
+                    color_occupied = False
+
+                occupied = bool(depth_occupied or color_occupied)
                 self.get_logger().info(
                     f"Tray {tray_idx} slot {i} (global {global_slot}): "
                     f"depth {depth_val:.1f} mm  diff {depth_diff:.1f} mm  "
+                    f"min_b {min_b:.1f}  hue {hue_val:.1f}  "
+                    f"depth_occ={depth_occupied} color_occ={color_occupied} "
+                    f"(r1={color_rule1} r2={color_rule2})  "
                     f"final={'OCCUPIED' if occupied else 'empty'}"
                 )
 
@@ -895,6 +1126,11 @@ class GSAMSlideDetectNode(Node):
                     'depth_mm': float(depth_val),
                     'depth_diff_mm': float(depth_diff),
                     'depth_cv_occupied': bool(depth_occupied),
+                    'color_min_b': None if np.isnan(min_b) else float(min_b),
+                    'color_hue_cv2': None if np.isnan(hue_val) else float(hue_val),
+                    'color_rule1_dark': bool(color_rule1),
+                    'color_rule2_hue': bool(color_rule2),
+                    'color_occupied': bool(color_occupied),
                     'occupied': bool(occupied),
                     'camera_frame_xyz': {
                         'x': float(t_pn[0]),
@@ -916,6 +1152,16 @@ class GSAMSlideDetectNode(Node):
                 {
                     'camera_frame': self.camera_frame,
                     'detected_slots': [int(slot) for slot in all_detected],
+                    'color_detection': {
+                        'enabled': bool(self.enable_color_detection),
+                        'interior_x_min': float(self.color_interior_x_min),
+                        'interior_x_max': float(self.color_interior_x_max),
+                        'hue_x': float(self.color_hue_x),
+                        'dark_abs_thresh': float(self.dark_abs_thresh),
+                        'single_thresh': float(self.single_thresh),
+                        'hue_low_cv2': float(self.hue_low_cv2),
+                        'hue_high_cv2': float(self.hue_high_cv2),
+                    },
                     'trays': debug_trays,
                 },
                 f,

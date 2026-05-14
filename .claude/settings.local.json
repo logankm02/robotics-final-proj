@@ -2,7 +2,11 @@
   "permissions": {
     "allow": [
       "Bash(find:*)",
-      "Bash(python3 -)"
+      "Bash(python3 -)",
+      "Read(//home/nano/tmdriver_ws/**)",
+      "Read(//home/nano/tmdriver_ws/install/**)",
+      "Read(//home/nano/tmdriver_ws/src/**)",
+      "Bash(ping -c 3 172.16.8.2)"
     ],
     "deny": [],
     "ask": []
