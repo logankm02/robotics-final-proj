@@ -44,6 +44,7 @@ import re
 GRIPPER_LENGTH = 0.142            # 142 mm — flange to gripper body
 GRIPPER_PAD_LENGTH = 0.066        # 66 mm — pad extension below gripper body
 FLANGE_TO_PAD_BOTTOM = GRIPPER_LENGTH + GRIPPER_PAD_LENGTH
+FLANGE_TO_GRIP_CENTER = 0.107     # 107 mm — flange to grip-center (where wafer is held)
 WAFER_SUPPORT_HEIGHT = 0.15       # conservative end of the user-reported 10–15 cm range
 GRASP_HEIGHT_ABOVE_SLOT_BASE = WAFER_SUPPORT_HEIGHT + FLANGE_TO_PAD_BOTTOM
 ARM_JOINT_NAMES = [
@@ -145,10 +146,33 @@ class PickAndPlace(Node):
         self.grasp_offset_x = float(self.get_parameter('grasp_offset_x').value)
         self.grasp_offset_y = float(self.get_parameter('grasp_offset_y').value)
         self.grasp_offset_z = float(self.get_parameter('grasp_offset_z').value)
+        # Local (slot-frame) offsets — useful when the trays are rotated
+        # relative to the robot base, so base X/Y don't match what you
+        # visually call "forward" / "across". These are rotated by each
+        # slot's orientation before being added, so:
+        #   local_x ~ along the tray length (slot stack direction)
+        #   local_y ~ across the tray width
+        #   local_z ~ depth into the slot (toward/away from the camera)
+        self.declare_parameter('grasp_offset_local_x', 0.0)
+        self.declare_parameter('grasp_offset_local_y', 0.0)
+        self.declare_parameter('grasp_offset_local_z', 0.0)
+        self.grasp_offset_local_x = float(
+            self.get_parameter('grasp_offset_local_x').value)
+        self.grasp_offset_local_y = float(
+            self.get_parameter('grasp_offset_local_y').value)
+        self.grasp_offset_local_z = float(
+            self.get_parameter('grasp_offset_local_z').value)
         if (self.grasp_offset_x or self.grasp_offset_y or self.grasp_offset_z):
             self.get_logger().info(
-                f'Grasp offset (base frame): x={self.grasp_offset_x:+.4f} '
+                f'Grasp offset (base frame):  x={self.grasp_offset_x:+.4f} '
                 f'y={self.grasp_offset_y:+.4f} z={self.grasp_offset_z:+.4f} m'
+            )
+        if (self.grasp_offset_local_x or self.grasp_offset_local_y
+                or self.grasp_offset_local_z):
+            self.get_logger().info(
+                f'Grasp offset (slot frame):  x={self.grasp_offset_local_x:+.4f} '
+                f'y={self.grasp_offset_local_y:+.4f} '
+                f'z={self.grasp_offset_local_z:+.4f} m'
             )
 
         # "Home / viewing" joint pose. The arm returns here between picks in
@@ -708,9 +732,6 @@ class PickAndPlace(Node):
         self.get_logger().info('='*60)
 
         try:
-            # ========================================
-            # GSAM MODE: Call detection service once
-            # ========================================
             if self.detection_mode == 'gsam':
                 self.get_logger().info('')
                 self.get_logger().info('='*60)
@@ -733,8 +754,6 @@ class PickAndPlace(Node):
                 
                 detected_slots = await self.detect_slides_gsam()
 
-                # None == detection FAILED (not "tray empty"). Abort instead of
-                # falsely reporting success. Usually means start_cv.sh isn't up.
                 if detected_slots is None:
                     self.get_logger().error(
                         'GSAM detection failed (service unavailable or '
@@ -765,18 +784,12 @@ class PickAndPlace(Node):
                 # Wait a moment for TF frames to be published
                 time.sleep(0.2)
             
-            # ========================================
-            # MAIN LOOP: Pick each detected slide
-            # ========================================
             while True:
                 self.get_logger().info('')
                 self.get_logger().info('='*60)
                 self.get_logger().info(f'CYCLE {slides_picked + 1}')
                 self.get_logger().info('='*60)
                 
-                # ========================================
-                # MARKER MODE: Move to scan pose each cycle
-                # ========================================
                 if self.detection_mode == 'marker':
                     self.get_logger().info('Step 1: Moving to pick scan pose...')
                     if not await self.move_to_target(pick_scan, velocity_scale=self.xy_vel_scale, acceleration_scale=self.xy_accel_scale):
@@ -835,9 +848,29 @@ class PickAndPlace(Node):
                 job_queue.append((align_pose, self.xy_vel_scale, self.xy_accel_scale))
                 current_state = ik_align
                 
-                # Job 2: Lower for grasp
-                self.get_logger().info(f'  Job 2/9: Computing lower ({pick_dist}m) - TODO: TUNE')
-                lower_pose = self.offset_pose_z(align_pose, -pick_dist)
+                # Job 2: Lower for grasp.
+                # Use the detected slide Z directly so the descent target
+                # auto-adapts to tray height and gripper length. `pick_dist`
+                # from the service request is kept only as a safety cap.
+                target_lower_z = slide_pose.pose.position.z + FLANGE_TO_GRIP_CENTER
+                descent_from_scan = align_pose.pose.position.z - target_lower_z
+                if descent_from_scan > pick_dist + 1e-3:
+                    self.get_logger().error(
+                        f'Descent {descent_from_scan:.3f}m exceeds safety cap '
+                        f'pick_dist={pick_dist:.3f}m - skipping this slide'
+                    )
+                    continue
+                self.get_logger().info(
+                    f'  Job 2/9: Lower to z={target_lower_z:.3f}m '
+                    f'(slide.z={slide_pose.pose.position.z:.3f} + '
+                    f'flange-to-grip={FLANGE_TO_GRIP_CENTER:.3f})'
+                )
+                lower_pose = PoseStamped()
+                lower_pose.header = align_pose.header
+                lower_pose.pose.position.x = align_pose.pose.position.x
+                lower_pose.pose.position.y = align_pose.pose.position.y
+                lower_pose.pose.position.z = target_lower_z
+                lower_pose.pose.orientation = align_pose.pose.orientation
                 
                 ik_lower = self.ik_planner.compute_ik(
                     current_state,
@@ -1378,17 +1411,35 @@ class PickAndPlace(Node):
 
     def _apply_grasp_offset(self, pose):
         """
-        Return a copy of `pose` shifted by the configured base-frame grasp
-        offset. Orientation is untouched. If all offsets are zero, returns the
-        pose unchanged (no copy).
+        Return a copy of `pose` shifted by:
+          - Base-frame offsets (grasp_offset_x/y/z), added directly.
+          - Slot-frame offsets (grasp_offset_local_x/y/z), rotated by the
+            pose's own orientation into base frame, then added. Use these when
+            the base axes don't match what you visually call "forward" /
+            "across" — e.g. the trays are at an angle to the robot.
+        Orientation is untouched. Returns the pose unchanged (no copy) when
+        all six offsets are zero.
         """
-        if not (self.grasp_offset_x or self.grasp_offset_y or self.grasp_offset_z):
+        bx, by, bz = (self.grasp_offset_x, self.grasp_offset_y,
+                      self.grasp_offset_z)
+        lx, ly, lz = (self.grasp_offset_local_x, self.grasp_offset_local_y,
+                      self.grasp_offset_local_z)
+        if not (bx or by or bz or lx or ly or lz):
             return pose
+
+        # Rotate the local offset by this pose's orientation into base frame.
+        if lx or ly or lz:
+            q = pose.pose.orientation
+            rot = R.from_quat([q.x, q.y, q.z, q.w])
+            local_in_base = rot.apply([lx, ly, lz])
+        else:
+            local_in_base = np.zeros(3)
+
         out = PoseStamped()
         out.header = pose.header
-        out.pose.position.x = pose.pose.position.x + self.grasp_offset_x
-        out.pose.position.y = pose.pose.position.y + self.grasp_offset_y
-        out.pose.position.z = pose.pose.position.z + self.grasp_offset_z
+        out.pose.position.x = pose.pose.position.x + bx + float(local_in_base[0])
+        out.pose.position.y = pose.pose.position.y + by + float(local_in_base[1])
+        out.pose.position.z = pose.pose.position.z + bz + float(local_in_base[2])
         out.pose.orientation = pose.pose.orientation
         return out
 
