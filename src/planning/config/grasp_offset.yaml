@@ -1,0 +1,26 @@
+# Slot-local grasp offset for /pick_and_place.
+#
+# Applied to every detected slide_XX pose so the commanded link_6 target is
+# shifted by (local_x, local_y, local_z) along the slot's own axes (rotated
+# into base frame by each slot's orientation):
+#   local_x ~ along the tray length (slot stack direction)
+#   local_y ~ across the tray width
+#   local_z ~ depth into the slot (toward / away from camera)
+#
+# Calibrated from a single-sample residual against slide_36 with the arm
+# parked at the grasp pose. The base-frame residual was
+# (dx, dy, dz) = (+0.104, -0.133, 0) m; projected into slide_36's local
+# axes that becomes (local_x, local_y, local_z) below.
+#
+# Launch with:
+#   ros2 run planning pick_and_place --ros-args \
+#     --params-file src/planning/config/viewing_pose.yaml \
+#     --params-file src/planning/config/grasp_offset.yaml
+#
+# Or tweak live (does not persist):
+#   ros2 param set /pick_and_place grasp_offset_local_x -0.127
+/pick_and_place:
+  ros__parameters:
+    grasp_offset_local_x: -0.127
+    grasp_offset_local_y: -0.111
+    grasp_offset_local_z: 0.0

@@ -45,6 +45,7 @@ DO_RUN=1
 ACTION="start"
 
 VIEWING_PARAMS="${WS_DIR}/src/planning/config/viewing_pose.yaml"
+GRASP_OFFSET_PARAMS="${WS_DIR}/src/planning/config/grasp_offset.yaml"
 
 # -- pretty output ----------------------------------------------------------
 
@@ -188,7 +189,8 @@ start_planner() {
         return 0
     fi
     local params_arg=()
-    [[ -f "${VIEWING_PARAMS}" ]] && params_arg=(--params-file "${VIEWING_PARAMS}")
+    [[ -f "${VIEWING_PARAMS}" ]] && params_arg+=(--params-file "${VIEWING_PARAMS}")
+    [[ -f "${GRASP_OFFSET_PARAMS}" ]] && params_arg+=(--params-file "${GRASP_OFFSET_PARAMS}")
     start_bg "pick_and_place" /tmp/pipe_planner.log /tmp/pipe_planner.pid \
         ros2 run planning pick_and_place --ros-args \
             "${params_arg[@]}" \

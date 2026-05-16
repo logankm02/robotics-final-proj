@@ -3,51 +3,17 @@
     "candidate_index": 0,
     "bbox": [
       182,
-      6,
-      970,
-      715
+      5,
+      972,
+      713
     ],
-    "width": 788,
-    "height": 709,
-    "area_fraction": 0.6062196180555556,
-    "short_side": 709,
-    "mask_fill_fraction": 0.7840491719945873,
-    "center_x": 576.0,
+    "width": 790,
+    "height": 708,
+    "area_fraction": 0.6069010416666667,
+    "short_side": 708,
+    "mask_fill_fraction": 0.7615747693627977,
+    "center_x": 577.0,
     "accepted": false,
     "rejection_reason": "too_large"
-  },
-  {
-    "candidate_index": 1,
-    "bbox": [
-      673,
-      166,
-      867,
-      386
-    ],
-    "width": 194,
-    "height": 220,
-    "area_fraction": 0.04631076388888889,
-    "short_side": 194,
-    "mask_fill_fraction": 0.8703608247422681,
-    "center_x": 770.0,
-    "accepted": true,
-    "rejection_reason": null
-  },
-  {
-    "candidate_index": 2,
-    "bbox": [
-      460,
-      168,
-      654,
-      386
-    ],
-    "width": 194,
-    "height": 218,
-    "area_fraction": 0.04588975694444444,
-    "short_side": 194,
-    "mask_fill_fraction": 0.5643147640215643,
-    "center_x": 557.0,
-    "accepted": true,
-    "rejection_reason": null
   }
 ]
